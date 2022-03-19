@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        // project options
+        "lib": ["ESNext", "dom"],
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "resolveJsonModule": true,
+        "declaration": false,
+        "outDir": "dist/",
+        "esModuleInterop": true
+    },
+    "include": ["src/"],
+    "exclude": ["node_modules/**/*"]
+}
