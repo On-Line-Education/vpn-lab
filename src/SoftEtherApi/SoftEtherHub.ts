@@ -12,35 +12,35 @@ export default class SoftEtherHub {
     }
 
     public async createHub(
-        hub_name: string,
-        hub_type: VpnRpcHubType,
+        hubName: string,
+        hubType: VpnRpcHubType,
         online: boolean,
-        max_session: number,
+        maxSession: number,
         password: string,
-        no_enum: boolean = false
+        noEnum: boolean = false
     ): Promise<VpnRpcCreateHub> {
-        let in_rpc_create_hub: VpnRpcCreateHub = new VpnRpcCreateHub({
-            HubName_str: hub_name,
-            HubType_u32: hub_type,
+        let data: VpnRpcCreateHub = new VpnRpcCreateHub({
+            HubName_str: hubName,
+            HubType_u32: hubType,
             Online_bool: online,
             AdminPasswordPlainText_str: password,
-            MaxSession_u32: max_session,
-            NoEnum_bool: no_enum,
+            MaxSession_u32: maxSession,
+            NoEnum_bool: noEnum,
         });
-        return await this.api.CreateHub(in_rpc_create_hub);
+        return await this.api.CreateHub(data);
     }
 
-    public async getHub(hub_name: string): Promise<VpnRpcCreateHub> {
-        let in_rpc_create_hub: VpnRpcCreateHub = new VpnRpcCreateHub({
-            HubName_str: hub_name,
+    public async getHub(hubName: string): Promise<VpnRpcCreateHub> {
+        let data: VpnRpcCreateHub = new VpnRpcCreateHub({
+            HubName_str: hubName,
         });
-        return await this.api.GetHub(in_rpc_create_hub);
+        return await this.api.GetHub(data);
     }
 
-    async getHubStatus(hub_name: string): Promise<VpnRpcHubStatus> {
-        let in_rpc_hub_status: VpnRpcHubStatus = new VpnRpcHubStatus({
-            HubName_str: hub_name,
+    async getHubStatus(hubName: string): Promise<VpnRpcHubStatus> {
+        let data: VpnRpcHubStatus = new VpnRpcHubStatus({
+            HubName_str: hubName,
         });
-        return await this.api.GetHubStatus(in_rpc_hub_status);
+        return await this.api.GetHubStatus(data);
     }
 }
