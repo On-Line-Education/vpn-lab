@@ -1,0 +1,26 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:./dev.db"
+}
+
+model Hub {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    title     String
+    passHash  String
+    users     User[]
+}
+
+model User {
+    id       Int    @id @default(autoincrement())
+    name     String @unique
+    passHash String
+    role     Int
+    Hub      Hub?   @relation(fields: [hubId], references: [id])
+    hubId    Int?
+}
