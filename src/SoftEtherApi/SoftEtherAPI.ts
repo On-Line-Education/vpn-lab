@@ -25,4 +25,12 @@ export default class SoftEtherAPI {
         this.user = new SoftEtherUser(this.api);
         this.hub = new SoftEtherHub(this.api);
     }
+
+    public async getServerInfo(): Promise<VPN.VpnRpcServerInfo> {
+        return await this.api.GetServerInfo();
+    }
+
+    public async getServerStatus(): Promise<VPN.VpnRpcServerStatus> {
+        return await this.api.GetServerStatus();
+    }
 }
