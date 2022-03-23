@@ -5,6 +5,7 @@ import {
     VpnRpcHubStatus,
     VpnRpcEnumHub,
     VpnRpcDeleteHub,
+    VpnRpcSetHubOnline,
 } from "vpnrpc";
 
 export default class SoftEtherHub {
@@ -13,7 +14,7 @@ export default class SoftEtherHub {
         this.api = api;
     }
 
-    public async createHub(
+    public async create(
         hubName: string,
         hubType: VpnRpcHubType,
         online: boolean,
@@ -32,21 +33,21 @@ export default class SoftEtherHub {
         return await this.api.CreateHub(data);
     }
 
-    public async getHub(hubName: string): Promise<VpnRpcCreateHub> {
+    public async get(hubName: string): Promise<VpnRpcCreateHub> {
         let data: VpnRpcCreateHub = new VpnRpcCreateHub({
             HubName_str: hubName,
         });
         return await this.api.GetHub(data);
     }
 
-    public async getHubStatus(hubName: string): Promise<VpnRpcHubStatus> {
+    public async getStatus(hubName: string): Promise<VpnRpcHubStatus> {
         let data: VpnRpcHubStatus = new VpnRpcHubStatus({
             HubName_str: hubName,
         });
         return await this.api.GetHubStatus(data);
     }
 
-    public async updateHub(
+    public async update(
         hubName: string,
         hubType: VpnRpcHubType,
         online: boolean,
@@ -66,14 +67,25 @@ export default class SoftEtherHub {
         return await this.api.SetHub(data);
     }
 
-    public async listHubs(): Promise<VpnRpcEnumHub> {
+    public async list(): Promise<VpnRpcEnumHub> {
         return await this.api.EnumHub();
     }
 
-    public async deleteHub(hubName: string) {
+    public async delete(hubName: string): Promise<VpnRpcDeleteHub> {
         let data = new VpnRpcDeleteHub({
             HubName_str: hubName,
         });
         return await this.api.DeleteHub(data);
+    }
+
+    public async changeOnline(
+        hubName: string,
+        online: boolean
+    ): Promise<VpnRpcSetHubOnline> {
+        let data = new VpnRpcSetHubOnline({
+            HubName_str: hubName,
+            Online_bool: online,
+        });
+        return await this.api.SetHubOnline(data);
     }
 }
