@@ -2,5 +2,5 @@
     "watch": ["dist"],
     "ext": ".js",
     "ignore": [],
-    "exec": "node ./dist/index.js"
+    "exec": "node ./dist/server/index.js"
   }

@@ -1,3 +1,15 @@
+# files created via npm commands
 node_modules
 dist
 /prisma/dev.db
+
+# editors
+.idea
+.vscode
+
+# local .env
+.env.local
+.env.*.local
+
+# mac
+.DS_Store
