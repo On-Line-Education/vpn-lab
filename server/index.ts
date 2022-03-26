@@ -1,7 +1,8 @@
-import { VpnRpcHubType } from "vpnrpc";
+import { VpnRpcHubType, VpnRpcUserAuthType } from "vpnrpc";
 import ResolversBuilder from "./Resolvers/ResolversBuilder";
 import createServer from "./server";
 import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
+import faker from "@faker-js/faker";
 
 async function main(): Promise<void> {
     let vpn = new SoftEtherAPI("127.0.0.1", 5555, "!@#$%^&*");
@@ -18,7 +19,12 @@ async function main(): Promise<void> {
     //         "test123"
     //     )
     // );
-    console.log(vpn.user.getUsersList("test1"));
+    // console.log(await vpn.user.createUser("test1", "arnold", "szfajceneger", VpnRpcUserAuthType.Password, "1234"));
+    // console.log(await vpn.user.getUsersList("test1"));
+    // console.log(
+    //     await vpn.user.update("test1", "BOrland", "Wichajster", "", "")
+    // );
+    // console.log(await vpn.user.getUsersList("test1"));
     // console.dir(e);
 
     let rb = new ResolversBuilder();

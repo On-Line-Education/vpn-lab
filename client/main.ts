@@ -1,9 +1,14 @@
-import { createApp } from "vue"
-import App from "./App.vue"
-import router from "./router"
-import store from "./store"
+import { createApp } from "vue";
+// @ts-ignore
+import App from "./App.vue";
+import store from "./store";
+import router from "./router";
+import "./assets/css/nucleo-icons.css";
+import "./assets/css/nucleo-svg.css";
+import SoftUIDashboard from "./soft-ui-dashboard";
 
-createApp(App)
-  .use(store)
-  .use(router)
-  .mount("#app")
+const appInstance = createApp(App);
+appInstance.use(store);
+appInstance.use(router);
+appInstance.use(SoftUIDashboard);
+appInstance.mount("#app");
