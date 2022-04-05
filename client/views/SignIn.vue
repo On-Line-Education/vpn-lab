@@ -1,15 +1,4 @@
 <template>
-    <div class="container top-0 position-sticky z-index-sticky">
-        <div class="row">
-            <div class="col-12">
-                <navbar
-                    isBlur="blur blur-rounded my-3 py-2 start-0 end-0 mx-4 shadow"
-                    btnBackground="bg-gradient-success"
-                    v-bind:darkMode="true"
-                />
-            </div>
-        </div>
-    </div>
     <main class="mt-0 main-content main-content-bg">
         <section>
             <div class="page-header min-vh-75">
@@ -21,53 +10,39 @@
                             <div class="mt-8 card card-plain">
                                 <div class="pb-0 card-header text-start">
                                     <h3
-                                        class="font-weight-bolder text-info text-gradient"
+                                        class="font-weight-bolder text-info text-gradient text-warning"
                                     >
-                                        Welcome back
+                                        ON-Line Education
                                     </h3>
                                     <p class="mb-0">
-                                        Enter your email and password to sign in
+                                        Podaj swoją nazwę użytkownika i hasło
+                                        aby się zalogować
                                     </p>
                                 </div>
                                 <div class="card-body">
                                     <form role="form" class="text-start">
-                                        <label>Email</label>
+                                        <label>Nazwa użytkownika</label>
                                         <vsud-input
-                                            type="email"
-                                            placeholder="Email"
-                                            name="email"
+                                            type="text"
+                                            placeholder="Nazwa użytkownika"
+                                            name="username"
                                         />
-                                        <label>Password</label>
+                                        <label>Hasło</label>
                                         <vsud-input
                                             type="password"
-                                            placeholder="Password"
+                                            placeholder="Hasło"
                                             name="password"
                                         />
-                                        <vsud-switch id="rememberMe" checked>
-                                            Remember me
-                                        </vsud-switch>
                                         <div class="text-center">
                                             <vsud-button
                                                 class="my-4 mb-2"
                                                 variant="gradient"
-                                                color="info"
+                                                color="warning"
                                                 fullWidth
-                                                >Sign in
+                                                >Zaloguj się
                                             </vsud-button>
                                         </div>
                                     </form>
-                                </div>
-                                <div
-                                    class="px-1 pt-0 text-center card-footer px-lg-2"
-                                >
-                                    <p class="mx-auto mb-4 text-sm">
-                                        Don't have an account?
-                                        <a
-                                            href="javascript:;"
-                                            class="text-info text-gradient font-weight-bold"
-                                            >Sign up</a
-                                        >
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -91,39 +66,31 @@
             </div>
         </section>
     </main>
-    <app-footer />
 </template>
 
-<script>
-import Navbar from "../examples/PageLayout/Navbar.vue";
-import AppFooter from "../examples/PageLayout/Footer.vue";
+<script setup lang="ts">
 import VsudInput from "../components/VsudInput.vue";
 import VsudSwitch from "../components/VsudSwitch.vue";
 import VsudButton from "../components/VsudButton.vue";
-const body = document.getElementsByTagName("body")[0];
 
-export default {
-    name: "signin",
-    components: {
-        Navbar,
-        AppFooter,
-        VsudInput,
-        VsudSwitch,
-        VsudButton,
-    },
-    beforeMount() {
-        this.$store.state.hideConfigButton = true;
-        this.$store.state.showNavbar = false;
-        this.$store.state.showSidenav = false;
-        this.$store.state.showFooter = false;
-        body.classList.remove("bg-gray-100");
-    },
-    beforeUnmount() {
-        this.$store.state.hideConfigButton = false;
-        this.$store.state.showNavbar = true;
-        this.$store.state.showSidenav = true;
-        this.$store.state.showFooter = true;
-        body.classList.add("bg-gray-100");
-    },
-};
+import { onBeforeMount, onBeforeUnmount } from "vue";
+import { useStore } from "vuex";
+const body = document.getElementsByTagName("body")[0];
+const store = useStore();
+
+onBeforeMount(() => {
+    store.state.hideConfigButton = true;
+    store.state.showNavbar = false;
+    store.state.showSidenav = false;
+    store.state.showFooter = false;
+    body.classList.remove("bg-gray-100");
+});
+
+onBeforeUnmount(() => {
+    store.state.hideConfigButton = false;
+    store.state.showNavbar = true;
+    store.state.showSidenav = true;
+    store.state.showFooter = true;
+    body.classList.add("bg-gray-100");
+});
 </script>

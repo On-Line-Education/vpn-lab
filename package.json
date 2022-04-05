@@ -9,7 +9,8 @@
     "dev:server:builder": "npx tsc -w",
     "dev:server:watcher": "nodemon",
     "build:start": "npx tsc -b && node ./dist/server/index.js",
-    "dev": "npx concurrently \"npm run dev:server:watcher\" \"npm run dev:server:builder\""
+    "dev": "npx concurrently \"npm run dev:server:watcher\" \"npm run dev:server:builder\"",
+    "serve": "npx vue-clu-service serve"
   },
   "author": "",
   "license": "ISC",
