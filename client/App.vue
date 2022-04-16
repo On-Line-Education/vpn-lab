@@ -1,6 +1,6 @@
 <template>
     <sidenav
-        :custom_class="store.state.mcolor"
+        custom_class="card-background-mask-warning"
         :class="[store.state.isTransparent, 'fixed-start']"
         v-if="store.state.showSidenav"
     />
@@ -11,7 +11,7 @@
         <navbar
             :class="[navClasses]"
             :textWhite="store.state.isAbsolute ? 'text-white opacity-8' : ''"
-            :minNav="navbarMinimize"
+            :minNav="navbarMinimize + ''"
             v-if="store.state.showNavbar"
         />
         <router-view />

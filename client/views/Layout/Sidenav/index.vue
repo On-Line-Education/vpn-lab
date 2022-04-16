@@ -3,6 +3,7 @@
         class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
         :class="'ms-3'"
         id="sidenav-main"
+        data-color="warning"
     >
         <div class="sidenav-header">
             <i
@@ -16,7 +17,9 @@
                     class="navbar-brand-img h-100"
                     alt="main_logo"
                 />
-                <span class="ms-1 font-weight-bold">OEDU VPN APP</span>
+                <span class="ms-1 font-weight-bold">{{
+                    store.getters.appName
+                }}</span>
             </a>
         </div>
         <hr class="mt-0 horizontal dark" />
@@ -26,6 +29,8 @@
 <script setup lang="ts">
 import SidenavList from "./SidenavList.vue";
 import logo from "../../../assets/img/logo-ct.png";
+import { useStore } from "vuex";
+const store = useStore();
 const { custom_class } = defineProps({
     custom_class: String,
 });

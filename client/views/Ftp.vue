@@ -7,5 +7,5 @@ const store = useStore();
 
 store.state.showSidenav = true;
 
-const hi = "Hello!";
+const hi = "FTP!!!!";
 </script>

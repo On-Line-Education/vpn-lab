@@ -39,6 +39,8 @@
                                                 variant="gradient"
                                                 color="warning"
                                                 fullWidth
+                                                type="button"
+                                                @click="fakeLogin()"
                                                 >Zaloguj się
                                             </vsud-button>
                                         </div>
@@ -69,14 +71,21 @@
 </template>
 
 <script setup lang="ts">
-import VsudInput from "../components/VsudInput.vue";
-import VsudSwitch from "../components/VsudSwitch.vue";
-import VsudButton from "../components/VsudButton.vue";
+import VsudInput from "../components/Basic/VsudInput.vue";
+import VsudSwitch from "../components/Basic/VsudSwitch.vue";
+import VsudButton from "../components/Basic/VsudButton.vue";
 
 import { onBeforeMount, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 const body = document.getElementsByTagName("body")[0];
 const store = useStore();
+const router = useRouter();
+
+function fakeLogin() {
+    store.commit("toggleLoggedIn", true);
+    router.push({ name: "HUBy" });
+}
 
 onBeforeMount(() => {
     store.state.hideConfigButton = true;
@@ -93,4 +102,10 @@ onBeforeUnmount(() => {
     store.state.showFooter = true;
     body.classList.add("bg-gray-100");
 });
+
+if (store.state.loggedIn) {
+    router.push({ name: "HUBy" });
+}
+
+console.log(store.state.loggedIn);
 </script>

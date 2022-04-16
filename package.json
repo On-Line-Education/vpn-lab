@@ -10,11 +10,13 @@
     "dev:server:watcher": "nodemon",
     "build:start": "npx tsc -b && node ./dist/server/index.js",
     "dev": "npx concurrently \"npm run dev:server:watcher\" \"npm run dev:server:builder\"",
-    "serve": "npx vue-clu-service serve"
+    "dev:serve": "npx vue-cli-service serve --mode development",
+    "serve": "npx vue-cli-service serve"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.1.1",
     "@popperjs/core": "^2.11.4",
     "@prisma/client": "^3.11.0",
     "apollo-server-express": "^3.6.5",

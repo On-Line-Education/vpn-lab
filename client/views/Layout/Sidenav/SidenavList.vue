@@ -5,73 +5,26 @@
     >
         <ul class="navbar-nav">
             <li class="nav-item">
-                <sidenav-collapse
-                    navText="Dashboard"
-                    :to="{ name: 'Dashboard' }"
-                >
+                <sidenav-collapse navText="HUBy" :to="{ name: 'HUBy' }">
                     <template v-slot:icon>
                         <icon name="dashboard" />
                     </template>
                 </sidenav-collapse>
             </li>
             <li class="nav-item">
-                <sidenav-collapse navText="Tables" :to="{ name: 'TODO' }">
-                    <template v-slot:icon>
-                        <icon name="tables" />
-                    </template>
-                </sidenav-collapse>
-            </li>
-            <li class="nav-item">
-                <sidenav-collapse navText="Billing" :to="{ name: 'TODO' }">
-                    <template v-slot:icon>
-                        <icon name="billing" />
-                    </template>
-                </sidenav-collapse>
-            </li>
-
-            <li class="nav-item">
-                <sidenav-collapse
-                    navText="Virtual Reality"
-                    :to="{ name: 'TODO' }"
-                >
+                <sidenav-collapse navText="FTP" :to="{ name: 'FTP' }">
                     <template v-slot:icon>
                         <icon name="virtual-reality" />
                     </template>
                 </sidenav-collapse>
             </li>
             <li class="nav-item">
-                <sidenav-collapse navText="RTL" :to="{ name: 'TODO' }">
+                <sidenav-collapse
+                    navText="Administracja"
+                    :to="{ name: 'Administracja' }"
+                >
                     <template v-slot:icon>
                         <icon name="rtl-page" />
-                    </template>
-                </sidenav-collapse>
-            </li>
-            <li class="mt-3 nav-item">
-                <h6
-                    class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6"
-                    :class="'ms-2'"
-                >
-                    PAGES
-                </h6>
-            </li>
-            <li class="nav-item">
-                <sidenav-collapse navText="Profile" :to="{ name: 'TODO' }">
-                    <template v-slot:icon>
-                        <icon name="customer-support" />
-                    </template>
-                </sidenav-collapse>
-            </li>
-            <li class="nav-item">
-                <sidenav-collapse navText="Sign In" :to="{ name: 'Sign In' }">
-                    <template v-slot:icon>
-                        <icon name="sign-in" />
-                    </template>
-                </sidenav-collapse>
-            </li>
-            <li class="nav-item">
-                <sidenav-collapse navText="Sign Up" :to="{ name: 'TODO' }">
-                    <template v-slot:icon>
-                        <icon name="sign-up" />
                     </template>
                 </sidenav-collapse>
             </li>
@@ -87,7 +40,7 @@
             iconClass="ni ni-diamond"
         />
         <a
-            class="btn bg-gradient-success mt-4 w-100"
+            class="btn bg-gradient-warning mt-4 w-100"
             href="https://www.creative-tim.com/product/vue-soft-ui-dashboard-pro?ref=vsud"
             type="button"
             >Me have no $$ to "Upgrade to pro"</a
@@ -95,7 +48,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import Icon from "../../../components/Icon.vue";
+import Icon from "../../../components/Basic/Icon.vue";
 import SidenavCollapse from "./SidenavCollapse.vue";
 import SidenavCard from "./SidenavCard.vue";
 import { useRoute } from "vue-router";
