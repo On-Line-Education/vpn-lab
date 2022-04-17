@@ -5,6 +5,7 @@ import store from "./store";
 import router from "./router";
 import "./assets/css/nucleo-icons.css";
 import "./assets/css/nucleo-svg.css";
+import "./assets/css/style.css";
 import SoftUIDashboard from "./soft-ui-dashboard";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 

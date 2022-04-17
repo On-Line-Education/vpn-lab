@@ -1,8 +1,8 @@
 <template>
     <div class="py-4 container-fluid">
-        <div class="row" v-if="reactiveHubs.hubs != null">
+        <div class="row" v-if="reactiveHub.hub != null">
             <div class="col-12">
-                <HubsTable :hubs="reactiveHubs.hubs" />
+                <HubsDetailsTable :hub="reactiveHub.hub" />
             </div>
         </div>
         <Card
@@ -16,30 +16,18 @@
     </div>
 </template>
 <script setup lang="ts">
-import HubsTable from "../components/Tables/HubsTable.vue";
+import HubsDetailsTable from "../components/Tables/HubsDetailsTable.vue";
 import Card from "../components/Cards/Card.vue";
 import { useStore } from "vuex";
 import { reactive } from "vue";
 const store = useStore();
 
-var reactiveHubs = reactive({ hubs: null });
+var reactiveHub = reactive({ hub: null });
 
 setTimeout(() => {
-    reactiveHubs.hubs = [
-        {
-            name: "Aaa",
-            school: "Wiszniowa",
-            status: "Działa",
-            working: true,
-            id: 1,
-        },
-        {
-            name: "Bbb",
-            school: "Wuwsi",
-            status: "Offline",
-            working: false,
-            id: 2,
-        },
+    reactiveHub.hub = [
+        { username: "Aaa", group: "1", online: true },
+        { username: "Bbb", group: "2", online: false },
     ];
 }, 1000);
 </script>

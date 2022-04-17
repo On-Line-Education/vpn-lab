@@ -9,6 +9,8 @@ import Ftp from "../views/Ftp.vue";
 import Administration from "../views/Administration.vue";
 // @ts-ignore
 import Logout from "../views/Logout.vue";
+// @ts-ignore
+import HubDetails from "../views/HubDetails.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -20,6 +22,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "/hubs",
         name: "HUBy",
         component: Hubs,
+    },
+    {
+        path: "/hub/:id",
+        name: "HUB",
+        component: HubDetails,
     },
     {
         path: "/administration",

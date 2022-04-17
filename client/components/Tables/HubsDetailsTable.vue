@@ -5,21 +5,18 @@
         </div>
         <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
-                <table
-                    v-if="hubs != null"
-                    class="table align-items-center mb-0"
-                >
+                <table v-if="hub != null" class="table align-items-center mb-0">
                     <thead>
                         <tr>
                             <th
                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                             >
-                                Nazwa
+                                Nazwa użytkownika
                             </th>
                             <th
                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
                             >
-                                Szkoła
+                                Grupa
                             </th>
                             <th
                                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
@@ -29,7 +26,7 @@
                             <th class="text-secondary opacity-7"></th>
                         </tr>
                     </thead>
-                    <tbody v-for="hub in hubs">
+                    <tbody v-for="user in hub">
                         <tr>
                             <td>
                                 <div class="d-flex px-2 py-1">
@@ -37,41 +34,40 @@
                                         class="d-flex flex-column justify-content-center"
                                     >
                                         <h6 class="mb-0 text-sm">
-                                            {{ hub.name }}
+                                            {{ user.username }}
                                         </h6>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <p class="text-xs font-weight-bold mb-0">
-                                    {{ hub.school }}
+                                    {{ user.group }}
                                 </p>
                             </td>
                             <td class="align-middle text-center text-sm">
                                 <vsud-badge
-                                    v-if="hub.working"
+                                    v-if="user.online"
                                     color="success"
                                     variant="gradient"
                                     size="sm"
-                                    >{{ hub.status }}</vsud-badge
+                                    >Online</vsud-badge
                                 >
                                 <vsud-badge
                                     v-else
                                     color="secondary"
                                     variant="gradient"
                                     size="sm"
-                                    >{{ hub.status }}</vsud-badge
+                                    >Offline</vsud-badge
                                 >
                             </td>
                             <td class="align-middle">
-                                <vsud-button
-                                    @click="more(hub.id)"
-                                    color="info"
-                                    variant="outline"
-                                    size="sm"
+                                <a
+                                    href="javascript:;"
+                                    class="text-secondary font-weight-bold text-xs"
+                                    data-toggle="tooltip"
+                                    data-original-title="Zobacz więcej"
+                                    >TODO</a
                                 >
-                                    Więcej
-                                </vsud-button>
                             </td>
                         </tr>
                     </tbody>
@@ -84,16 +80,8 @@
 <script setup lang="ts">
 import VsudAvatar from "../Basic/VsudAvatar.vue";
 import VsudBadge from "../Basic/VsudBadge.vue";
-import VsudButton from "../Basic/VsudButton.vue";
-import { useRouter } from "vue-router";
-const router = useRouter();
 
-const { hubs } = defineProps({
-    hubs: Array,
+const { hub } = defineProps({
+    hub: Array,
 });
-
-function more(id) {
-    console.log(id);
-    router.push({ name: "HUB", params: { id } });
-}
 </script>
