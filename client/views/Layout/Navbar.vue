@@ -4,6 +4,7 @@
         v-bind="$attrs"
         id="navbarBlur"
         data-scroll="true"
+        ref="navbar"
     >
         <div class="px-3 py-1 container-fluid">
             <breadcrumbs
@@ -32,12 +33,14 @@
 </template>
 <script setup lang="ts">
 import Breadcrumbs from "./Breadcrumbs.vue";
-import { defineProps, computed, onUpdated } from "vue";
+import { defineProps, computed, onUpdated, ref } from "vue";
 import { mapMutations, mapActions, useStore } from "vuex";
 import { useRoute } from "vue-router";
-var showMenu = false;
+
 const store = useStore();
 const route = useRoute();
+
+const navbar = ref();
 
 const props = defineProps({
     minNav: String,
@@ -57,7 +60,6 @@ const currentRouteName = computed(() => {
     return route.name;
 });
 onUpdated(() => {
-    const navbar = document.getElementById("navbarBlur");
     window.addEventListener("scroll", () => {
         if (window.scrollY > 10 && store.state.isNavFixed) {
             navbar.classList.add("blur");

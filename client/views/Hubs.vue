@@ -5,12 +5,12 @@
                 <HubsTable :hubs="reactiveHubs.hubs" />
             </div>
         </div>
-        <Card
+        <card
             v-else
             title="Wczytywanie danych"
             value="Prosimy poczekać"
             titleColor="opacity-7"
-            iconClass="text-white ni ni-world-2"
+            iconClass="text-white fas fa-solid fa-spinner"
             iconBackground="bg-gradient-warning"
         />
     </div>

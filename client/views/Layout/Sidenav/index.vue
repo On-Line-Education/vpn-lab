@@ -12,11 +12,7 @@
                 id="iconSidenav"
             ></i>
             <a class="m-0 navbar-brand" href="/">
-                <img
-                    :src="logo"
-                    class="navbar-brand-img h-100"
-                    alt="main_logo"
-                />
+                <i class="fas fa-duotone fa-network-wired" alt="main_logo" />
                 <span class="ms-1 font-weight-bold">{{
                     store.getters.appName
                 }}</span>
@@ -28,7 +24,6 @@
 </template>
 <script setup lang="ts">
 import SidenavList from "./SidenavList.vue";
-import logo from "../../../assets/img/logo-ct.png";
 import { useStore } from "vuex";
 const store = useStore();
 const { custom_class } = defineProps({

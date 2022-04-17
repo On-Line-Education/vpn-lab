@@ -6,7 +6,7 @@ import Hubs from "../views/Hubs.vue";
 // @ts-ignore
 import Ftp from "../views/Ftp.vue";
 // @ts-ignore
-import Administration from "../views/Administration.vue";
+import Administration from "../views/Administration/Administration.vue";
 // @ts-ignore
 import Logout from "../views/Logout.vue";
 // @ts-ignore

@@ -21,11 +21,21 @@
 import Sidenav from "./views/Layout/Sidenav/index.vue";
 import Navbar from "./views/Layout/Navbar.vue";
 
-import { computed, onBeforeMount } from "vue";
+import { computed, onBeforeMount, watch } from "vue";
 import { mapMutations, useStore } from "vuex";
+import { useRoute, useRouter } from "vue-router";
 const store = useStore();
+const route = useRoute();
+const router = useRouter();
 const mut = mapMutations(["toggleConfigurator", "navbarMinimize"]);
-
+const currentRouteName = computed(() => {
+    return route.name;
+});
+watch(currentRouteName, (r) => {
+    if (r !== "Zaloguj się" && !store.state.loggedIn) {
+        router.push({ name: "Zaloguj się" });
+    }
+});
 const navbarMinimize = mapMutations(["navbarMinimize"]);
 
 const navClasses = computed(() => {

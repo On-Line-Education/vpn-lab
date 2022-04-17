@@ -7,14 +7,14 @@
             <li class="nav-item">
                 <sidenav-collapse navText="HUBy" :to="{ name: 'HUBy' }">
                     <template v-slot:icon>
-                        <icon name="dashboard" />
+                        <i class="fas fa-solid fa-diagram-project" />
                     </template>
                 </sidenav-collapse>
             </li>
             <li class="nav-item">
                 <sidenav-collapse navText="FTP" :to="{ name: 'FTP' }">
                     <template v-slot:icon>
-                        <icon name="virtual-reality" />
+                        <i class="fas fa-solid fa-folder-tree" />
                     </template>
                 </sidenav-collapse>
             </li>
@@ -24,7 +24,7 @@
                     :to="{ name: 'Administracja' }"
                 >
                     <template v-slot:icon>
-                        <icon name="rtl-page" />
+                        <i class="fas fa-solid fa-screwdriver-wrench" />
                     </template>
                 </sidenav-collapse>
             </li>

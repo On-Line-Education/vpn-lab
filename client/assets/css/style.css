@@ -1,3 +1,26 @@
 .half-width {
     width: 25%;
 }
+
+.full-width {
+    width: 100%;
+}
+
+.flex-space-between {
+    display: flex;
+    justify-content: space-between;
+}
+
+.icon-shape-dark i {
+    color: #344767;
+    opacity: 0.8;
+    top: 11px;
+    position: relative;
+}
+
+.icon-shape-dark {
+    width: 48px;
+    height: 48px;
+    background-position: center;
+    border-radius: 0.75rem;
+}
