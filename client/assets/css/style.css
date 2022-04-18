@@ -24,3 +24,7 @@
     background-position: center;
     border-radius: 0.75rem;
 }
+
+.padding-left-rem {
+    padding-left: 1rem;
+}

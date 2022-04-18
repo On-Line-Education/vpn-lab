@@ -8,19 +8,30 @@ datasource db {
 }
 
 model Hub {
-    id        Int      @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id        Int        @id @default(autoincrement())
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
     title     String
     passHash  String
     users     User[]
+    UsersHub  UsersHub[]
 }
 
 model User {
-    id       Int    @id @default(autoincrement())
-    name     String @unique
+    id       Int        @id @default(autoincrement())
+    name     String     @unique
+    vpnName  String     @unique
     passHash String
     role     Int
-    Hub      Hub?   @relation(fields: [hubId], references: [id])
-    hubId    Int?
+    Hubs     Hub[]
+    UsersHub UsersHub[]
+}
+
+model UsersHub {
+    user   User @relation(fields: [userId], references: [id])
+    userId Int
+    hub    Hub  @relation(fields: [hubId], references: [id])
+    hubId  Int
+
+    @@id([userId, hubId])
 }

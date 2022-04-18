@@ -3,14 +3,18 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import ResolversBuilder from "./Resolvers/ResolversBuilder";
 import schema from "./Schema/schema";
+import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
 
-export default async function createServer(resolvers: ResolversBuilder) {
+export default async function createServer(
+    resolvers: ResolversBuilder,
+    vpn: SoftEtherAPI
+) {
     const app = express();
     // const httpServer = createServer(app);
 
     const apolloServer = new ApolloServer({
         typeDefs: schema,
-        resolvers: resolvers.build(),
+        resolvers: resolvers.build(vpn),
     });
 
     await apolloServer.start();

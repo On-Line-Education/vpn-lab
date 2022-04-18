@@ -11,6 +11,16 @@
                     </template>
                 </sidenav-collapse>
             </li>
+            <li
+                class="nav-item padding-left-rem"
+                v-if="currentRouteName == 'HUB'"
+            >
+                <sidenav-collapse navText="HUB" :to="{ name: 'HUB' }">
+                    <template v-slot:icon>
+                        <i class="fas fa-solid fa-users-viewfinder" />
+                    </template>
+                </sidenav-collapse>
+            </li>
             <li class="nav-item">
                 <sidenav-collapse navText="FTP" :to="{ name: 'FTP' }">
                     <template v-slot:icon>
@@ -52,15 +62,16 @@ import Icon from "../../../components/Basic/Icon.vue";
 import SidenavCollapse from "./SidenavCollapse.vue";
 import SidenavCard from "./SidenavCard.vue";
 import { useRoute } from "vue-router";
+import { computed } from "vue";
 const route = useRoute();
 
 const { cardBg } = defineProps({
     cardBg: String,
 });
 
-var title = "OEDU VPN APP",
-    controls = "dashboardsExamples",
-    isActive: "active";
+const currentRouteName = computed(() => {
+    return route.name;
+});
 
 const getRoute = () => {
     const routeArr = route.path.split("/");
