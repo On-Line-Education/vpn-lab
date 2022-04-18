@@ -7,6 +7,9 @@ import {
     VpnServerRpc,
 } from "vpnrpc";
 
+import VpnAccessDataIPv4 from "./SoftEtherData/VpnAccessDataIPv4";
+import VpnAccessDataIPv6 from "./SoftEtherData/VpnAccessDataIPv6";
+
 // Access List
 export default class SoftEtherAl {
     protected api: VpnServerRpc;
@@ -14,76 +17,24 @@ export default class SoftEtherAl {
         this.api = api;
     }
 
-    public async addAlIpv4(hubName: string): Promise<VpnRpcAddAccess> {
+    public async addAlIpv4(
+        hubName: string,
+        va: VpnAccessDataIPv4
+    ): Promise<VpnRpcAddAccess> {
         let data = new VpnRpcAddAccess({
             HubName_str: hubName,
-            AccessListSingle: [
-                new VpnAccess({
-                    Note_utf: "IPv4 Test",
-                    Active_bool: true,
-                    Priority_u32: 100,
-                    Discard_bool: true,
-                    IsIPv6_bool: false,
-                    SrcIpAddress_ip: "192.168.0.0",
-                    SrcSubnetMask_ip: "255.255.255.0",
-                    DestIpAddress_ip: "10.0.0.0",
-                    DestSubnetMask_ip: "255.255.0.0",
-                    Protocol_u32: VpnIpProtocolNumber.TCP,
-                    SrcPortStart_u32: 123,
-                    SrcPortEnd_u32: 456,
-                    DestPortStart_u32: 555,
-                    DestPortEnd_u32: 666,
-                    SrcUsername_str: "dnobori",
-                    DestUsername_str: "nekosan",
-                    CheckSrcMac_bool: true,
-                    SrcMacAddress_bin: new Uint8Array([1, 2, 3, 0, 0, 0]),
-                    SrcMacMask_bin: new Uint8Array([255, 255, 255, 0, 0, 0]),
-                    CheckTcpState_bool: true,
-                    Established_bool: true,
-                    Delay_u32: 10,
-                    Jitter_u32: 20,
-                    Loss_u32: 30,
-                    RedirectUrl_str: "aho",
-                }),
-            ],
+            AccessListSingle: [new VpnAccess(va)],
         });
         return await this.api.AddAccess(data);
     }
 
-    public async addAlIpv6(hubName: string): Promise<VpnRpcAddAccess> {
+    public async addAlIpv6(
+        hubName: string,
+        va: VpnAccessDataIPv6
+    ): Promise<VpnRpcAddAccess> {
         let data: VpnRpcAddAccess = new VpnRpcAddAccess({
             HubName_str: hubName,
-            AccessListSingle: [
-                new VpnAccess({
-                    Note_utf: "IPv6 Test",
-                    Active_bool: true,
-                    Priority_u32: 100,
-                    Discard_bool: true,
-                    IsIPv6_bool: true,
-                    SrcIpAddress6_bin: new Uint8Array([
-                        0x20, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    ]),
-                    SrcSubnetMask6_bin: new Uint8Array([
-                        0xff, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    ]),
-                    Protocol_u32: VpnIpProtocolNumber.UDP,
-                    SrcPortStart_u32: 123,
-                    SrcPortEnd_u32: 456,
-                    DestPortStart_u32: 555,
-                    DestPortEnd_u32: 666,
-                    SrcUsername_str: "dnobori",
-                    DestUsername_str: "nekosan",
-                    CheckSrcMac_bool: true,
-                    SrcMacAddress_bin: new Uint8Array([1, 2, 3, 0, 0, 0]),
-                    SrcMacMask_bin: new Uint8Array([255, 255, 255, 0, 0, 0]),
-                    CheckTcpState_bool: true,
-                    Established_bool: true,
-                    Delay_u32: 10,
-                    Jitter_u32: 20,
-                    Loss_u32: 30,
-                    RedirectUrl_str: "aho",
-                }),
-            ],
+            AccessListSingle: [new VpnAccess(va)],
         });
         return await this.api.AddAccess(data);
     }
@@ -106,67 +57,22 @@ export default class SoftEtherAl {
         return await this.api.EnumAccess(data);
     }
 
-    public async update(hubName: string): Promise<VpnRpcEnumAccessList> {
+    public async update(
+        hubName: string,
+        va4?: VpnAccessDataIPv4,
+        va6?: VpnAccessDataIPv6
+    ): Promise<VpnRpcEnumAccessList> {
+        let al = [];
+        if (va4) {
+            al.push(new VpnAccess(va4));
+        }
+        if (va6) {
+            al.push(new VpnAccess(va6));
+        }
+
         let data = new VpnRpcEnumAccessList({
             HubName_str: hubName,
-            AccessList: [
-                new VpnAccess({
-                    Note_utf: "IPv4 Test 2",
-                    Active_bool: true,
-                    Priority_u32: 100,
-                    Discard_bool: true,
-                    IsIPv6_bool: false,
-                    SrcIpAddress_ip: "192.168.0.0",
-                    SrcSubnetMask_ip: "255.255.255.0",
-                    DestIpAddress_ip: "10.0.0.0",
-                    DestSubnetMask_ip: "255.255.0.0",
-                    Protocol_u32: VpnIpProtocolNumber.TCP,
-                    SrcPortStart_u32: 123,
-                    SrcPortEnd_u32: 456,
-                    DestPortStart_u32: 555,
-                    DestPortEnd_u32: 666,
-                    SrcUsername_str: "dnobori",
-                    DestUsername_str: "nekosan",
-                    CheckSrcMac_bool: true,
-                    SrcMacAddress_bin: new Uint8Array([1, 2, 3, 0, 0, 0]),
-                    SrcMacMask_bin: new Uint8Array([255, 255, 255, 0, 0, 0]),
-                    CheckTcpState_bool: true,
-                    Established_bool: true,
-                    Delay_u32: 10,
-                    Jitter_u32: 20,
-                    Loss_u32: 30,
-                    RedirectUrl_str: "aho",
-                }),
-                new VpnAccess({
-                    Note_utf: "IPv6 Test 2",
-                    Active_bool: true,
-                    Priority_u32: 100,
-                    Discard_bool: true,
-                    IsIPv6_bool: true,
-                    SrcIpAddress6_bin: new Uint8Array([
-                        0x20, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    ]),
-                    SrcSubnetMask6_bin: new Uint8Array([
-                        0xff, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    ]),
-                    Protocol_u32: VpnIpProtocolNumber.UDP,
-                    SrcPortStart_u32: 123,
-                    SrcPortEnd_u32: 456,
-                    DestPortStart_u32: 555,
-                    DestPortEnd_u32: 666,
-                    SrcUsername_str: "dnobori",
-                    DestUsername_str: "nekosan",
-                    CheckSrcMac_bool: true,
-                    SrcMacAddress_bin: new Uint8Array([1, 2, 3, 0, 0, 0]),
-                    SrcMacMask_bin: new Uint8Array([255, 255, 255, 0, 0, 0]),
-                    CheckTcpState_bool: true,
-                    Established_bool: true,
-                    Delay_u32: 10,
-                    Jitter_u32: 20,
-                    Loss_u32: 30,
-                    RedirectUrl_str: "aho",
-                }),
-            ],
+            AccessList: al,
         });
         return await this.api.SetAccessList(data);
     }

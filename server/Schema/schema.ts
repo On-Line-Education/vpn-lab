@@ -1,19 +1,6 @@
 import { gql } from "apollo-server-express";
+import { mergeTypeDefs } from "@graphql-tools/merge";
+import hubSchema from "./hubSchema";
+import accessListSchema from "./accessListSchema";
 
-export default gql`
-    type VPNHubGet {
-        AdminPasswordPlainText_str: String
-        HashedPassword_bin: String
-        HubName_str: String
-        HubType_u32: Int
-        MaxSession_u32: Int
-        NoEnum_bool: Boolean
-        Online_bool: Boolean
-        SecurePassword_bin: String
-    }
-
-    type Query {
-        hello: String
-        getVPNHub(name: String): VPNHubGet
-    }
-`;
+export default mergeTypeDefs([hubSchema, accessListSchema]);

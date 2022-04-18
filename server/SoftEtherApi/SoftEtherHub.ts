@@ -49,21 +49,37 @@ export default class SoftEtherHub {
 
     public async update(
         hubName: string,
-        hubType: VpnRpcHubType,
-        online: boolean,
-        maxSession: number,
-        password: string,
-        noEnum: boolean = false
+        hubType: VpnRpcHubType = null,
+        online: boolean = null,
+        maxSession: number = null,
+        password: string = null,
+        noEnum: boolean = null
     ): Promise<VpnRpcCreateHub> {
+        let hub = await this.get(hubName);
+        if (hubType) {
+            hub.HubType_u32 = hubType;
+        }
+        if (online) {
+            hub.Online_bool = online;
+        }
+        if (maxSession) {
+            hub.MaxSession_u32 = maxSession;
+        }
+        if (password) {
+            hub.AdminPasswordPlainText_str = password;
+        }
+        if (noEnum) {
+            hub.NoEnum_bool = noEnum;
+        }
+
         let data: VpnRpcCreateHub = new VpnRpcCreateHub({
             HubName_str: hubName,
-            HubType_u32: hubType,
-            Online_bool: online,
-            AdminPasswordPlainText_str: password,
-            MaxSession_u32: maxSession,
-            NoEnum_bool: noEnum,
+            HubType_u32: hub.HubType_u32,
+            Online_bool: hub.Online_bool,
+            AdminPasswordPlainText_str: hub.AdminPasswordPlainText_str,
+            MaxSession_u32: hub.MaxSession_u32,
+            NoEnum_bool: hub.NoEnum_bool,
         });
-
         return await this.api.SetHub(data);
     }
 

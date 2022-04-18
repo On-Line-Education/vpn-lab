@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
+    "@graphql-tools/merge": "^8.2.9",
     "@popperjs/core": "^2.11.4",
     "@prisma/client": "^3.11.0",
     "apollo-server-express": "^3.6.5",
@@ -55,6 +56,7 @@
     "@vue/eslint-config-typescript": "^10.0.0",
     "babel-eslint": "^10.1.0",
     "concurrently": "^7.0.0",
+    "deepmerge-ts": "^4.0.3",
     "eslint": "^8.11.0",
     "eslint-plugin-vue": "^8.5.0",
     "nodemon": "^2.0.15",
