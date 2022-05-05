@@ -6,4 +6,7 @@ module.exports = {
             entry: "./client/main.ts",
         },
     },
+    devServer: {
+        https: false,
+    },
 };

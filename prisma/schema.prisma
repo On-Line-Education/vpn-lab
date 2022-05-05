@@ -22,7 +22,9 @@ model User {
     name     String     @unique
     vpnName  String     @unique
     passHash String
-    role     Int
+    vayonKey String?
+    loginKey String?
+    role     String
     Hubs     Hub[]
     UsersHub UsersHub[]
 }

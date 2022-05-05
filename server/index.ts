@@ -18,6 +18,10 @@ async function main(): Promise<void> {
         process.env.VPN_PASSWORD
     );
 
+    if (parseInt(process.env.develop) == 1) {
+        process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+    }
+
     let rb = new ResolversBuilder();
     await createServer(rb, vpn);
 }

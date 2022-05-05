@@ -19,27 +19,52 @@
 import HubsTable from "../components/Tables/HubsTable.vue";
 import Card from "../components/Cards/Card.vue";
 import { useStore } from "vuex";
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 const store = useStore();
 
 var reactiveHubs = reactive({ hubs: null });
 
-setTimeout(() => {
-    reactiveHubs.hubs = [
-        {
-            name: "Aaa",
-            school: "Wiszniowa",
-            status: "Działa",
-            working: true,
-            id: 1,
-        },
-        {
-            name: "Bbb",
-            school: "Wuwsi",
-            status: "Offline",
-            working: false,
-            id: 2,
-        },
-    ];
-}, 1000);
+store.dispatch("listHubs");
+
+// HubName_str
+// Online_bool
+
+watch(
+    () => store.getters.hubsList,
+    function () {
+        console.log("value changes detected");
+        let hubs = [],
+            id = 0;
+        store.getters.hubsList.forEach((hub) => {
+            hubs.push({
+                name: hub.HubName_str,
+                school: "TODO",
+                status: hub.Online_bool ? "Online" : "Offline",
+                working: hub.Online_bool,
+                id: id++,
+            });
+        });
+
+        reactiveHubs.hubs = hubs;
+    }
+);
+
+// setTimeout(() => {
+//     reactiveHubs.hubs = [
+//         {
+//             name: "Aaa",
+//             school: "Wiszniowa",
+//             status: "Działa",
+//             working: true,
+//             id: 1,
+//         },
+//         {
+//             name: "Bbb",
+//             school: "Wuwsi",
+//             status: "Offline",
+//             working: false,
+//             id: 2,
+//         },
+//     ];
+// }, 1000);
 </script>

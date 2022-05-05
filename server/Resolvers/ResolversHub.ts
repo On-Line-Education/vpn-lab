@@ -1,3 +1,4 @@
+import { AuthenticationError } from "apollo-server-express";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
 export default (vpn: SoftEtherAPI) => {
@@ -8,8 +9,11 @@ export default (vpn: SoftEtherAPI) => {
             },
             async createHub(
                 _: any,
-                { hubName, hubType, online, maxSession, password, noEnum }: any
+                { hubName, hubType, online, maxSession, password, noEnum }: any,
+                context: { user: any }
             ) {
+                if (!context.user)
+                    throw new AuthenticationError("you must be logged in");
                 return await vpn.hub.create(
                     hubName,
                     hubType,
