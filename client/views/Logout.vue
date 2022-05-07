@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 const store = useStore();
 const router = useRouter();
 
-store.state.loggedIn = false;
+store.state.token = null;
 
 router.push({ name: "Zaloguj się" });
 </script>

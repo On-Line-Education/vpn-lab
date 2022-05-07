@@ -3,33 +3,33 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 model Hub {
-    id        Int        @id @default(autoincrement())
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-    title     String
+    id        Int          @id @default(autoincrement())
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @updatedAt
+    title     String       @unique
     passHash  String
-    users     User[]
-    UsersHub  UsersHub[]
+    // users     User[]
+    users     UsersInHub[]
 }
 
 model User {
-    id       Int        @id @default(autoincrement())
-    name     String     @unique
-    vpnName  String     @unique
+    id       Int          @id @default(autoincrement())
+    name     String       @unique
+    vpnName  String       @unique
     passHash String
     vayonKey String?
     loginKey String?
     role     String
-    Hubs     Hub[]
-    UsersHub UsersHub[]
+    // Hubs     Hub[]
+    hubs     UsersInHub[]
 }
 
-model UsersHub {
+model UsersInHub {
     user   User @relation(fields: [userId], references: [id])
     userId Int
     hub    Hub  @relation(fields: [hubId], references: [id])

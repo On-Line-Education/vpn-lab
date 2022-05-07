@@ -17,7 +17,7 @@ export default createStore({
         showNavbar: true,
         showFooter: true,
         showMain: true,
-        loggedIn: false,
+        token: "",
         lastError: null,
         //--
         apollo: new ApolloClient({
@@ -59,7 +59,7 @@ export default createStore({
             }
         },
         toggleLoggedIn(state, payload) {
-            state.loggedIn = payload;
+            state.token = payload;
         },
         setError(state, error) {
             state.lastError = error;

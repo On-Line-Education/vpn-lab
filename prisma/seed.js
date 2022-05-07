@@ -1,6 +1,17 @@
 const { PrismaClient } = require("@prisma/client"),
     { faker } = require("@faker-js/faker"),
-    crypto = require("crypto");
+    crypto = require("crypto"),
+    VPN = require("vpnrpc");
+
+require("dotenv").config({ path: __dirname + "/../../.env" });
+
+const vpn = new VPN.VpnServerRpc(
+    process.env.VPN_HOST,
+    parseInt(process.env.VPN_PORT),
+    "",
+    process.env.VPN_PASSWORD,
+    false
+);
 
 const prisma = new PrismaClient();
 
@@ -16,7 +27,7 @@ async function main() {
 
     for (let i = 0; i < seedCount; i++) {
         let password = faker.random.alphaNumeric(8);
-        let title = faker.lorem.word();
+        let title = faker.lorem.word() + "_" + parseInt(Math.random() * 1000);
         let passHash = crypto
             .createHash("SHA256")
             .update(password)
@@ -27,6 +38,7 @@ async function main() {
         for (let j = 0; j < usersInHub; j++) {
             let password = faker.random.alphaNumeric(8);
             let name = faker.name.firstName();
+            let vpnName = name + "_VPN_" + parseInt(Math.random() * 1000);
             while (names.includes(name)) {
                 name = faker.random.alpha(8);
             }
@@ -35,35 +47,106 @@ async function main() {
                 .createHash("SHA256")
                 .update(password)
                 .digest("hex");
-            let fake = {
+            let fakeUser = {
                 name,
                 passHash,
-                role: 0,
+                vpnName,
+                role: "user",
+                vayonKey: null,
+                loginKey: null,
+                password,
             };
             console.dir("USER PASS: " + password);
-            console.dir(fake);
-
-            users.push(fake);
+            console.dir(fakeUser);
+            // let user = await prisma.user.create({
+            //     data: fakeUser,
+            // });
+            // users.push(user.id);
+            users.push(fakeUser);
         }
 
-        let fake = {
+        let fakeHub = {
             title,
             passHash,
-            users: {
-                create: [...users],
-            },
+            users: users,
+            password,
         };
         console.dir("HUB PASS: " + password);
-        console.dir(fake);
-        hubs.push(fake);
+        console.dir(fakeHub);
+        hubs.push(fakeHub);
     }
-
+    console.log("ADDING HUBS");
     for (const h of hubs) {
+        console.dir({
+            data: {
+                title: h.title,
+                passHash: h.passHash,
+                users: {
+                    create: h.users.map((e) => {
+                        return {
+                            user: { connect: e },
+                        };
+                    }),
+                },
+            },
+        });
+        console.dir({
+            create: h.users.map((e) => {
+                return {
+                    user: { create: e },
+                };
+            }),
+        });
         const hub = await prisma.hub.create({
-            data: h,
+            data: {
+                title: h.title,
+                passHash: h.passHash,
+                users: {
+                    create: h.users.map((e) => {
+                        return {
+                            user: {
+                                create: {
+                                    name: e.name,
+                                    passHash: e.passHash,
+                                    vpnName: e.vpnName,
+                                    role: e.role,
+                                    vayonKey: e.vayonKey,
+                                    loginKey: e.loginKey,
+                                },
+                            },
+                        };
+                    }),
+                },
+            },
         });
         console.log(`Created hub with id: ${hub.id}`);
+
+        // do the same in vpn
+
+        let data = new VPN.VpnRpcCreateHub({
+            HubName_str: h.title,
+            HubType_u32: VPN.VpnRpcHubType.Standalone,
+            Online_bool: true,
+            AdminPasswordPlainText_str: h.password,
+            MaxSession_u32: 256,
+            NoEnum_bool: false,
+        });
+        let vpnHub = await vpn.CreateHub(data);
+
+        for (let index in h.users) {
+            let huser = h.users[index];
+            let data = new VPN.VpnRpcSetUser({
+                HubName_str: h.title,
+                Name_str: huser.vpnName,
+                Realname_utf: huser.name,
+                AuthType_u32: VPN.VpnRpcUserAuthType.Password,
+                Auth_Password_str: h.password,
+            });
+
+            return await vpn.CreateUser(data);
+        }
     }
+
     console.log(`Seeding finished.`);
 }
 

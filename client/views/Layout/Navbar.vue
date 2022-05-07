@@ -61,6 +61,7 @@ const currentRouteName = computed(() => {
 });
 onUpdated(() => {
     window.addEventListener("scroll", () => {
+        if (!navbar.classList) return;
         if (window.scrollY > 10 && store.state.isNavFixed) {
             navbar.classList.add("blur");
             navbar.classList.add("position-sticky");

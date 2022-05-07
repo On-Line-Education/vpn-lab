@@ -7,9 +7,8 @@ dist
 .idea
 .vscode
 
-# local .env
-.env.local
-.env.*.local
+# .env
+.env
 
 # mac
 .DS_Store

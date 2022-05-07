@@ -32,7 +32,7 @@ const currentRouteName = computed(() => {
     return route.name;
 });
 watch(currentRouteName, (r) => {
-    if (r !== "Zaloguj się" && !store.state.loggedIn) {
+    if (r !== "Zaloguj się" && !store.state.token) {
         router.push({ name: "Zaloguj się" });
     }
 });

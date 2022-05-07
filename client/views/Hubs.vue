@@ -19,12 +19,14 @@
 import HubsTable from "../components/Tables/HubsTable.vue";
 import Card from "../components/Cards/Card.vue";
 import { useStore } from "vuex";
-import { reactive, watch } from "vue";
+import { onMounted, reactive, watch } from "vue";
 const store = useStore();
 
 var reactiveHubs = reactive({ hubs: null });
 
-store.dispatch("listHubs");
+onMounted(() => {
+    store.dispatch("listHubs");
+});
 
 // HubName_str
 // Online_bool
@@ -48,23 +50,4 @@ watch(
         reactiveHubs.hubs = hubs;
     }
 );
-
-// setTimeout(() => {
-//     reactiveHubs.hubs = [
-//         {
-//             name: "Aaa",
-//             school: "Wiszniowa",
-//             status: "Działa",
-//             working: true,
-//             id: 1,
-//         },
-//         {
-//             name: "Bbb",
-//             school: "Wuwsi",
-//             status: "Offline",
-//             working: false,
-//             id: 2,
-//         },
-//     ];
-// }, 1000);
 </script>

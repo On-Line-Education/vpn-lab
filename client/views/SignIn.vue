@@ -26,12 +26,14 @@
                                             type="text"
                                             placeholder="Nazwa użytkownika"
                                             name="username"
+                                            ref="username"
                                         />
                                         <label>Hasło</label>
                                         <vsud-input
                                             type="password"
                                             placeholder="Hasło"
                                             name="password"
+                                            ref="password"
                                         />
                                         <div class="text-center">
                                             <vsud-button
@@ -40,7 +42,28 @@
                                                 color="warning"
                                                 fullWidth
                                                 type="button"
-                                                @click="fakeLogin()"
+                                                @click="passwordLogin()"
+                                                >Zaloguj się
+                                            </vsud-button>
+                                        </div>
+                                    </form>
+                                    <p class="text-center mt-4">Lub</p>
+                                    <form role="form" class="text-start">
+                                        <label>Kod dostępu</label>
+                                        <vsud-input
+                                            type="password"
+                                            placeholder="Kod dostępu"
+                                            name="accessCode"
+                                            ref="loginCode"
+                                        />
+                                        <div class="text-center">
+                                            <vsud-button
+                                                class="my-4 mb-2"
+                                                variant="gradient"
+                                                color="warning"
+                                                fullWidth
+                                                type="button"
+                                                @click="codeLogin()"
                                                 >Zaloguj się
                                             </vsud-button>
                                         </div>
@@ -75,12 +98,26 @@ import VsudInput from "../components/Basic/VsudInput.vue";
 import VsudSwitch from "../components/Basic/VsudSwitch.vue";
 import VsudButton from "../components/Basic/VsudButton.vue";
 
-import { onBeforeMount, onBeforeUnmount } from "vue";
+import { onBeforeMount, onBeforeUnmount, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 const body = document.getElementsByTagName("body")[0];
 const store = useStore();
 const router = useRouter();
+
+var loginCode = ref(null),
+    username = ref(null),
+    password = ref(null);
+
+function passwordLogin() {
+    //
+    console.log({ func: "passwordLogin", loginCode, username, password });
+}
+
+function codeLogin() {
+    //
+    console.log({ func: "codeLogin", loginCode, username, password });
+}
 
 function fakeLogin() {
     store.commit("toggleLoggedIn", true);
@@ -103,9 +140,7 @@ onBeforeUnmount(() => {
     body.classList.add("bg-gray-100");
 });
 
-if (store.state.loggedIn) {
+if (store.state.token) {
     router.push({ name: "HUBy" });
 }
-
-console.log(store.state.loggedIn);
 </script>
