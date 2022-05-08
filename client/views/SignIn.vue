@@ -20,18 +20,23 @@
                                     </p>
                                 </div>
                                 <div class="card-body">
-                                    <form role="form" class="text-start">
+                                    <form
+                                        role="form"
+                                        class="text-start form-group"
+                                    >
                                         <label>Nazwa użytkownika</label>
-                                        <vsud-input
+                                        <input
                                             type="text"
                                             placeholder="Nazwa użytkownika"
+                                            class="form-control"
                                             name="username"
                                             ref="username"
                                         />
                                         <label>Hasło</label>
-                                        <vsud-input
+                                        <input
                                             type="password"
                                             placeholder="Hasło"
+                                            class="form-control"
                                             name="password"
                                             ref="password"
                                         />
@@ -48,11 +53,15 @@
                                         </div>
                                     </form>
                                     <p class="text-center mt-4">Lub</p>
-                                    <form role="form" class="text-start">
+                                    <form
+                                        role="form"
+                                        class="text-star form-group"
+                                    >
                                         <label>Kod dostępu</label>
-                                        <vsud-input
+                                        <input
                                             type="password"
                                             placeholder="Kod dostępu"
+                                            class="form-control"
                                             name="accessCode"
                                             ref="loginCode"
                                         />
@@ -94,7 +103,6 @@
 </template>
 
 <script setup lang="ts">
-import VsudInput from "../components/Basic/VsudInput.vue";
 import VsudSwitch from "../components/Basic/VsudSwitch.vue";
 import VsudButton from "../components/Basic/VsudButton.vue";
 
@@ -111,12 +119,24 @@ var loginCode = ref(null),
 
 function passwordLogin() {
     //
-    console.log({ func: "passwordLogin", loginCode, username, password });
+    console.log({
+        func: "passwordLogin",
+        loginCode: loginCode.value,
+        username,
+        password,
+    });
+    store.commit("loginViaPassword", { username, password });
 }
 
 function codeLogin() {
     //
-    console.log({ func: "codeLogin", loginCode, username, password });
+    console.log({
+        func: "codeLogin",
+        loginCode: loginCode.value.value,
+        username,
+        password,
+    });
+    store.commit("loginViaKey", loginCode.value.value);
 }
 
 function fakeLogin() {

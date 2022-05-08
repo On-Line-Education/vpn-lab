@@ -1,7 +1,9 @@
 # files created via npm commands
 node_modules
 dist
-/prisma/dev.db
+
+# only before release
+/prisma/migrations
 
 # editors
 .idea

@@ -5,6 +5,7 @@ import ResolversBuilder from "./Resolvers/ResolversBuilder";
 import schema from "./Schema/schema";
 import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
 import cors from "cors";
+import loginResolver from "./Helpsers/loginResolver";
 
 export default async function createServer(
     resolvers: ResolversBuilder,
@@ -16,9 +17,11 @@ export default async function createServer(
     const apolloServer = new ApolloServer({
         typeDefs: schema,
         resolvers: resolvers.build(vpn),
-        context: ({ req }) => {
+        context: async ({ req }) => {
             // get the user token from the headers
             const token = req.headers.authorization || "";
+
+            let context = await loginResolver(token);
 
             // try to retrieve a user with the token
             // const user = getUser(token);
@@ -29,8 +32,7 @@ export default async function createServer(
 
             // add the user to the context
             // return { user };
-
-            return null;
+            return { user: context.user, api: context.apiCall };
         },
     });
 
@@ -42,12 +44,14 @@ export default async function createServer(
     });
 
     app.use(cors());
-    app.listen({ port: process.env.PORT || 4000 }, () =>
+    app.listen({ port: process.env.SERVER_PORT || 4000 }, () =>
         console.log(
-            `Server listening on localhost:4000${apolloServer.graphqlPath}`
+            `Server listening on localhost:${process.env.SERVER_PORT || 4000}${
+                apolloServer.graphqlPath
+            }`
         )
     );
-    // httpServer.listen({ port: process.env.PORT || 4000 }, () =>
+    // httpServer.listen({ port: process.env.SERVER_PORT || 4000 }, () =>
     //     console.log(
     //         `Server listening on localhost:4000${apolloServer.graphqlPath}`
     //     )

@@ -1,6 +1,8 @@
 import { ApolloClient, gql, InMemoryCache } from "@apollo/client";
 import { createStore } from "vuex";
 
+const SERVER_PORT = 3000;
+
 export default createStore({
     state: {
         appName: "OEDU VPN",
@@ -21,7 +23,7 @@ export default createStore({
         lastError: null,
         //--
         apollo: new ApolloClient({
-            uri: "http://localhost:4000/api",
+            uri: "http://localhost:" + SERVER_PORT + "/api",
             cache: new InMemoryCache(),
         }),
         hubsList: [],
@@ -67,6 +69,61 @@ export default createStore({
         setHubsList(state, hubsList) {
             state.hubsList = hubsList;
         },
+        loginViaKey(state, key) {
+            console.log({ key });
+            state.apollo
+                .query({
+                    query: gql`
+                        query LoginViaKey($loginKey: String) {
+                            loginViaKey(loginKey: $loginKey) {
+                                token
+                            }
+                        }
+                    `,
+                    variables: {
+                        loginKey: key,
+                    },
+                })
+                .then((res) => {
+                    console.log(res);
+                    state.token = res.data.loginViaKey.token;
+                })
+                .catch((e) => {
+                    state.lastError = e;
+                });
+        },
+        loginViaPassword(state, payload) {
+            state.apollo
+                .query({
+                    query: gql`
+                        query LoginViaPassword(
+                            $username: String
+                            $password: String
+                        ) {
+                            loginViaPassword(
+                                username: $username
+                                password: $password
+                            ) {
+                                token
+                            }
+                        }
+                    `,
+                    variables: {
+                        username: payload.username,
+                        password: payload.password,
+                    },
+                })
+                .then((res) => {
+                    console.log(res);
+                    state.token = res.data.token;
+                })
+                .catch((e) => {
+                    console.error(e);
+                });
+        },
+        logout(state) {
+            state.token = "";
+        }
     },
     actions: {
         toggleSidebarColor({ commit }, payload) {
@@ -118,6 +175,9 @@ export default createStore({
     getters: {
         appName(state) {
             return state.appName;
+        },
+        getLastError(state) {
+            return state.lastError;
         },
         hubsList(state) {
             return state.hubsList;

@@ -25,20 +25,29 @@ async function main() {
 
     let names = [];
 
+    let fakeServer = {
+        name: faker.random.alphaNumeric(8),
+        presharedKey: faker.random.alphaNumeric(8),
+    };
+
+    let server = await prisma.server.create({
+        data: fakeServer,
+    });
+
     for (let i = 0; i < seedCount; i++) {
         let password = faker.random.alphaNumeric(8);
         let title = faker.lorem.word() + "_" + parseInt(Math.random() * 1000);
-        let passHash = crypto
-            .createHash("SHA256")
-            .update(password)
-            .digest("hex");
+        // let passHash = crypto
+        //     .createHash("SHA256")
+        //     .update(password)
+        //     .digest("hex");
 
         let users = [];
 
         for (let j = 0; j < usersInHub; j++) {
             let password = faker.random.alphaNumeric(8);
             let name = faker.name.firstName();
-            let vpnName = name + "_VPN_" + parseInt(Math.random() * 1000);
+            // let vpnName = name + "_VPN_" + parseInt(Math.random() * 1000);
             while (names.includes(name)) {
                 name = faker.random.alpha(8);
             }
@@ -50,11 +59,20 @@ async function main() {
             let fakeUser = {
                 name,
                 passHash,
-                vpnName,
+                // vpnName,
                 role: "user",
-                vayonKey: null,
-                loginKey: null,
+                veyonKeyPub: faker.random.alphaNumeric(32),
+                veyonKeyPriv: faker.random.alphaNumeric(32),
+                loginKey: faker.random.alphaNumeric(16),
                 password,
+                token: {
+                    token: faker.random.alphaNumeric(16),
+                    expireOn: () => {
+                        let dt = new Date(Date.now());
+                        dt.setHours(dt.getHours() + 1);
+                        return dt;
+                    },
+                },
             };
             console.dir("USER PASS: " + password);
             console.dir(fakeUser);
@@ -67,7 +85,7 @@ async function main() {
 
         let fakeHub = {
             title,
-            passHash,
+            // passHash,
             users: users,
             password,
         };
@@ -80,13 +98,16 @@ async function main() {
         console.dir({
             data: {
                 title: h.title,
-                passHash: h.passHash,
+                // passHash: h.passHash,
                 users: {
                     create: h.users.map((e) => {
                         return {
                             user: { connect: e },
                         };
                     }),
+                },
+                server: {
+                    connect: { id: server.id },
                 },
             },
         });
@@ -108,19 +129,33 @@ async function main() {
                                 create: {
                                     name: e.name,
                                     passHash: e.passHash,
-                                    vpnName: e.vpnName,
+                                    // vpnName: e.vpnName,
                                     role: e.role,
-                                    vayonKey: e.vayonKey,
+                                    veyonKeyPub: e.veyonKeyPub,
+                                    veyonKeyPriv: e.veyonKeyPriv,
                                     loginKey: e.loginKey,
+                                    Token: {
+                                        create: {
+                                            expireOn: e.token.expireOn(),
+                                            token: e.token.token,
+                                        },
+                                    },
                                 },
                             },
                         };
                     }),
                 },
+                server: {
+                    connect: { id: server.id },
+                },
             },
         });
         console.log(`Created hub with id: ${hub.id}`);
+    }
 
+    console.log(`Seeding database completed, starting seeding vpn.`);
+
+    for (const h of hubs) {
         // do the same in vpn
 
         let data = new VPN.VpnRpcCreateHub({
@@ -143,7 +178,7 @@ async function main() {
                 Auth_Password_str: h.password,
             });
 
-            return await vpn.CreateUser(data);
+            await vpn.CreateUser(data);
         }
     }
 

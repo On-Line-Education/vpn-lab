@@ -4,16 +4,20 @@ import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 export default (vpn: SoftEtherAPI) => {
     return {
         Query: {
-            async getHub(_: any, { hubName }: any) {
+            async getHub(_: any, { hubName }: any, { user, api }) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 return await vpn.hub.get(hubName);
             },
             async createHub(
                 _: any,
                 { hubName, hubType, online, maxSession, password, noEnum }: any,
-                context: { user: any }
+                { user, api }
             ) {
-                if (!context.user)
-                    throw new AuthenticationError("you must be logged in");
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 return await vpn.hub.create(
                     hubName,
                     hubType,
@@ -23,7 +27,11 @@ export default (vpn: SoftEtherAPI) => {
                     noEnum
                 );
             },
-            async listHubs() {
+            async listHubs(_1: any, _2: any, { user, api }) {
+                console.log({ user, api });
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 let v = await vpn.hub.list();
 
                 for (let i in v.HubList) {
@@ -48,8 +56,12 @@ export default (vpn: SoftEtherAPI) => {
             },
             async updateHub(
                 _: any,
-                { hubName, hubType, online, maxSession, password, noEnum }: any
+                { hubName, hubType, online, maxSession, password, noEnum }: any,
+                { user, api }
             ) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 return await vpn.hub.update(
                     hubName,
                     hubType,
@@ -59,7 +71,10 @@ export default (vpn: SoftEtherAPI) => {
                     noEnum
                 );
             },
-            async getHubStatus(_: any, { hubName }: any) {
+            async getHubStatus(_: any, { hubName }: any, { user, api }) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 let v = await vpn.hub.getStatus(hubName);
                 v["Recv_BroadcastBytes_u64"] = v["Ex.Recv.BroadcastBytes_u64"];
                 v["Recv_BroadcastCount_u64"] = v["Ex.Recv.BroadcastCount_u64"];
@@ -71,7 +86,10 @@ export default (vpn: SoftEtherAPI) => {
                 v["Send_UnicastCount_u64"] = v["Ex.Recv.UnicastCount_u64"];
                 return v;
             },
-            async deleteHub(_: any, { hubName }: any) {
+            async deleteHub(_: any, { hubName }: any, { user, api }) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 return await vpn.hub.delete(hubName);
             },
         },

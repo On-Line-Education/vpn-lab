@@ -12,21 +12,38 @@ model Hub {
     createdAt DateTime     @default(now())
     updatedAt DateTime     @updatedAt
     title     String       @unique
-    passHash  String
-    // users     User[]
+    server    Server       @relation(fields: [serverId], references: [id])
+    serverId  Int
     users     UsersInHub[]
 }
 
 model User {
-    id       Int          @id @default(autoincrement())
-    name     String       @unique
-    vpnName  String       @unique
-    passHash String
-    vayonKey String?
-    loginKey String?
-    role     String
-    // Hubs     Hub[]
-    hubs     UsersInHub[]
+    id           Int          @id @default(autoincrement())
+    name         String       @unique // same as vpnName
+    passHash     String
+    veyonKeyPub  String?
+    veyonKeyPriv String?
+    loginKey     String?
+    // vpnPass      String // TODO: Generate password
+    role         String
+    hubs         UsersInHub[]
+    Token        Token[]
+}
+
+model Token {
+    id        Int      @id @default(autoincrement())
+    user      User     @relation(fields: [userId], references: [id])
+    userId    Int
+    token     String
+    createdAt DateTime @default(now())
+    expireOn  DateTime
+}
+
+model Server {
+    id           Int    @id @default(autoincrement())
+    name         String
+    presharedKey String // klucz logowania do vpn
+    Hub          Hub[]
 }
 
 model UsersInHub {

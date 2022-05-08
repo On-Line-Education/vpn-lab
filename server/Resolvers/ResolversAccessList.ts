@@ -1,12 +1,23 @@
+import { AuthenticationError } from "apollo-server-express";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
 export default (vpn: SoftEtherAPI) => {
     return {
         Query: {
-            async getHubAccessLists(_: any, { hubName }: any) {
+            async getHubAccessLists(_: any, { hubName }: any, { user, api }) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 return JSON.stringify(await vpn.al.list(hubName));
             },
-            async addHubAccessList(_: any, { hubName, accessList }: any) {
+            async addHubAccessList(
+                _: any,
+                { hubName, accessList }: any,
+                { user, api }
+            ) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
                 console.log(accessList);
                 if (accessList.SrcMacMask_bin) {
                     accessList.SrcMacMask_bin = new Uint8Array(
