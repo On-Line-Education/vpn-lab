@@ -28,3 +28,13 @@
 .padding-left-rem {
     padding-left: 1rem;
 }
+
+.error-alert-text {
+    color: black;
+}
+
+.pos-alert {
+    position: absolute;
+    bottom: 0px;
+    right: 1%;
+}

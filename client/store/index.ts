@@ -20,6 +20,7 @@ export default createStore({
         showFooter: true,
         showMain: true,
         token: "",
+        showErrorAlert: false,
         lastError: null,
         //--
         apollo: new ApolloClient({
@@ -65,12 +66,12 @@ export default createStore({
         },
         setError(state, error) {
             state.lastError = error;
+            state.showErrorAlert = true;
         },
         setHubsList(state, hubsList) {
             state.hubsList = hubsList;
         },
         loginViaKey(state, key) {
-            console.log({ key });
             state.apollo
                 .query({
                     query: gql`
@@ -85,11 +86,11 @@ export default createStore({
                     },
                 })
                 .then((res) => {
-                    console.log(res);
                     state.token = res.data.loginViaKey.token;
                 })
                 .catch((e) => {
                     state.lastError = e;
+                    state.showErrorAlert = true;
                 });
         },
         loginViaPassword(state, payload) {
@@ -114,16 +115,19 @@ export default createStore({
                     },
                 })
                 .then((res) => {
-                    console.log(res);
-                    state.token = res.data.token;
+                    state.token = res.data.loginViaPassword.token;
                 })
                 .catch((e) => {
-                    console.error(e);
+                    state.lastError = e;
+                    state.showErrorAlert = true;
                 });
         },
         logout(state) {
             state.token = "";
-        }
+        },
+        hideAlert(state) {
+            state.showErrorAlert = false;
+        },
     },
     actions: {
         toggleSidebarColor({ commit }, payload) {
@@ -164,7 +168,6 @@ export default createStore({
                     `,
                 })
                 .then((hubs) => {
-                    console.log(hubs);
                     commit("setHubsList", hubs.data.listHubs.HubList);
                 })
                 .catch((err) => {
@@ -179,8 +182,14 @@ export default createStore({
         getLastError(state) {
             return state.lastError;
         },
+        getLastErrorMessage(state) {
+            return state.lastError?.message ?? "";
+        },
         hubsList(state) {
             return state.hubsList;
+        },
+        isLoggedIn(state) {
+            return state.token.length > 0;
         },
     },
 });

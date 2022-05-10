@@ -1,4 +1,21 @@
 <template>
+    <div :class="[alertClasses]" style="z-index: 100" role="alert">
+        <span class="alert-icon"
+            ><i class="fa-solid fa-circle-exclamation"></i
+        ></span>
+        <span class="alert-text error-alert-text"
+            ><strong> Uwaga! </strong>
+            {{ store.getters.getLastErrorMessage }}</span
+        >
+        <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            @click="alertClose"
+        >
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     <sidenav
         custom_class="card-background-mask-warning"
         :class="[store.state.isTransparent, 'fixed-start']"
@@ -21,7 +38,7 @@
 import Sidenav from "./views/Layout/Sidenav/index.vue";
 import Navbar from "./views/Layout/Navbar.vue";
 
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { computed, onBeforeMount, watch } from "vue";
 import { mapMutations, useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 const store = useStore();
@@ -39,6 +56,15 @@ watch(currentRouteName, (r) => {
 });
 const navbarMinimize = mapMutations(["navbarMinimize"]);
 
+const alertClasses = computed(() => {
+    return {
+        "pos-alert alert alert-danger alert-dismissible fade show":
+            store.state.showErrorAlert,
+        "pos-alert alert alert-danger alert-dismissible fade":
+            !store.state.showErrorAlert,
+    };
+});
+
 const navClasses = computed(() => {
     return {
         "position-sticky blur shadow-blur mt-4 left-auto top-1 z-index-sticky":
@@ -50,4 +76,8 @@ const navClasses = computed(() => {
 onBeforeMount(() => {
     store.state.isTransparent = "bg-transparent";
 });
+
+function alertClose() {
+    store.commit("hideAlert");
+}
 </script>

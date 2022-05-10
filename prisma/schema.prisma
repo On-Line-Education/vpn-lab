@@ -23,7 +23,7 @@ model User {
     passHash     String
     veyonKeyPub  String?
     veyonKeyPriv String?
-    loginKey     String?
+    loginKey     String?      @unique
     // vpnPass      String // TODO: Generate password
     role         String
     hubs         UsersInHub[]

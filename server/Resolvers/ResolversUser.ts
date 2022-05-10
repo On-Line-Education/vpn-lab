@@ -7,6 +7,7 @@ export default (prisma: PrismaClient) => {
     return {
         Query: {
             async loginViaKey(_: any, { loginKey }: any) {
+                console.log({ loginKey });
                 await prisma.token.deleteMany({
                     where: {
                         expireOn: {
@@ -22,7 +23,7 @@ export default (prisma: PrismaClient) => {
                 });
 
                 if (!u) {
-                    throw new AuthenticationError("Invalid user or password");
+                    throw new AuthenticationError("Nieprawidłowy kod dostępu");
                 }
 
                 let expire = new Date(Date.now());
@@ -59,7 +60,9 @@ export default (prisma: PrismaClient) => {
                 });
 
                 if (!u) {
-                    throw new AuthenticationError("Invalid user or password");
+                    throw new AuthenticationError(
+                        "Nieprawidłowa nazwa użytkownika lub hasło"
+                    );
                 }
 
                 let expire = new Date(Date.now());

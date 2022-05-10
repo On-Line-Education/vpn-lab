@@ -106,7 +106,7 @@
 import VsudSwitch from "../components/Basic/VsudSwitch.vue";
 import VsudButton from "../components/Basic/VsudButton.vue";
 
-import { onBeforeMount, onBeforeUnmount, ref } from "vue";
+import { onBeforeMount, onBeforeUnmount, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 const body = document.getElementsByTagName("body")[0];
@@ -118,31 +118,21 @@ var loginCode = ref(null),
     password = ref(null);
 
 function passwordLogin() {
-    //
-    console.log({
-        func: "passwordLogin",
-        loginCode: loginCode.value,
-        username,
-        password,
-    });
     store.commit("loginViaPassword", { username, password });
 }
 
 function codeLogin() {
-    //
-    console.log({
-        func: "codeLogin",
-        loginCode: loginCode.value.value,
-        username,
-        password,
-    });
     store.commit("loginViaKey", loginCode.value.value);
 }
 
-function fakeLogin() {
-    store.commit("toggleLoggedIn", true);
-    router.push({ name: "HUBy" });
-}
+watch(
+    () => store.getters.isLoggedIn,
+    (isLoggedIn, old) => {
+        if (isLoggedIn) {
+            router.push({ name: "HUBy" });
+        }
+    }
+);
 
 onBeforeMount(() => {
     store.state.hideConfigButton = true;
