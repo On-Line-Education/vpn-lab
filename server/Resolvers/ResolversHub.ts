@@ -6,7 +6,7 @@ export default (vpn: SoftEtherAPI) => {
         Query: {
             async getHub(_: any, { hubName }: any, { user, api }) {
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.hub.get(hubName);
             },
@@ -16,7 +16,7 @@ export default (vpn: SoftEtherAPI) => {
                 { user, api }
             ) {
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.hub.create(
                     hubName,
@@ -30,7 +30,7 @@ export default (vpn: SoftEtherAPI) => {
             async listHubs(_1: any, _2: any, { user, api }) {
                 console.log({ user, api });
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let v = await vpn.hub.list();
 
@@ -60,7 +60,7 @@ export default (vpn: SoftEtherAPI) => {
                 { user, api }
             ) {
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.hub.update(
                     hubName,
@@ -73,7 +73,7 @@ export default (vpn: SoftEtherAPI) => {
             },
             async getHubStatus(_: any, { hubName }: any, { user, api }) {
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let v = await vpn.hub.getStatus(hubName);
                 v["Recv_BroadcastBytes_u64"] = v["Ex.Recv.BroadcastBytes_u64"];
@@ -88,7 +88,7 @@ export default (vpn: SoftEtherAPI) => {
             },
             async deleteHub(_: any, { hubName }: any, { user, api }) {
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.hub.delete(hubName);
             },

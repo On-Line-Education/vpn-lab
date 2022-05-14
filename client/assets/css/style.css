@@ -14,8 +14,9 @@
 .icon-shape-dark i {
     color: #344767;
     opacity: 0.8;
-    top: 11px;
+    /* top: 11px; */
     position: relative;
+    font-size: 1rem;
 }
 
 .icon-shape-dark {
@@ -37,4 +38,16 @@
     position: absolute;
     bottom: 0px;
     right: 1%;
+}
+
+.table-ms-15 * {
+    padding: 0 15px;
+}
+
+.mw-400 {
+    max-width: 400px;
+}
+
+.mw-fc {
+    max-width: fit-content;
 }

@@ -1,20 +1,29 @@
 {
     "compilerOptions": {
         // project options
-        "lib": ["ESNext", "dom"],
+        "lib": ["ESnext", "dom"],
         "removeComments": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "moduleResolution": "node",
         "resolveJsonModule": true,
         "declaration": false,
         "outDir": "dist/",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "allowJs": true,
+        "target": "ES3"
     },
     "include": [
         "client/**/*.ts",
         "client/**/*.tsx",
         "server/**/*.ts",
-        "client/**/*.vue"
+        "client/**/*.vue",
+        "client/main.js",
+        "client/soft-ui-dashboard.js",
+        "client/connection/index.js",
+        "client/plugins/table-sorter.js",
+        "client/router/index.js",
+        "client/store/index.js"
     ],
     "exclude": ["node_modules", "prisma", "dist"]
 }

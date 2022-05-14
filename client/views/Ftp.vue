@@ -16,7 +16,7 @@
         </div>
     </div>
 </template>
-<script setup lang="ts">
+<script setup>
 import FileCard from "../components/Cards/FileCard.vue";
 import { useStore } from "vuex";
 const store = useStore();

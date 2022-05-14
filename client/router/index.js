@@ -11,12 +11,19 @@ import Administration from "../views/Administration/Administration.vue";
 import Logout from "../views/Logout.vue";
 // @ts-ignore
 import HubDetails from "../views/HubDetails.vue";
+// @ts-ignore
+import Dashboard from "../views/Dashboard.vue";
 
-const routes: Array<RouteRecordRaw> = [
+const routes = [
     {
         path: "/sign-in",
         name: "Zaloguj się",
         component: SignIn,
+    },
+    {
+        path: "/",
+        name: "Panel",
+        component: Dashboard,
     },
     {
         path: "/hubs",

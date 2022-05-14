@@ -6,6 +6,12 @@ import crypto from "crypto";
 export default (prisma: PrismaClient) => {
     return {
         Query: {
+            getCurrentUser(_1: any, _2: any, { user, api }) {
+                if (!user) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+                return user;
+            },
             async loginViaKey(_: any, { loginKey }: any) {
                 console.log({ loginKey });
                 await prisma.token.deleteMany({

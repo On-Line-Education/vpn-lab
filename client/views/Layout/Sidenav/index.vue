@@ -22,7 +22,7 @@
         <sidenav-list :cardBg="custom_class" />
     </aside>
 </template>
-<script setup lang="ts">
+<script setup>
 import SidenavList from "./SidenavList.vue";
 import { useStore } from "vuex";
 const store = useStore();

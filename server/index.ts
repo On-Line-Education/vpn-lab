@@ -1,4 +1,3 @@
-import { VpnRpcHubType, VpnRpcUserAuthType } from "vpnrpc";
 import ResolversBuilder from "./Resolvers/ResolversBuilder";
 import createServer from "./server";
 import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
@@ -21,5 +20,5 @@ async function main(): Promise<void> {
 }
 
 main().then((_) => {
-    console.log("System shut down!");
+    console.log("System is running!");
 });

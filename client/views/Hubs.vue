@@ -15,14 +15,14 @@
         />
     </div>
 </template>
-<script setup lang="ts">
+<script setup>
 import HubsTable from "../components/Tables/HubsTable.vue";
 import Card from "../components/Cards/Card.vue";
 import { useStore } from "vuex";
 import { onMounted, reactive, watch } from "vue";
 const store = useStore();
 
-var reactiveHubs = reactive({ hubs: null });
+const reactiveHubs = reactive({ hubs: null });
 
 onMounted(() => {
     store.dispatch("listHubs");
@@ -33,11 +33,10 @@ onMounted(() => {
 
 watch(
     () => store.getters.hubsList,
-    function () {
-        console.log("value changes detected");
+    function (hubsList, _) {
         let hubs = [],
             id = 0;
-        store.getters.hubsList.forEach((hub) => {
+        hubsList.forEach((hub) => {
             hubs.push({
                 name: hub.HubName_str,
                 school: "TODO",

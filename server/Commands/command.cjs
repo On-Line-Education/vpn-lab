@@ -1,5 +1,5 @@
 require("dotenv").config({ path: __dirname + "/../../.env" });
-const hubsToVPNExport = require("./hubsToVPNExport.js");
+const hubsToVPNExport = require("./hubsToVPNExport.cjss");
 const { PrismaClient } = require("@prisma/client");
 const VPN = require("vpnrpc");
 const prisma = new PrismaClient();

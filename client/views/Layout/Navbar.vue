@@ -31,7 +31,7 @@
         </div>
     </nav>
 </template>
-<script setup lang="ts">
+<script setup>
 import Breadcrumbs from "./Breadcrumbs.vue";
 import { defineProps, computed, onUpdated, ref } from "vue";
 import { mapMutations, mapActions, useStore } from "vuex";

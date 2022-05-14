@@ -23,6 +23,7 @@
                                     <form
                                         role="form"
                                         class="text-start form-group"
+                                        @submit.prevent="passwordLogin()"
                                     >
                                         <label>Nazwa użytkownika</label>
                                         <input
@@ -41,21 +42,21 @@
                                             ref="password"
                                         />
                                         <div class="text-center">
-                                            <vsud-button
-                                                class="my-4 mb-2"
-                                                variant="gradient"
-                                                color="warning"
-                                                fullWidth
+                                            <button
+                                                class="my-4 mb-2 btn bg-gradient-warning btn-lg w-100"
                                                 type="button"
+                                                :disabled="disableButtons"
                                                 @click="passwordLogin()"
-                                                >Zaloguj się
-                                            </vsud-button>
+                                            >
+                                                Zaloguj się
+                                            </button>
                                         </div>
                                     </form>
                                     <p class="text-center mt-4">Lub</p>
                                     <form
                                         role="form"
                                         class="text-star form-group"
+                                        @submit.prevent="codeLogin()"
                                     >
                                         <label>Kod dostępu</label>
                                         <input
@@ -66,15 +67,14 @@
                                             ref="loginCode"
                                         />
                                         <div class="text-center">
-                                            <vsud-button
-                                                class="my-4 mb-2"
-                                                variant="gradient"
-                                                color="warning"
-                                                fullWidth
+                                            <button
+                                                class="my-4 mb-2 btn bg-gradient-warning btn-lg w-100"
                                                 type="button"
+                                                :disabled="disableButtons"
                                                 @click="codeLogin()"
-                                                >Zaloguj się
-                                            </vsud-button>
+                                            >
+                                                Zaloguj się
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -102,55 +102,40 @@
     </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import VsudSwitch from "../components/Basic/VsudSwitch.vue";
 import VsudButton from "../components/Basic/VsudButton.vue";
 
 import { onBeforeMount, onBeforeUnmount, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-const body = document.getElementsByTagName("body")[0];
+
 const store = useStore();
 const router = useRouter();
 
 var loginCode = ref(null),
     username = ref(null),
-    password = ref(null);
+    password = ref(null),
+    disableButtons = ref(false);
 
 function passwordLogin() {
-    store.commit("loginViaPassword", { username, password });
+    store.dispatch("loginViaPassword", { username, password });
 }
 
 function codeLogin() {
-    store.commit("loginViaKey", loginCode.value.value);
+    store.dispatch("loginViaKey", loginCode.value.value);
 }
 
 watch(
     () => store.getters.isLoggedIn,
     (isLoggedIn, old) => {
         if (isLoggedIn) {
-            router.push({ name: "HUBy" });
+            router.push({ name: "Panel" });
         }
     }
 );
 
-onBeforeMount(() => {
-    store.state.hideConfigButton = true;
-    store.state.showNavbar = false;
-    store.state.showSidenav = false;
-    store.state.showFooter = false;
-    body.classList.remove("bg-gray-100");
-});
-
-onBeforeUnmount(() => {
-    store.state.hideConfigButton = false;
-    store.state.showNavbar = true;
-    store.state.showSidenav = true;
-    store.state.showFooter = true;
-    body.classList.add("bg-gray-100");
-});
-
-if (store.state.token) {
-    router.push({ name: "HUBy" });
+if (store.getters.isLoggedIn) {
+    router.push({ name: "Panel" });
 }
 </script>

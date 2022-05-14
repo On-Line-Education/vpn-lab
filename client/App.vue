@@ -34,7 +34,7 @@
         <router-view />
     </main>
 </template>
-<script setup lang="ts">
+<script setup>
 import Sidenav from "./views/Layout/Sidenav/index.vue";
 import Navbar from "./views/Layout/Navbar.vue";
 
@@ -50,10 +50,14 @@ const currentRouteName = computed(() => {
 });
 
 watch(currentRouteName, (r) => {
-    if (r !== "Zaloguj się" && !store.state.token) {
+    if (r !== "Zaloguj się" && !store.getters.isLoggedIn) {
+        store.commit("logoutState");
         router.push({ name: "Zaloguj się" });
+    } else if (r === "Zaloguj się") {
+        store.commit("logoutState");
     }
 });
+
 const navbarMinimize = mapMutations(["navbarMinimize"]);
 
 const alertClasses = computed(() => {

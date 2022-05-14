@@ -17,7 +17,7 @@
     </nav>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { defineProps } from "vue";
 import { useStore } from "vuex";
 const store = useStore();

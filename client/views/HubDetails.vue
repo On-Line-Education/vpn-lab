@@ -15,7 +15,7 @@
         />
     </div>
 </template>
-<script setup lang="ts">
+<script setup>
 import HubsDetailsTable from "../components/Tables/HubsDetailsTable.vue";
 import Card from "../components/Cards/Card.vue";
 import { useStore } from "vuex";

@@ -1,16 +1,16 @@
 import { reactive } from "vue";
 
 export default class TableSorter {
-    protected _currentSort = "name";
-    protected _currentSortDir = "asc";
-    protected _data;
-    public sortData;
+    _currentSort = "name";
+    _currentSortDir = "asc";
+    _data;
+    sortData;
 
-    public currentSort() {
+    currentSort() {
         return this._currentSort;
     }
 
-    public currentSortDir() {
+    currentSortDir() {
         return this._currentSortDir;
     }
 

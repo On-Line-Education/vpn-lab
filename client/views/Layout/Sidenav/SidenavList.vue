@@ -4,7 +4,7 @@
         id="sidenav-collapse-main"
     >
         <ul class="navbar-nav">
-            <li class="nav-item">
+            <li class="nav-item" v-if="hasRole('instructor')">
                 <sidenav-collapse navText="HUBy" :to="{ name: 'HUBy' }">
                     <template v-slot:icon>
                         <i class="fas fa-solid fa-diagram-project" />
@@ -21,14 +21,14 @@
                     </template>
                 </sidenav-collapse>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="hasRole('user')">
                 <sidenav-collapse navText="FTP" :to="{ name: 'FTP' }">
                     <template v-slot:icon>
                         <i class="fas fa-solid fa-folder-tree" />
                     </template>
                 </sidenav-collapse>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="hasRole('admin')">
                 <sidenav-collapse
                     navText="Administracja"
                     :to="{ name: 'Administracja' }"
@@ -57,13 +57,19 @@
         >
     </div>
 </template>
-<script setup lang="ts">
+<script setup>
 import Icon from "../../../components/Basic/Icon.vue";
 import SidenavCollapse from "./SidenavCollapse.vue";
 import SidenavCard from "./SidenavCard.vue";
 import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { computed, reactive, watch } from "vue";
+import { useStore } from "vuex";
 const route = useRoute();
+const store = useStore();
+
+const role = computed(() => {
+    return store.getters.getRole;
+});
 
 const { cardBg } = defineProps({
     cardBg: String,
@@ -77,4 +83,10 @@ const getRoute = () => {
     const routeArr = route.path.split("/");
     return routeArr[1];
 };
+
+function hasRole(userRole) {
+    return (
+        store.getters.getRole == "admin" || store.getters.getRole == userRole
+    );
+}
 </script>

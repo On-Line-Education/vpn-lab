@@ -3,7 +3,7 @@ module.exports = {
     outputDir: "./dist/client",
     pages: {
         index: {
-            entry: "./client/main.ts",
+            entry: "./client/main.js",
         },
     },
     devServer: {

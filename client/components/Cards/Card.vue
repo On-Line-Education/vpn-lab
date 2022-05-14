@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-4 card half-width">
+    <div class="mb-4 card mw-fc">
         <div class="p-3 card-body">
             <div class="d-flex flex-row-reverse justify-content-between">
                 <div>
@@ -32,7 +32,7 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 const {
     title,
     titleColor,

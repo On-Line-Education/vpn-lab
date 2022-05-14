@@ -31,7 +31,7 @@
         </div>
     </div>
 </template>
-<script setup lang="ts">
+<script setup>
 import imgWhiteCurved from "../../../assets/img/curved-images/white-curved.jpeg";
 
 const { textPrimary, textSecondary, href, linkText, iconClass } = defineProps({

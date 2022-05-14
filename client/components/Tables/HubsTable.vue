@@ -92,7 +92,7 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import VsudAvatar from "../Basic/VsudAvatar.vue";
 import VsudBadge from "../Basic/VsudBadge.vue";
 import VsudButton from "../Basic/VsudButton.vue";

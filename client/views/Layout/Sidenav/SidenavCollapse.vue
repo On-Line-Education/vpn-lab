@@ -9,7 +9,7 @@
         <span class="nav-link-text" :class="'ms-1'">{{ navText }}</span>
     </router-link>
 </template>
-<script setup lang="ts">
+<script setup>
 import { useStore } from "vuex";
 const store = useStore();
 var isExpanded = false;

@@ -33,7 +33,7 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import VsudInput from "../Basic/VsudInput.vue";
 import VsudButton from "../Basic/VsudButton.vue";
 import { ref } from "vue";
