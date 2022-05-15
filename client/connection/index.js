@@ -97,9 +97,128 @@ export default class Connection {
             },
         });
     }
+    async getHub(hubName) {
+        return await this._apollo.query({
+            query: gql`
+                query GetHub($hubName: String) {
+                    getHub(hubName: $hubName) {
+                        AdminPasswordPlainText_str
+                        HashedPassword_bin
+                        HubName_str
+                        HubType_u32
+                        MaxSession_u32
+                        NoEnum_bool
+                        Online_bool
+                        SecurePassword_bin
+                    }
+                }
+            `,
+            variables: {
+                hubName,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async listHubsNames() {
+        return await this._apollo.query({
+            query: gql`
+                query ListHubs {
+                    listHubs {
+                        HubList {
+                            HubName_str
+                        }
+                    }
+                }
+            `,
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async listHubUsers(hubName) {
+        return await this._apollo.query({
+            query: gql`
+                query Query($hubName: String) {
+                    getHubUsers(hubName: $hubName) {
+                        AuthType_u32
+                        DenyAccess_bool
+                        Recv_BroadcastBytes_u64
+                        Recv_BroadcastCount_u64
+                        Recv_UnicastBytes_u64
+                        Recv_UnicastCount_u64
+                        Send_BroadcastBytes_u64
+                        Send_BroadcastCount_u64
+                        Send_UnicastBytes_u64
+                        Send_UnicastCount_u64
+                        Expires_dt
+                        GroupName_str
+                        IsExpiresFilled_bool
+                        IsTrafficFilled_bool
+                        LastLoginTime_dt
+                        Name_str
+                        Note_utf
+                        NumLogin_u32
+                        Realname_utf
+                    }
+                }
+            `,
+            variables: {
+                hubName,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async changeUserSettings({ newPassword, oldPassword }) {
+        console.log({ newPassword, oldPassword });
+        return await this._apollo.query({
+            query: gql`
+                query Query($settings: UserSettings) {
+                    changeUserSettings(settings: $settings)
+                }
+            `,
+            variables: {
+                settings: {
+                    newPassword,
+                    oldPassword,
+                },
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
     logout() {
         this._token = null;
         this._user = null;
+    }
+    async import(importObj) {
+        return await this._apollo.query({
+            query: gql`
+                query Query($data: Import) {
+                    import(data: $data)
+                }
+            `,
+            variables: {
+                data: importObj,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
     }
     async _setUser() {
         if (!this._user) {

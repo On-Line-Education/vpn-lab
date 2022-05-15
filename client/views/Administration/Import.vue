@@ -15,13 +15,26 @@
         </div>
         <div class="p-3 card-body">
             <div class="d-flex flex-column justify-content-between">
-                <select class="form-control mb-3"></select>
+                <select
+                    class="form-control mb-3"
+                    ref="selectHub"
+                    @change="selectHubChanged"
+                >
+                    <option selected value="0">Nowy Hub</option>
+                    <option
+                        v-for="(name, index) in hubNames"
+                        :value="index + 1"
+                    >
+                        {{ name }}
+                    </option>
+                </select>
                 <input
                     type="text"
                     placeholder="Nazwa huba"
                     name="hubname"
                     class="form-control d-flex justify-content-start mb-3"
-                    @keyup="hubname($event.target.value)"
+                    ref="customHubName"
+                    :disabled="disableCustomHubName"
                 />
                 <input
                     titleColor="opacity-7"
@@ -63,18 +76,22 @@
             class="card-body p-3 d-flex justify-content-between table-responsive"
         >
             <table class="table align-items-center mb-0">
-                <tr class="table-ms-15">
-                    <th v-for="title in previewTitles">{{ title }}</th>
-                </tr>
-                <tr class="table-ms-15" v-for="data in previewData">
-                    <td v-for="val in data">{{ val }}</td>
-                </tr>
+                <thead>
+                    <tr class="table-ms-15">
+                        <th v-for="title in previewTitles">{{ title }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-ms-15" v-for="data in previewData">
+                        <td v-for="val in data">{{ val }}</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
 </template>
 <script setup>
-import { reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import * as CSV from "papaparse";
 import { useStore } from "vuex";
 
@@ -83,15 +100,36 @@ const file = ref();
 const csvData = reactive({ csv: null });
 const previewTitles = ref([]);
 const previewData = ref([]);
+const hubNames = ref([]);
+const selectHub = ref();
+const disableCustomHubName = ref(false);
+const customHubName = ref();
+
+function selectHubChanged() {
+    if (selectHub.value.value != 0) {
+        disableCustomHubName.value = true;
+    } else {
+        disableCustomHubName.value = false;
+    }
+}
+
+onMounted(async () => {
+    try {
+        let hubs = await store.getters.getServer.listHubs();
+        hubs.data.listHubs.HubList.forEach((hub) => {
+            hubNames.value.push(hub.HubName_str);
+        });
+    } catch (e) {
+        store.commit("setError", e);
+        console.error(e);
+    }
+});
 
 watch(file, (newData, _) => {
-    console.dir(newData);
-    console.dir(newData.files[0]);
     if (newData.files.length > 0) returnValue(newData.files);
 });
 
 function newFile() {
-    console.dir(file.value.files[0]);
     if (file.value.files.length > 0) returnValue(file.value.files);
 }
 
@@ -103,64 +141,103 @@ function clearImport() {
 }
 
 function returnValue(val) {
-    console.log(val[0]);
     var fReader = new FileReader();
     fReader.readAsText(val[0]);
     fReader.onloadend = function (event) {
-        csvData.csv = CSV.parse(event.target.result, {
-            output: "objects",
-        });
-        console.log(csvData.csv.data);
-        // console.table(csvData.csv.data);
-        console.log(csvData.csv.errors);
+        try {
+            csvData.csv = CSV.parse(event.target.result.trim(), {
+                output: "objects",
+            });
 
-        if (csvData.csv.errors.length > 0) {
-            store.commit("setError", { message: "Nieprawidłowy plik csv" });
-            clearImport();
-            return;
-        }
-
-        let invalid = false;
-        csvData.csv.data.forEach((row, index) => {
-            if (invalid) {
-                return;
+            if (csvData.csv.errors.length > 0) {
+                clearImport();
+                throw "Nieprawidłowy plik csv";
             }
-            if (index == 0) {
-                let titles = [];
-                row.forEach((element) => {
-                    previewTitles.value.push(element);
-                });
-                if (previewTitles.value.length != 2) {
-                    store.commit("setError", {
-                        message: "Nieprawidłowa struktura pliku csv",
-                    });
-                    clearImport();
-                    invalid = true;
+
+            let invalid = false;
+            csvData.csv.data.forEach((row, index) => {
+                if (invalid) {
+                    return;
                 }
-                let csvRequiredTitles = ["name", "role"];
-                for (let index in csvRequiredTitles) {
-                    if (
-                        !previewTitles.value.includes(csvRequiredTitles[index])
-                    ) {
-                        store.commit("setError", {
-                            message: "Nieprawidłowa struktura pliku csv",
-                        });
+                if (index == 0) {
+                    let titles = [];
+                    row.forEach((element) => {
+                        previewTitles.value.push(element);
+                    });
+                    if (previewTitles.value.length != 4) {
                         clearImport();
                         invalid = true;
-                        return;
+                        throw "Nieprawidłowa struktura pliku csv";
                     }
+                    let csvRequiredTitles = [
+                        "name",
+                        "role",
+                        "password",
+                        "passcode",
+                    ];
+                    for (let index in csvRequiredTitles) {
+                        if (
+                            !previewTitles.value.includes(
+                                csvRequiredTitles[index]
+                            )
+                        ) {
+                            clearImport();
+                            invalid = true;
+                            throw "Nieprawidłowa struktura pliku csv";
+                        }
+                    }
+                    previewTitles.value.push(...titles);
+                    return;
                 }
-                previewTitles.value.push(...titles);
-                return;
-            }
-            let data = [];
-            row.forEach((element) => {
-                data.push(element);
+                let data = [];
+                row.forEach((element) => {
+                    data.push(element);
+                });
+                previewData.value.push(data);
             });
-            previewData.value.push(data);
-        });
+        } catch (e) {
+            store.commit("setError", e);
+            console.error(e);
+        }
     };
 }
 
-function importData() {}
+function importData() {
+    try {
+        let hubName = "",
+            newHub = false,
+            csv = [];
+        if (selectHub.value.value != 0) {
+            hubName = hubNames.value[selectHub.value.value - 1];
+        } else {
+            console.log(customHubName.value.value);
+            hubName = customHubName.value.value;
+            newHub = true;
+        }
+        let titles = [];
+        previewTitles.value.forEach((name, index) => {
+            titles.push({ name, index });
+        });
+        previewData.value.forEach((row) => {
+            let obj = {};
+            titles.forEach((title) => {
+                obj[title.name] = row[title.index];
+            });
+            csv.push(obj);
+        });
+        console.log({ csv, newHub, hubName });
+        store.getters.getServer
+            .import({ csv, newHub, hubName })
+            .then((_) => {
+                store.commit("showAlert", { message: "Import zakończony" });
+            })
+            .catch((e) => {
+                store.commit("setError", e);
+                console.error(e);
+            });
+    } catch (e) {
+        store.commit("setError", e);
+        console.error(e);
+    }
+}
 </script>

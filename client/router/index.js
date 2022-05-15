@@ -13,6 +13,8 @@ import Logout from "../views/Logout.vue";
 import HubDetails from "../views/HubDetails.vue";
 // @ts-ignore
 import Dashboard from "../views/Dashboard.vue";
+// @ts-ignore
+import Settings from "../views/Settings.vue";
 
 const routes = [
     {
@@ -31,7 +33,7 @@ const routes = [
         component: Hubs,
     },
     {
-        path: "/hub/:id",
+        path: "/hub/:hubname",
         name: "HUB",
         component: HubDetails,
     },
@@ -39,6 +41,11 @@ const routes = [
         path: "/administration",
         name: "Administracja",
         component: Administration,
+    },
+    {
+        path: "/ustawienia",
+        name: "Ustawienia",
+        component: Settings,
     },
     {
         path: "/ftp",

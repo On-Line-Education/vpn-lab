@@ -75,7 +75,7 @@
                             </td>
                             <td class="align-middle">
                                 <vsud-button
-                                    @click="more(hub.id)"
+                                    @click="more(hub.name)"
                                     color="info"
                                     variant="outline"
                                     size="sm"
@@ -109,8 +109,8 @@ const { hubs } = defineProps({
 
 const tableSorter = new TableSorter(hubs);
 
-function more(id) {
-    router.push({ name: "HUB", params: { id } });
+function more(hubname) {
+    router.push({ name: "HUB", params: { hubname } });
 }
 </script>
 VsudInput

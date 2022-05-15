@@ -20,7 +20,10 @@ export default createStore({
 
         loggedIn: false,
         showErrorAlert: false,
-        lastError: null,
+        showAlert: false,
+        isAlertError: false,
+
+        lastMessage: null,
 
         server: new Connection(),
         hubsList: [],
@@ -58,11 +61,17 @@ export default createStore({
             }
         },
         setError(state, error) {
-            state.lastError = error;
-            state.showErrorAlert = true;
+            state.lastMessage = error;
+            state.isAlertError = true;
+            state.showAlert = true;
+        },
+        showAlert(state, message) {
+            state.lastMessage = message;
+            state.isAlertError = false;
+            state.showAlert = true;
         },
         hideAlert(state) {
-            state.showErrorAlert = false;
+            state.showAlert = false;
         },
         loginState(state) {
             state.hideConfigButton = false;
@@ -92,8 +101,7 @@ export default createStore({
                     commit("loginState");
                 })
                 .catch((e) => {
-                    state.lastError = e;
-                    state.showErrorAlert = true;
+                    commit("setError", e);
                 });
         },
         loginViaPassword({ commit, state }, payload) {
@@ -105,8 +113,7 @@ export default createStore({
                     commit("loginState");
                 })
                 .catch((e) => {
-                    state.lastError = e;
-                    state.showErrorAlert = true;
+                    commit("setError", e);
                 });
         },
         logout({ state, commit }) {
@@ -130,11 +137,11 @@ export default createStore({
         appName(state) {
             return state.appName;
         },
-        getLastError(state) {
-            return state.lastError;
+        getError(state) {
+            return state.lastMessage;
         },
-        getLastErrorMessage(state) {
-            return state.lastError?.message ?? "";
+        getLastMessage(state) {
+            return state.lastMessage?.message ?? "";
         },
         hubsList(state) {
             return state.hubsList;
@@ -144,6 +151,16 @@ export default createStore({
         },
         getRole(state) {
             return state.server.getUser()?.role ?? "";
+        },
+        getHubsNames(state) {
+            let names = [];
+            state.hubsList.forEach((hub) => {
+                names.push(hub.HubName_str);
+            });
+            return names;
+        },
+        getServer(state) {
+            return state.server;
         },
     },
 });

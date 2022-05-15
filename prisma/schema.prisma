@@ -46,11 +46,21 @@ model Server {
     Hub          Hub[]
 }
 
+model UsersGroup {
+    userGroup   UsersInHub @relation(fields: [userGroupId], references: [id])
+    userGroupId Int
+    groupName   String
+
+    @@id([userGroupId])
+}
+
 model UsersInHub {
+    id     Int  @id @default(autoincrement())
     user   User @relation(fields: [userId], references: [id])
     userId Int
     hub    Hub  @relation(fields: [hubId], references: [id])
     hubId  Int
 
-    @@id([userId, hubId])
+    // @@id([userId, hubId])
+    UsersGroup UsersGroup[]
 }

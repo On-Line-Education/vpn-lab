@@ -19,15 +19,15 @@
                                 Grupa
                             </th>
                             <th
-                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                             >
                                 Status
                             </th>
                             <th class="text-secondary opacity-7"></th>
                         </tr>
                     </thead>
-                    <tbody v-for="user in hub">
-                        <tr>
+                    <tbody>
+                        <tr v-for="user in hub">
                             <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
@@ -44,7 +44,7 @@
                                     {{ user.group }}
                                 </p>
                             </td>
-                            <td class="align-middle text-center text-sm">
+                            <!-- <td class="align-middle text-center text-sm">
                                 <vsud-badge
                                     v-if="user.online"
                                     color="success"
@@ -59,7 +59,7 @@
                                     size="sm"
                                     >Offline</vsud-badge
                                 >
-                            </td>
+                            </td> -->
                             <td class="align-middle">
                                 <a
                                     href="javascript:;"
@@ -68,6 +68,15 @@
                                     data-original-title="Zobacz więcej"
                                     >TODO</a
                                 >
+                            </td>
+                            <td class="align-middle">
+                                <vsud-button
+                                    color="info"
+                                    variant="outline"
+                                    size="sm"
+                                >
+                                    Więcej
+                                </vsud-button>
                             </td>
                         </tr>
                     </tbody>
@@ -78,6 +87,7 @@
 </template>
 
 <script setup>
+import VsudButton from "../Basic/VsudButton.vue";
 import VsudAvatar from "../Basic/VsudAvatar.vue";
 import VsudBadge from "../Basic/VsudBadge.vue";
 

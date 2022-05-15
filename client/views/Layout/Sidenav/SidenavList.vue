@@ -38,6 +38,16 @@
                     </template>
                 </sidenav-collapse>
             </li>
+            <li class="nav-item">
+                <sidenav-collapse
+                    navText="Ustawienia"
+                    :to="{ name: 'Ustawienia' }"
+                >
+                    <template v-slot:icon>
+                        <i class="fas fa-solid fa-gears" />
+                    </template>
+                </sidenav-collapse>
+            </li>
         </ul>
     </div>
     <div class="pt-3 mx-3 mt-3 sidenav-footer">

@@ -19,15 +19,34 @@
 import HubsDetailsTable from "../components/Tables/HubsDetailsTable.vue";
 import Card from "../components/Cards/Card.vue";
 import { useStore } from "vuex";
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 const store = useStore();
 
 var reactiveHub = reactive({ hub: null });
 
-setTimeout(() => {
-    reactiveHub.hub = [
-        { username: "Aaa", group: "1", online: true },
-        { username: "Bbb", group: "2", online: false },
-    ];
-}, 1000);
+onMounted(async () => {
+    // let hub = await store.getters.getServer.getHub(route.params.hubname);
+
+    let hubUsers = [];
+    let users = await store.getters.getServer.listHubUsers(
+        route.params.hubname
+    );
+    users.data.getHubUsers.forEach((user) => {
+        hubUsers.push({
+            username: user.Name_str,
+            group: user.GroupName_str ? user.GroupName_str : "-",
+        });
+    });
+    reactiveHub.hub = hubUsers;
+});
+
+// setTimeout(() => {
+//     reactiveHub.hub = [
+//         { username: "Aaa", group: "1", online: true },
+//         { username: "Bbb", group: "2", online: false },
+//     ];
+// }, 1000);
 </script>

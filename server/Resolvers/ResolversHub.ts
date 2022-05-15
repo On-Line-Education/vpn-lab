@@ -1,7 +1,8 @@
+import { PrismaClient } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
-export default (vpn: SoftEtherAPI) => {
+export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
         Query: {
             async getHub(_: any, { hubName }: any, { user, api }) {
@@ -32,8 +33,23 @@ export default (vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                let v = await vpn.hub.list();
+                let vpnHubs = await vpn.hub.list(),
+                    v = { HubList: [], NumHub_u32: vpnHubs.NumHub_u32 },
+                    systemHubs = (
+                        await prisma.hub.findMany({
+                            select: {
+                                title: true,
+                            },
+                        })
+                    ).map((e) => {
+                        return e.title;
+                    });
 
+                vpnHubs.HubList.forEach((hub) => {
+                    if (systemHubs.includes(hub.HubName_str)) {
+                        v.HubList.push(hub);
+                    }
+                });
                 for (let i in v.HubList) {
                     v.HubList[i]["Recv_BroadcastBytes_u64"] =
                         v.HubList[i]["Ex.Recv.BroadcastBytes_u64"];
@@ -91,6 +107,36 @@ export default (vpn: SoftEtherAPI) => {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.hub.delete(hubName);
+            },
+            async getHubUsers(_: any, { hubName }: any, guard: { user; api }) {
+                if (!(guard.api || guard.user)) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+                let users = [];
+                let dbUsers = (
+                    await prisma.usersInHub.findMany({
+                        where: {
+                            hub: {
+                                title: hubName,
+                            },
+                        },
+                        select: {
+                            user: true,
+                        },
+                    })
+                ).map((usr) => {
+                    return usr.user.name;
+                });
+
+                (await vpn.user.getUsersList(hubName)).UserList.forEach(
+                    (user) => {
+                        if (dbUsers.includes(user.Name_str)) {
+                            users.push(user);
+                        }
+                    }
+                );
+
+                return users;
             },
         },
         HubType: {

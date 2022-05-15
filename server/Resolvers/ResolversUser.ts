@@ -13,7 +13,6 @@ export default (prisma: PrismaClient) => {
                 return user;
             },
             async loginViaKey(_: any, { loginKey }: any) {
-                console.log({ loginKey });
                 await prisma.token.deleteMany({
                     where: {
                         expireOn: {
@@ -22,9 +21,16 @@ export default (prisma: PrismaClient) => {
                     },
                 });
 
+                if (!loginKey || loginKey.trim() === "") {
+                    throw new Error("Kod dostępu nie może być pusty");
+                }
+
                 let u = await prisma.user.findFirst({
                     where: {
-                        loginKey,
+                        loginKey: crypto
+                            .createHash("SHA256")
+                            .update(loginKey)
+                            .digest("hex"),
                     },
                 });
 
@@ -58,12 +64,18 @@ export default (prisma: PrismaClient) => {
                 let u = await prisma.user.findFirst({
                     where: {
                         name: username,
-                        passHash: crypto
-                            .createHash("SHA256")
-                            .update(password)
-                            .digest("hex"),
                     },
                 });
+
+                if (!u.passHash) {
+                    throw new Error("Nieprawidłowa forma logowania");
+                }
+                if (
+                    u.passHash !=
+                    crypto.createHash("SHA256").update(password).digest("hex")
+                ) {
+                    u = null;
+                }
 
                 if (!u) {
                     throw new AuthenticationError(
@@ -84,6 +96,48 @@ export default (prisma: PrismaClient) => {
                 return {
                     token: token.token,
                 };
+            },
+            async changeUserSettings(
+                _: any,
+                { settings }: { settings: { newPassword; oldPassword } },
+                { user, api }
+            ) {
+                if (!user) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                let oldPass = crypto
+                    .createHash("SHA256")
+                    .update(settings.oldPassword)
+                    .digest("hex");
+
+                if (user.passHash !== oldPass) {
+                    throw new Error("Podane hasło jest nieprawidłowe");
+                }
+                if (
+                    !/(?=.*[0-9])(?=.*[A-Z])(.*[a-zA-Z0-9.*]){8,}$/g.test(
+                        settings.newPassword
+                    )
+                ) {
+                    throw new Error(
+                        "Hasło musi składać się z minimum 8 znaków, posiadać minimum jedną dużą literę oraz cyfrę"
+                    );
+                }
+                let newPass = crypto
+                    .createHash("SHA256")
+                    .update(settings.newPassword)
+                    .digest("hex");
+
+                await prisma.user.update({
+                    where: {
+                        id: user.id,
+                    },
+                    data: {
+                        passHash: newPass,
+                    },
+                });
+
+                return true;
             },
         },
     };

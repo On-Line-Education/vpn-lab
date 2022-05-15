@@ -34,6 +34,15 @@ async function main() {
         data: fakeServer,
     });
 
+    await prisma.user.create({
+        data: {
+            name: admin,
+            passHash: crypto.createHash("SHA256").update("admin").digest("hex"),
+            loginKey: crypto.createHash("SHA256").update("admin").digest("hex"),
+            role: "admin",
+        },
+    });
+
     for (let i = 0; i < seedCount; i++) {
         let password = faker.random.alphaNumeric(8);
         let title = faker.lorem.word() + "_" + parseInt(Math.random() * 1000);
@@ -52,6 +61,7 @@ async function main() {
                 name = faker.random.alpha(8);
             }
             names.push(name);
+            let passcode = faker.random.alphaNumeric(16);
             let passHash = crypto
                 .createHash("SHA256")
                 .update(password)
@@ -63,8 +73,12 @@ async function main() {
                 role: "user",
                 veyonKeyPub: faker.random.alphaNumeric(32),
                 veyonKeyPriv: faker.random.alphaNumeric(32),
-                loginKey: faker.random.alphaNumeric(16),
+                loginKey: crypto
+                    .createHash("SHA256")
+                    .update(passcode)
+                    .digest("hex"),
                 password,
+                passcode,
                 token: {
                     token: faker.random.alphaNumeric(16),
                     expireOn: () => {
@@ -185,11 +199,11 @@ async function main() {
     console.log(`Seeding finished.`);
 }
 
-main()
-    .catch((e) => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+// main()
+//     .catch((e) => {
+//         console.error(e);
+//         process.exit(1);
+//     })
+//     .finally(async () => {
+//         await prisma.$disconnect();
+//     });

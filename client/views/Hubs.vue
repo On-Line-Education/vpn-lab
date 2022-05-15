@@ -24,20 +24,13 @@ const store = useStore();
 
 const reactiveHubs = reactive({ hubs: null });
 
-onMounted(() => {
-    store.dispatch("listHubs");
-});
-
-// HubName_str
-// Online_bool
-
-watch(
-    () => store.getters.hubsList,
-    function (hubsList, _) {
-        let hubs = [],
+async function refreshHubs() {
+    try {
+        let hubs = await store.getters.getServer.listHubs(),
+            hubsList = [],
             id = 0;
-        hubsList.forEach((hub) => {
-            hubs.push({
+        hubs.data.listHubs.HubList.forEach((hub) => {
+            hubsList.push({
                 name: hub.HubName_str,
                 school: "TODO",
                 status: hub.Online_bool ? "Online" : "Offline",
@@ -45,8 +38,12 @@ watch(
                 id: id++,
             });
         });
-
-        reactiveHubs.hubs = hubs;
+        reactiveHubs.hubs = hubsList;
+    } catch (e) {
+        store.commit("setError", e);
+        console.error(e);
     }
-);
+}
+
+onMounted(refreshHubs);
 </script>

@@ -1,11 +1,10 @@
 <template>
     <div :class="[alertClasses]" style="z-index: 100" role="alert">
-        <span class="alert-icon"
-            ><i class="fa-solid fa-circle-exclamation"></i
-        ></span>
+        <span class="alert-icon"><i :class="[alertIconClasses]"></i></span>
         <span class="alert-text error-alert-text"
-            ><strong> Uwaga! </strong>
-            {{ store.getters.getLastErrorMessage }}</span
+            ><strong v-if="isErrorAlert"> Błąd! </strong
+            ><strong v-else> Sukces! </strong>
+            {{ store.getters.getLastMessage }}</span
         >
         <button
             type="button"
@@ -49,23 +48,33 @@ const currentRouteName = computed(() => {
     return route.name;
 });
 
-watch(currentRouteName, (r) => {
-    if (r !== "Zaloguj się" && !store.getters.isLoggedIn) {
+function checkPerms(route) {
+    if (route !== "Zaloguj się" && !store.getters.isLoggedIn) {
         store.commit("logoutState");
         router.push({ name: "Zaloguj się" });
-    } else if (r === "Zaloguj się") {
+    } else if (route === "Zaloguj się") {
         store.commit("logoutState");
     }
-});
+}
+checkPerms(currentRouteName);
+watch(currentRouteName, (r) => checkPerms(r));
 
 const navbarMinimize = mapMutations(["navbarMinimize"]);
 
 const alertClasses = computed(() => {
     return {
         "pos-alert alert alert-danger alert-dismissible fade show":
-            store.state.showErrorAlert,
+            store.state.isAlertError && store.state.showAlert,
+        "pos-alert alert alert-success alert-dismissible fade show":
+            !store.state.isAlertError && store.state.showAlert,
         "pos-alert alert alert-danger alert-dismissible fade":
-            !store.state.showErrorAlert,
+            !store.state.showAlert,
+    };
+});
+const alertIconClasses = computed(() => {
+    return {
+        "fa-solid fa-circle-exclamation": store.state.isAlertError,
+        "ni ni-like-2": !store.state.isAlertError,
     };
 });
 
@@ -77,6 +86,11 @@ const navClasses = computed(() => {
         "px-0 mx-4 mt-4": !store.state.isAbsolute,
     };
 });
+
+const isErrorAlert = computed(() => {
+    return store.state.isAlertError;
+});
+
 onBeforeMount(() => {
     store.state.isTransparent = "bg-transparent";
 });

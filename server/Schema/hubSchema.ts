@@ -21,6 +21,28 @@ export default gql`
         HubType_u32: HubType
     }
 
+    type HubUser {
+        AuthType_u32: Int
+        DenyAccess_bool: Boolean
+        Recv_BroadcastBytes_u64: Float
+        Recv_BroadcastCount_u64: Float
+        Recv_UnicastBytes_u64: Float
+        Recv_UnicastCount_u64: Float
+        Send_BroadcastBytes_u64: Float
+        Send_BroadcastCount_u64: Float
+        Send_UnicastBytes_u64: Float
+        Send_UnicastCount_u64: Float
+        Expires_dt: DateTime
+        GroupName_str: String
+        IsExpiresFilled_bool: Boolean
+        IsTrafficFilled_bool: Boolean
+        LastLoginTime_dt: DateTime
+        Name_str: String
+        Note_utf: String
+        NumLogin_u32: Int
+        Realname_utf: String
+    }
+
     type EnumHubItem {
         HubName_str: String
         Online_bool: Boolean
@@ -108,5 +130,8 @@ export default gql`
             noEnum: Boolean
         ): CreateHub
         deleteHub(hubName: String): HubDelete
+        getHubUsers(hubName: String): [HubUser]
     }
+
+    scalar DateTime
 `;
