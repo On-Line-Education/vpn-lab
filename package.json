@@ -11,7 +11,9 @@
     "dev:serve": "npx vue-cli-service serve --mode development",
     "dev:server:builder": "npx tsc -w",
     "dev:server:watcher": "nodemon",
-    "start": "node ./dist/index.js"
+    "start": "node ./dist/index.js",
+    "ts-start": "npx ts-node ./server/index.ts",
+    "dockerstart": "npm i && concurrently \"npm run dev:server:watcher\" \"npm run dev:server:builder\" \"npm run dev:serve\""
   },
   "main": "index.js",
   "dependencies": {

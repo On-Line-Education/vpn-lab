@@ -1,13 +1,15 @@
 import * as VPN from "vpnrpc";
-import SoftEtherAl from "./SoftEtherAl";
+import SoftEtherACl from "./SoftEtherACl";
 import SoftEtherHub from "./SoftEtherHub";
 import SoftEtherUser from "./SoftEtherUser";
+import SoftEtherGroup from "./SoftEtherGroup";
 
 export default class SoftEtherAPI {
     protected api: VPN.VpnServerRpc;
     public hub: SoftEtherHub;
     public user: SoftEtherUser;
-    public al: SoftEtherAl;
+    public acl: SoftEtherACl;
+    public group: SoftEtherGroup;
 
     constructor(
         localhost: string,
@@ -26,7 +28,7 @@ export default class SoftEtherAPI {
         );
         this.user = new SoftEtherUser(this.api);
         this.hub = new SoftEtherHub(this.api);
-        this.al = new SoftEtherAl(this.api);
+        this.acl = new SoftEtherACl(this.api);
     }
 
     public async getServerInfo(): Promise<VPN.VpnRpcServerInfo> {

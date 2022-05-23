@@ -10,7 +10,7 @@ export default gql`
         SrcSubnetMask_ip: String
         DestIpAddress_ip: String
         DestSubnetMask_ip: String
-        Protocol_u32: Int
+        Protocol_u32: Protocol
         SrcPortStart_u32: Int
         SrcPortEnd_u32: Int
         DestPortStart_u32: Int
@@ -33,7 +33,7 @@ export default gql`
         Active_bool: Boolean
         Priority_u32: Int
         Discard_bool: Boolean
-        Protocol_u32: Int
+        Protocol_u32: Protocol
         SrcPortStart_u32: Int
         SrcPortEnd_u32: Int
         DestPortStart_u32: Int
@@ -63,7 +63,7 @@ export default gql`
         SrcSubnetMask_ip: String
         DestIpAddress_ip: String
         DestSubnetMask_ip: String
-        Protocol_u32: Int
+        Protocol_u32: Protocol
         SrcPortStart_u32: Int
         SrcPortEnd_u32: Int
         DestPortStart_u32: Int
@@ -94,4 +94,9 @@ export default gql`
     }
 
     scalar ByteArray
+
+    enum Protocol {
+        TCP
+        UDP
+    }
 `;

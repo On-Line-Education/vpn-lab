@@ -1,4 +1,5 @@
 import { AuthenticationError } from "apollo-server-express";
+import { VpnIpProtocolNumber } from "vpnrpc";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
 export default (vpn: SoftEtherAPI) => {
@@ -8,7 +9,7 @@ export default (vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Not authorized");
                 }
-                return JSON.stringify(await vpn.al.list(hubName));
+                return JSON.stringify(await vpn.acl.list(hubName));
             },
             async addHubAccessList(
                 _: any,
@@ -29,16 +30,16 @@ export default (vpn: SoftEtherAPI) => {
                         accessList.SrcMacAddress_bin
                     );
                 }
-                if (accessList.SrcIpAddress6_bin) {
-                    accessList.SrcMacAddress_bin = new Uint8Array(
-                        accessList.SrcMacAddress_bin
-                    );
-                }
-                if (accessList.SrcSubnetMask6_bin) {
-                    accessList.SrcMacAddress_bin = new Uint8Array(
-                        accessList.SrcMacAddress_bin
-                    );
-                }
+                // if (accessList.SrcIpAddress6_bin) {
+                //     accessList.SrcMacAddress_bin = new Uint8Array(
+                //         accessList.SrcMacAddress_bin
+                //     );
+                // }
+                // if (accessList.SrcSubnetMask6_bin) {
+                //     accessList.SrcMacAddress_bin = new Uint8Array(
+                //         accessList.SrcMacAddress_bin
+                //     );
+                // }
                 if (accessList.SrcSubnetMask6_bin) {
                     accessList.SrcSubnetMask6_bin = new Uint8Array(
                         accessList.SrcSubnetMask6_bin
@@ -52,14 +53,18 @@ export default (vpn: SoftEtherAPI) => {
                 console.log(accessList);
                 if (accessList.IsIPv6_bool) {
                     return JSON.stringify(
-                        await vpn.al.addAlIpv6(hubName, accessList)
+                        await vpn.acl.addAlIpv6(hubName, accessList)
                     );
                 } else {
                     return JSON.stringify(
-                        await vpn.al.addAlIpv4(hubName, accessList)
+                        await vpn.acl.addAlIpv4(hubName, accessList)
                     );
                 }
             },
+        },
+        Protocol: {
+            TCP: VpnIpProtocolNumber.TCP,
+            UDP: VpnIpProtocolNumber.UDP,
         },
     };
 };

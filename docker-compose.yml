@@ -1,0 +1,38 @@
+version: '3'
+services:
+  web:
+    build: .
+    command: npm run dockerstart
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3000:3000"
+      - "4000:4000"
+    depends_on:
+      - mysql
+      - vpn
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vpndb
+      MYSQL_USER: vpnuser
+      MYSQL_PASSWORD: vpnuser
+    ports:
+      - "3307:3306"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+  vpn:
+    image: siomiz/softethervpn
+    ports:
+      - 500:500
+      - 4500:4500
+      - 1701:1701
+      - 1194:1194
+      - 5555:5555
+    environment:
+     SPW: '!@#$%^&*'

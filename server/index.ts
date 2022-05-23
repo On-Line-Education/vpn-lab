@@ -1,4 +1,4 @@
-import ResolversBuilder from "./Resolvers/ResolversBuilder";
+import ResolversBuilder from "./Resolvers/resolversBuilder";
 import createServer from "./server";
 import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
 

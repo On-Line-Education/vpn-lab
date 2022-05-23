@@ -1,0 +1,95 @@
+export default class {
+    HubName_str: string;
+    Name_str: string;
+    Realname_utf: string;
+    Note_utf: string;
+    UsePolicy_bool: boolean;
+    policyAccess_bool: boolean;
+    policyDHCPFilter_bool: boolean;
+    policyDHCPNoServer_bool: boolean;
+    policyDHCPForce_bool: boolean;
+    policyNoBridge_bool: boolean;
+    policyNoRouting_bool: boolean;
+    policyCheckMac_bool: boolean;
+    policyCheckIP_bool: boolean;
+    policyArpDhcpOnly_bool: boolean;
+    policyPrivacyFilter_bool: boolean;
+    policyNoServer_bool: boolean;
+    policyNoBroadcastLimiter_bool: boolean;
+    policyMonitorPort_bool: boolean;
+    policyMaxConnection_u32: number;
+    policyTimeOut_u32: number;
+    policyMaxMac_u32: number;
+    policyMaxIP_u32: number;
+    policyMaxUpload_u32: number;
+    policyMaxDownload_u32: number;
+    policyFixPassword_bool: boolean;
+    policyMultiLogins_u32: number;
+    policyNoQoS_bool: boolean;
+    policyRSandRAFilter_bool: boolean;
+    policyRAFilter_bool: boolean;
+    policyDHCPv6Filter_bool: boolean;
+    policyDHCPv6NoServer_bool: boolean;
+    policyNoRoutingV6_bool: boolean;
+    policyCheckIPv6_bool: boolean;
+    policyNoServerV6_bool: boolean;
+    policyMaxIPv6_u32: number;
+    policyNoSavePassword_bool: boolean;
+    policyAutoDisconnect_u32: number;
+    policyFilterIPv4_bool: boolean;
+    policyFilterIPv6_bool: boolean;
+    policyFilterNonIP_bool: boolean;
+    policyNoIPv6DefaultRouterInRA_bool: boolean;
+    policyNoIPv6DefaultRouterInRAWhenIPv6_bool: boolean;
+    policyVLanId_u32: number;
+    policyVer3_bool: boolean;
+}
+
+export function example() {
+    return {
+        HubName_str: "test1",
+        Name_str: "group1",
+        Realname_utf: "Cat group",
+        Note_utf: "This is it! This is it!!",
+        UsePolicy_bool: true,
+        ["policy:Access_bool"]: true,
+        ["policy:DHCPFilter_bool"]: false,
+        ["policy:DHCPNoServer_bool"]: true,
+        ["policy:DHCPForce_bool"]: false,
+        ["policy:NoBridge_bool"]: false,
+        ["policy:NoRouting_bool"]: false,
+        ["policy:CheckMac_bool"]: false,
+        ["policy:CheckIP_bool"]: false,
+        ["policy:ArpDhcpOnly_bool"]: false,
+        ["policy:PrivacyFilter_bool"]: false,
+        ["policy:NoServer_bool"]: false,
+        ["policy:NoBroadcastLimiter_bool"]: false,
+        ["policy:MonitorPort_bool"]: false,
+        ["policy:MaxConnection_u32"]: 32,
+        ["policy:TimeOut_u32"]: 15,
+        ["policy:MaxMac_u32"]: 1000,
+        ["policy:MaxIP_u32"]: 1000,
+        ["policy:MaxUpload_u32"]: 1000000000,
+        ["policy:MaxDownload_u32"]: 1000000000,
+        ["policy:FixPassword_bool"]: false,
+        ["policy:MultiLogins_u32"]: 1000,
+        ["policy:NoQoS_bool"]: false,
+        ["policy:RSandRAFilter_bool"]: false,
+        ["policy:RAFilter_bool"]: false,
+        ["policy:DHCPv6Filter_bool"]: false,
+        ["policy:DHCPv6NoServer_bool"]: false,
+        ["policy:NoRoutingV6_bool"]: false,
+        ["policy:CheckIPv6_bool"]: false,
+        ["policy:NoServerV6_bool"]: false,
+        ["policy:MaxIPv6_u32"]: 1234,
+        ["policy:NoSavePassword_bool"]: false,
+        ["policy:AutoDisconnect_u32"]: 0,
+        ["policy:FilterIPv4_bool"]: false,
+        ["policy:FilterIPv6_bool"]: false,
+        ["policy:FilterNonIP_bool"]: false,
+        ["policy:NoIPv6DefaultRouterInRA_bool"]: false,
+        ["policy:NoIPv6DefaultRouterInRAWhenIPv6_bool"]: false,
+        ["policy:VLanId_u32"]: 0,
+        ["policy:Ver3_bool"]: true,
+    };
+}

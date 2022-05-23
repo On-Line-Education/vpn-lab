@@ -62,17 +62,17 @@ export default class SoftEtherAl {
         va4?: VpnAccessDataIPv4,
         va6?: VpnAccessDataIPv6
     ): Promise<VpnRpcEnumAccessList> {
-        let al = [];
+        let acl = [];
         if (va4) {
-            al.push(new VpnAccess(va4));
+            acl.push(new VpnAccess(va4));
         }
         if (va6) {
-            al.push(new VpnAccess(va6));
+            acl.push(new VpnAccess(va6));
         }
 
         let data = new VpnRpcEnumAccessList({
             HubName_str: hubName,
-            AccessList: al,
+            AccessList: acl,
         });
         return await this.api.SetAccessList(data);
     }

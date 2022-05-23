@@ -1,6 +1,6 @@
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import ResolversBuilder from "./Resolvers/ResolversBuilder";
+import ResolversBuilder from "./Resolvers/resolversBuilder";
 import schema from "./Schema/schema";
 import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
 import cors from "cors";
@@ -32,9 +32,9 @@ export default async function createServer(
     });
 
     app.use(cors());
-    app.listen({ port: process.env.SERVER_PORT || 4000 }, () =>
+    app.listen({ port: process.env.SERVER_PORT || 3000 }, () =>
         console.log(
-            `Server listening on localhost:${process.env.SERVER_PORT || 4000}${
+            `Server listening on localhost:${process.env.SERVER_PORT || 3000}${
                 apolloServer.graphqlPath
             }`
         )

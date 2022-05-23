@@ -1,11 +1,11 @@
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
-import ResolversAccessList from "./ResolversAccessList";
-import ResolversHub from "./ResolversHub";
+import ResolversAccessList from "./resolversAccessList";
+import ResolversHub from "./resolversHub";
 import { deepmerge } from "deepmerge-ts";
 import { PrismaClient } from "@prisma/client";
-import ResolversVeyon from "./ResolversVeyon";
-import ResolversUser from "./ResolversUser";
-import ResolversSystem from "./ResolversSystem";
+import ResolversVeyon from "./resolversVeyon";
+import ResolversUser from "./resolversUser";
+import ResolversSystem from "./resolversSystem";
 
 export default class ResolversBuilder {
     public build(vpn: SoftEtherAPI): any {
