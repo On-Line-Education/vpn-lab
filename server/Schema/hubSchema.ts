@@ -109,6 +109,11 @@ export default gql`
         FarmDynamic
     }
 
+    type HubUserEntry {
+        user: HubUser
+        group: String
+    }
+
     type Query {
         listHubs: HubsList
         getHub(hubName: String): HubGet
@@ -130,7 +135,7 @@ export default gql`
             noEnum: Boolean
         ): CreateHub
         deleteHub(hubName: String): HubDelete
-        getHubUsers(hubName: String): [HubUser]
+        getHubUsers(hubName: String): [HubUserEntry]
     }
 
     scalar DateTime

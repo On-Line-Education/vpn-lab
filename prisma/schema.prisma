@@ -40,9 +40,9 @@ model Token {
 }
 
 model Server {
-    id           Int    @id @default(autoincrement())
+    id           Int     @id @default(autoincrement())
     name         String
-    presharedKey String // klucz logowania do vpn
+    presharedKey String? // klucz logowania do vpn
     Hub          Hub[]
 }
 

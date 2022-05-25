@@ -122,17 +122,25 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         },
                         select: {
                             user: true,
+                            UsersGroup: true,
                         },
                     })
                 ).map((usr) => {
-                    return usr.user.name;
+                    console.log(usr);
+                    return {
+                        name: usr.user.name,
+                        group: usr.UsersGroup[0]?.groupName ?? "",
+                    };
                 });
+                console.log(dbUsers);
 
                 (await vpn.user.getUsersList(hubName)).UserList.forEach(
                     (user) => {
-                        if (dbUsers.includes(user.Name_str)) {
-                            users.push(user);
-                        }
+                        dbUsers.forEach((dbu) => {
+                            if (dbu.name === user.Name_str) {
+                                users.push({ user, group: dbu.group });
+                            }
+                        });
                     }
                 );
 

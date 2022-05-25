@@ -16,10 +16,21 @@ export default gql`
         role: String
     }
 
+    type ApiUser {
+        id: Int
+        name: String
+        role: String
+        veyonKeyPriv: String
+        veyonKeyPub: String
+        groupName: String
+    }
+
     type Query {
         loginViaKey(loginKey: String): Token
         loginViaPassword(username: String, password: String): Token
         getCurrentUser: User
         changeUserSettings(settings: UserSettings): Boolean
+        getAllUsersInStudentsGroup(username: String, group: String): [ApiUser]
+        getTeachersInUserGroups(username: String): [ApiUser]
     }
 `;

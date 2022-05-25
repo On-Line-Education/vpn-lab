@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
 import randomString from "../Helpsers/randomString";
 import crypto from "crypto";
+import Roles from "../Helpsers/roles";
 
 export default (prisma: PrismaClient) => {
     return {
@@ -138,6 +139,130 @@ export default (prisma: PrismaClient) => {
                 });
 
                 return true;
+            },
+            async getAllUsersInStudentsGroup(
+                _: any,
+                { username, group }: any,
+                { user, api }
+            ) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                let usersWithTeacher = [];
+
+                let dbuser = await prisma.usersGroup.findFirst({
+                    where: {
+                        userGroup: {
+                            user: {
+                                name: username,
+                            },
+                        },
+                    },
+                    select: {
+                        userGroup: {
+                            include: {
+                                user: true,
+                                hub: true,
+                            },
+                        },
+                    },
+                });
+
+                let usersHub = await prisma.usersGroup.findMany({
+                    where: {
+                        userGroup: {
+                            user: {
+                                hubs: {
+                                    some: {
+                                        hubId: dbuser.userGroup.user.id,
+                                    },
+                                },
+                            },
+                        },
+                        groupName: group,
+                    },
+                    select: {
+                        userGroup: {
+                            include: {
+                                user: true,
+                            },
+                        },
+                    },
+                });
+
+                usersHub.map((r) => {
+                    usersWithTeacher.push({
+                        id: r.userGroup.user.id,
+                        name: r.userGroup.user.name,
+                        role: r.userGroup.user.role,
+                        veyonKeyPriv: r.userGroup.user.veyonKeyPriv,
+                        veyonKeyPub: r.userGroup.user.veyonKeyPub,
+                        groupName: group,
+                    });
+                });
+                return usersWithTeacher;
+            },
+            async getTeachersInUserGroups(
+                _: any,
+                { username }: any,
+                { user, api }
+            ) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                let teachersInGroups = [];
+
+                let userWithGroups = await prisma.usersGroup.findFirst({
+                    where: {
+                        userGroup: {
+                            user: {
+                                name: username,
+                            },
+                        },
+                    },
+                    select: {
+                        userGroup: {
+                            include: {
+                                user: true,
+                                hub: true,
+                            },
+                        },
+                        groupName: true,
+                    },
+                });
+
+                let usersHub = await prisma.usersGroup.findMany({
+                    where: {
+                        userGroup: {
+                            user: {
+                                role: Roles.INSTRUCTOR,
+                            },
+                        },
+                        groupName: userWithGroups.groupName,
+                    },
+                    select: {
+                        userGroup: {
+                            include: {
+                                user: true,
+                            },
+                        },
+                        groupName: true,
+                    },
+                });
+
+                usersHub.map((r) => {
+                    teachersInGroups.push({
+                        id: r.userGroup.user.id,
+                        name: r.userGroup.user.name,
+                        role: r.userGroup.user.role,
+                        veyonKeyPriv: r.userGroup.user.veyonKeyPriv,
+                        veyonKeyPub: r.userGroup.user.veyonKeyPub,
+                        groupName: r.groupName,
+                    });
+                });
+                return teachersInGroups;
             },
         },
     };
