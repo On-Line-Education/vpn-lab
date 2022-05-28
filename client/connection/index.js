@@ -20,6 +20,11 @@ export default class Connection {
         this._apollo = new ApolloClient({
             link: this._link,
             cache: new InMemoryCache(),
+            defaultOptions: {
+                query: {
+                    fetchPolicy: "no-cache",
+                },
+            },
         });
     }
 
@@ -146,25 +151,28 @@ export default class Connection {
             query: gql`
                 query Query($hubName: String) {
                     getHubUsers(hubName: $hubName) {
-                        AuthType_u32
-                        DenyAccess_bool
-                        Recv_BroadcastBytes_u64
-                        Recv_BroadcastCount_u64
-                        Recv_UnicastBytes_u64
-                        Recv_UnicastCount_u64
-                        Send_BroadcastBytes_u64
-                        Send_BroadcastCount_u64
-                        Send_UnicastBytes_u64
-                        Send_UnicastCount_u64
-                        Expires_dt
-                        GroupName_str
-                        IsExpiresFilled_bool
-                        IsTrafficFilled_bool
-                        LastLoginTime_dt
-                        Name_str
-                        Note_utf
-                        NumLogin_u32
-                        Realname_utf
+                        user {
+                            AuthType_u32
+                            DenyAccess_bool
+                            Recv_BroadcastBytes_u64
+                            Recv_BroadcastCount_u64
+                            Recv_UnicastBytes_u64
+                            Recv_UnicastCount_u64
+                            Send_BroadcastBytes_u64
+                            Send_BroadcastCount_u64
+                            Send_UnicastBytes_u64
+                            Send_UnicastCount_u64
+                            Expires_dt
+                            GroupName_str
+                            IsExpiresFilled_bool
+                            IsTrafficFilled_bool
+                            LastLoginTime_dt
+                            Name_str
+                            Note_utf
+                            NumLogin_u32
+                            Realname_utf
+                        }
+                        group
                     }
                 }
             `,
@@ -178,8 +186,66 @@ export default class Connection {
             },
         });
     }
+    async listGroupsInHub(hubName) {
+        return await this._apollo.query({
+            query: gql`
+                query ListGroups($hubName: String) {
+                    listGroups(hubName: $hubName) {
+                        Name_str
+                    }
+                }
+            `,
+            variables: {
+                hubName,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async listSystemGroupsInHub(hubName) {
+        return await this._apollo.query({
+            query: gql`
+                query Query($hubName: String) {
+                    listSystemGroups(hubName: $hubName)
+                }
+            `,
+            variables: {
+                hubName,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async addUserToGroup(hubName, group, userName) {
+        return await this._apollo.query({
+            query: gql`
+                query CreateGroup(
+                    $userName: String
+                    $group: String
+                    $hubName: String
+                ) {
+                    addUserToGroup(
+                        userName: $userName
+                        group: $group
+                        hubName: $hubName
+                    )
+                }
+            `,
+            variables: { hubName, group, userName },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
     async changeUserSettings({ newPassword, oldPassword }) {
-        console.log({ newPassword, oldPassword });
         return await this._apollo.query({
             query: gql`
                 query Query($settings: UserSettings) {
@@ -199,6 +265,34 @@ export default class Connection {
             },
         });
     }
+    async removeFromSystemGroup(hubName, username, group) {
+        return await this._apollo.query({
+            query: gql`
+                query Query(
+                    $hubName: String
+                    $username: String
+                    $group: String
+                ) {
+                    removeFromSystemGroup(
+                        hubName: $hubName
+                        username: $username
+                        group: $group
+                    )
+                }
+            `,
+            variables: {
+                hubName,
+                username,
+                group,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+
     logout() {
         this._token = null;
         this._user = null;

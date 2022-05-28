@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
+import Roles from "../Helpsers/roles";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
@@ -27,6 +28,19 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!api) {
                     throw new AuthenticationError("Not authorized");
                 }
+
+                if (
+                    (
+                        await prisma.user.findFirst({
+                            where: {
+                                name: studentName,
+                            },
+                        })
+                    ).role === Roles.INSTRUCTOR
+                ) {
+                    return false;
+                }
+
                 let teacher = await prisma.hub.findFirst({
                     where: {
                         users: {

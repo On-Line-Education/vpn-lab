@@ -151,7 +151,7 @@ function returnValue(val) {
 
             if (csvData.csv.errors.length > 0) {
                 clearImport();
-                throw "Nieprawidłowy plik csv";
+                throw new Error("Nieprawidłowy plik csv");
             }
 
             let invalid = false;
@@ -167,7 +167,7 @@ function returnValue(val) {
                     if (previewTitles.value.length != 4) {
                         clearImport();
                         invalid = true;
-                        throw "Nieprawidłowa struktura pliku csv";
+                        throw new Error("Nieprawidłowa struktura pliku csv");
                     }
                     let csvRequiredTitles = [
                         "name",
@@ -183,7 +183,9 @@ function returnValue(val) {
                         ) {
                             clearImport();
                             invalid = true;
-                            throw "Nieprawidłowa struktura pliku csv";
+                            throw new Error(
+                                "Nieprawidłowa struktura pliku csv"
+                            );
                         }
                     }
                     previewTitles.value.push(...titles);

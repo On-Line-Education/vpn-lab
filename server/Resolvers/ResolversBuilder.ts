@@ -6,6 +6,7 @@ import { PrismaClient } from "@prisma/client";
 import ResolversVeyon from "./resolversVeyon";
 import ResolversUser from "./resolversUser";
 import ResolversSystem from "./resolversSystem";
+import resolversGroup from "./resolversGroup";
 
 export default class ResolversBuilder {
     public build(vpn: SoftEtherAPI): any {
@@ -17,6 +18,7 @@ export default class ResolversBuilder {
             ResolversVeyon(prisma, vpn),
             ResolversUser(prisma),
             ResolversSystem(prisma, vpn),
+            resolversGroup(prisma, vpn),
         ];
 
         res.forEach((r) => {

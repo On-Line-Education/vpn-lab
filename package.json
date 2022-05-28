@@ -14,7 +14,8 @@
     "start": "node ./dist/index.js",
     "dockerstart": "npm i && concurrently \"npm run dev:server:watcher\" \"npm run dev:server:builder\" \"npm run dev:serve\"",
     "prisma:setup": "npx prisma generate && npx prisma migrate deploy",
-    "prisma:setup:dev": "npx prisma generate && npx prisma migrate dev"
+    "prisma:setup:dev": "npx prisma generate && npx prisma migrate dev",
+    "command": "node ./server/Commands/command.cjs"
   },
   "main": "index.js",
   "dependencies": {

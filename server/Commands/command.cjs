@@ -1,5 +1,6 @@
 require("dotenv").config({ path: __dirname + "/../../.env" });
-const hubsToVPNExport = require("./hubsToVPNExport.cjss");
+const hubsToVPNExport = require("./hubsToVPNExport.cjs");
+const createAdmin = require("./createAdmin.cjs");
 const { PrismaClient } = require("@prisma/client");
 const VPN = require("vpnrpc");
 const prisma = new PrismaClient();
@@ -19,23 +20,24 @@ let commands = {
         info: "Exports hubs in database to VPN",
         exec: hubsToVPNExport,
     },
+    "create:admin": {
+        command: "create:admin",
+        info: "Create admin account",
+        exec: createAdmin,
+    },
 };
 (async () => {
-    let showHelp = true;
     if (args.length > 0) {
         if (Object.keys(commands).includes(args[0])) {
-            await commands[args[0]].exec.command(prisma, vpn, args);
-            showHelp = false;
+            return await commands[args[0]].exec.command(prisma, vpn, args);
         }
     }
 
-    if (showHelp) {
-        let help = [];
-        Object.entries(commands).forEach((entry) => {
-            help.push({ command: entry[1].command, info: entry[1].info });
-        });
-        console.table(help);
-    }
+    let help = [];
+    Object.entries(commands).forEach((entry) => {
+        help.push({ command: entry[1].command, info: entry[1].info });
+    });
+    console.table(help);
 })()
     .then((result) => console.log(result))
     .catch((err) => console.error(err));

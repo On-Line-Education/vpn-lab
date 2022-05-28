@@ -19,24 +19,28 @@
                     <thead>
                         <tr>
                             <th
-                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                                class="text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="tableSorter.sort('name')"
                             >
                                 Nazwa
                             </th>
                             <th
-                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                class="text-uppercase text-secondary font-weight-bolder opacity-7 ps-2"
                                 @click="tableSorter.sort('school')"
                             >
                                 Szkoła
                             </th>
                             <th
-                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                                class="text-center text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="tableSorter.sort('status')"
                             >
                                 Status
                             </th>
-                            <th class="text-secondary opacity-7"></th>
+                            <th
+                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                            >
+                                Działania
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

@@ -48,11 +48,11 @@ model Server {
 }
 
 model UsersGroup {
-    userGroup   UsersInHub @relation(fields: [userGroupId], references: [id])
-    userGroupId Int
-    groupName   String
+    userHub   UsersInHub @relation(fields: [userHubId], references: [id])
+    userHubId Int
+    groupName String
 
-    @@id([userGroupId])
+    @@id([userHubId])
 }
 
 model UsersInHub {

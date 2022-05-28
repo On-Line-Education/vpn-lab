@@ -11,6 +11,55 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
                 return await vpn.group.list(hubName);
             },
+            async listSystemGroups(_: any, { hubName }: any, { user, api }) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+                let l = await prisma.usersGroup.findMany({
+                    where: {
+                        userHub: {
+                            hub: {
+                                title: hubName,
+                            },
+                        },
+                    },
+                    select: {
+                        groupName: true,
+                    },
+                });
+                return l
+                    .map((el) => {
+                        return el.groupName;
+                    })
+                    .filter((el, pos, arr) => {
+                        return arr.indexOf(el) == pos;
+                    });
+            },
+            async removeFromSystemGroup(
+                _: any,
+                { hubName, username, group }: any,
+                { user, api }
+            ) {
+                if (!(api || user)) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                await prisma.usersGroup.deleteMany({
+                    where: {
+                        userHub: {
+                            hub: {
+                                title: hubName,
+                            },
+                            user: {
+                                name: username,
+                            },
+                        },
+                        groupName: group,
+                    },
+                });
+
+                return true;
+            },
             async createGroup(_: any, { group }: any, { user, api }) {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
@@ -38,7 +87,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let ug = await prisma.usersGroup.findFirst({
                     where: {
-                        userGroupId: userhub.id,
+                        userHubId: userhub.id,
                         groupName: group,
                     },
                 });
@@ -47,12 +96,14 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     return false;
                 }
 
-                await prisma.usersGroup.create({
+                let gr = await prisma.usersGroup.create({
                     data: {
                         groupName: group,
-                        userGroupId: userhub.id,
+                        userHubId: userhub.id,
                     },
                 });
+
+                console.log({ gr, userName, group, hubName });
 
                 return true;
             },
@@ -62,7 +113,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
                 return await prisma.usersGroup.findMany({
                     where: {
-                        userGroup: {
+                        userHub: {
                             hub: {
                                 title: hubName,
                             },
