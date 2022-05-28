@@ -30,7 +30,7 @@ export default class {
 
 export function example() {
     return {
-        Note_utf: "IPv4 Test",
+        Note_utf: "",
         Active_bool: true,
         Priority_u32: 100,
         Discard_bool: true,
@@ -54,6 +54,6 @@ export function example() {
         Delay_u32: 10,
         Jitter_u32: 20,
         Loss_u32: 30,
-        RedirectUrl_str: "aho",
+        RedirectUrl_str: "",
     };
 }

@@ -14,7 +14,7 @@ export default class ResolversBuilder {
         let res = [
             ResolversHub(prisma, vpn),
             ResolversAccessList(vpn),
-            ResolversVeyon(prisma),
+            ResolversVeyon(prisma, vpn),
             ResolversUser(prisma),
             ResolversSystem(prisma, vpn),
         ];

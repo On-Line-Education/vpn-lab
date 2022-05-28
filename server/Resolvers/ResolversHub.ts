@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
+import { example as defaultACL } from "../SoftEtherApi/SoftEtherData/VpnAccessDataIPv4";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
@@ -19,7 +20,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                return await vpn.hub.create(
+                let createHub = await vpn.hub.create(
                     hubName,
                     hubType,
                     online,
@@ -27,6 +28,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     password,
                     noEnum
                 );
+
+                let defaultAcl = defaultACL();
+
+                defaultAcl.DestUsername_str = createHub.HubName_str;
+                defaultAcl.SrcUsername_str = createHub.HubName_str;
+
+                await vpn.acl.addAlIpv4(createHub.HubName_str, defaultAcl);
+
+                return createHub;
             },
             async listHubs(_1: any, _2: any, { user, api }) {
                 console.log({ user, api });

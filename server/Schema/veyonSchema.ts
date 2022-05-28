@@ -8,5 +8,9 @@ export default gql`
 
     type Query {
         getVeyonKeys(username: String): VeyonKeys
+        changeUserGroupToTeacher(
+            studentName: String
+            teacherName: String
+        ): Boolean
     }
 `;
