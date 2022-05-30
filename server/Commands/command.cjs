@@ -1,6 +1,7 @@
 require("dotenv").config({ path: __dirname + "/../../.env" });
 const hubsToVPNExport = require("./hubsToVPNExport.cjs");
 const createAdmin = require("./createAdmin.cjs");
+const createServer = require("./createServer.cjs");
 const { PrismaClient } = require("@prisma/client");
 const VPN = require("vpnrpc");
 const prisma = new PrismaClient();
@@ -24,6 +25,11 @@ let commands = {
         command: "create:admin",
         info: "Create admin account",
         exec: createAdmin,
+    },
+    "create:server": {
+        command: "create:server",
+        info: "Create server instance",
+        exec: createServer,
     },
 };
 (async () => {

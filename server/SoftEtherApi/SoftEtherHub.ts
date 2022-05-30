@@ -6,6 +6,7 @@ import {
     VpnRpcEnumHub,
     VpnRpcDeleteHub,
     VpnRpcSetHubOnline,
+    VpnVhOption,
 } from "vpnrpc";
 
 export default class SoftEtherHub {
@@ -46,6 +47,16 @@ export default class SoftEtherHub {
         });
         return await this.api.GetHubStatus(data);
     }
+
+    public async getSecureNATOption(hubName: string): Promise<VpnVhOption>
+    {
+        let in_vh_option: VpnVhOption = new VpnVhOption(
+        {
+            RpcHubName_str: hubName,
+        });
+        return await this.api.GetSecureNATOption(in_vh_option);
+    }
+    
 
     public async update(
         hubName: string,

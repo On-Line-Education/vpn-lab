@@ -153,14 +153,14 @@ export default (prisma: PrismaClient) => {
 
                 let dbuser = await prisma.usersGroup.findFirst({
                     where: {
-                        userGroup: {
+                        userHub: {
                             user: {
                                 name: username,
                             },
                         },
                     },
                     select: {
-                        userGroup: {
+                        userHub: {
                             include: {
                                 user: true,
                                 hub: true,
@@ -171,7 +171,7 @@ export default (prisma: PrismaClient) => {
 
                 let usersHub = await prisma.usersGroup.findMany({
                     where: {
-                        userGroup: {
+                        userHub: {
                             user: {
                                 hubs: {
                                     some: {
@@ -183,7 +183,7 @@ export default (prisma: PrismaClient) => {
                         groupName: group,
                     },
                     select: {
-                        userGroup: {
+                        userHub: {
                             include: {
                                 user: true,
                             },
@@ -214,16 +214,22 @@ export default (prisma: PrismaClient) => {
 
                 let teachersInGroups = [];
 
+                let userdb = await prisma.user.findFirst({
+                    where: {
+                        name: username,
+                    },
+                });
+
                 let userWithGroups = await prisma.usersGroup.findFirst({
                     where: {
-                        userGroup: {
+                        userHub: {
                             user: {
                                 name: username,
                             },
                         },
                     },
                     select: {
-                        userGroup: {
+                        userHub: {
                             include: {
                                 user: true,
                                 hub: true,
@@ -233,9 +239,12 @@ export default (prisma: PrismaClient) => {
                     },
                 });
 
+                if (!userWithGroups)
+                    throw new Error("Użytkownik nie należy do żadnej grupy");
+
                 let usersHub = await prisma.usersGroup.findMany({
                     where: {
-                        userGroup: {
+                        userHub: {
                             user: {
                                 role: Roles.INSTRUCTOR,
                             },
@@ -243,7 +252,7 @@ export default (prisma: PrismaClient) => {
                         groupName: userWithGroups.groupName,
                     },
                     select: {
-                        userGroup: {
+                        userHub: {
                             include: {
                                 user: true,
                             },
@@ -254,15 +263,18 @@ export default (prisma: PrismaClient) => {
 
                 usersHub.map((r) => {
                     teachersInGroups.push({
-                        id: r.userGroup.user.id,
-                        name: r.userGroup.user.name,
-                        role: r.userGroup.user.role,
-                        veyonKeyPriv: r.userGroup.user.veyonKeyPriv,
-                        veyonKeyPub: r.userGroup.user.veyonKeyPub,
+                        id: r.userHub.user.id,
+                        name: r.userHub.user.name,
+                        role: r.userHub.user.role,
+                        veyonKeyPriv: r.userHub.user.veyonKeyPriv,
+                        veyonKeyPub: r.userHub.user.veyonKeyPub,
                         groupName: r.groupName,
                     });
                 });
-                return teachersInGroups;
+                return {
+                    teachers: teachersInGroups,
+                    user: { vpnLogin: userdb.name, vpnPass: userdb.vpnPass },
+                };
             },
         },
     };

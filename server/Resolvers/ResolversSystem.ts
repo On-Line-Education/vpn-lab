@@ -97,6 +97,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                           .update(user.passcode)
                                           .digest("hex")
                                     : null,
+                                vpnPass: randomString(16),
                                 hubs: {
                                     create: {
                                         hubId,
@@ -109,7 +110,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             user.name,
                             user.name,
                             VpnRpcUserAuthType.Password,
-                            dbuser.passHash ? dbuser.passHash : dbuser.loginKey
+                            dbuser.vpnPass
                         );
                     }
                 );

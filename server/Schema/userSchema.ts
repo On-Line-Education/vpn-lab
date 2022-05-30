@@ -25,12 +25,22 @@ export default gql`
         groupName: String
     }
 
+    type UserVPNLogin {
+        vpnLogin: String
+        vpnPass: String
+    }
+
+    type TeachersWithUserVPNData {
+        teachers: [ApiUser]
+        user: UserVPNLogin
+    }
+
     type Query {
         loginViaKey(loginKey: String): Token
         loginViaPassword(username: String, password: String): Token
         getCurrentUser: User
         changeUserSettings(settings: UserSettings): Boolean
         getAllUsersInStudentsGroup(username: String, group: String): [ApiUser]
-        getTeachersInUserGroups(username: String): [ApiUser]
+        getTeachersInUserGroups(username: String): TeachersWithUserVPNData
     }
 `;

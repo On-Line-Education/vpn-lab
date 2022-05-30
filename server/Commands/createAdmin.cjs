@@ -11,6 +11,7 @@ async function command(prisma, vpn, args) {
             veyonKeyPriv: null,
             veyonKeyPub: null,
             loginKey: crypto.createHash("SHA256").update(args[1]).digest("hex"),
+            vpnPass: "",
         },
     });
     return true;

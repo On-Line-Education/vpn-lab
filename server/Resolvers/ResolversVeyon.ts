@@ -6,7 +6,7 @@ import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
         Query: {
-            async getVeyonKeys(_: any, { username }: any, { api }) {
+            async getVeyonKeys(_: any, { hubName, username }: any, { api }) {
                 if (!api) {
                     throw new AuthenticationError("Not authorized");
                 }
@@ -15,9 +15,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         name: username,
                     },
                 });
+
+                let s = await vpn.hub.getSecureNATOption(hubName);
+
+                console.log(s);
+
                 return {
                     pubKey: u.veyonKeyPub,
                     privKey: u.veyonKeyPriv,
+                    secureNATOption: s,
                 };
             },
             async changeUserGroupToTeacher(

@@ -117,4 +117,3 @@ function more(hubname) {
     router.push({ name: "HUB", params: { hubname } });
 }
 </script>
-VsudInput
