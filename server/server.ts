@@ -22,6 +22,7 @@ export default async function createServer(
 
             return { user: context.user, api: context.apiCall };
         },
+        introspection: process.env.NODE_ENV !== 'production'
     });
 
     await apolloServer.start();

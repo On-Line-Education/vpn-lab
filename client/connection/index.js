@@ -15,7 +15,7 @@ export default class Connection {
 
     constructor() {
         this._link = createHttpLink({
-            uri: "http://localhost:" + SERVER_PORT + "/api",
+            uri: "http://web:" + SERVER_PORT + "/api",
         });
         this._apollo = new ApolloClient({
             link: this._link,
