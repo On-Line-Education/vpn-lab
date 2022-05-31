@@ -35,8 +35,13 @@ export default gql`
         user: UserVPNLogin
     }
 
+    type LoginKeyOutput {
+        token: String
+        user: User
+    }
+
     type Query {
-        loginViaKey(loginKey: String): Token
+        loginViaKey(loginKey: String): LoginKeyOutput
         loginViaPassword(username: String, password: String): Token
         getCurrentUser: User
         changeUserSettings(settings: UserSettings): Boolean

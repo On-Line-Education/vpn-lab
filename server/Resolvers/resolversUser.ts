@@ -51,6 +51,7 @@ export default (prisma: PrismaClient) => {
                 });
                 return {
                     token: token.token,
+                    user: u
                 };
             },
             async loginViaPassword(_: any, { username, password }: any) {
