@@ -8,6 +8,6 @@ module.exports = {
     },
     devServer: {
         https: false,
-        disableHostCheck: true
+        allowedHosts: ['all']   // needs to be changed to .oedu.pl
     },
 };

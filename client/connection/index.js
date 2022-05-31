@@ -5,8 +5,6 @@ import {
     InMemoryCache,
 } from "@apollo/client/core";
 
-const SERVER_PORT = 3000;
-
 export default class Connection {
     _token;
     _user;
@@ -15,7 +13,7 @@ export default class Connection {
 
     constructor() {
         this._link = createHttpLink({
-            uri: "http://web:" + SERVER_PORT + "/api",
+            uri: require('../config').ENV.API_URL,
         });
         this._apollo = new ApolloClient({
             link: this._link,

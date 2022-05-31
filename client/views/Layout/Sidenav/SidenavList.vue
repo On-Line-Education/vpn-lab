@@ -50,7 +50,7 @@
             </li>
         </ul>
     </div>
-    <div class="pt-3 mx-3 mt-3 sidenav-footer">
+    <!-- <div class="pt-3 mx-3 mt-3 sidenav-footer">
         <sidenav-card
             :class="cardBg"
             textPrimary="Hello from code!"
@@ -65,7 +65,7 @@
             type="button"
             >Me have no $$ to "Upgrade to pro"</a
         >
-    </div>
+    </div> -->
 </template>
 <script setup>
 import Icon from "../../../components/Basic/Icon.vue";
