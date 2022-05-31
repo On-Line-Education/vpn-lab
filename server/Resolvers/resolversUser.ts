@@ -175,7 +175,7 @@ export default (prisma: PrismaClient) => {
                             user: {
                                 hubs: {
                                     some: {
-                                        hubId: dbuser.userGroup.user.id,
+                                        hubId: dbuser.userHub.user.id,
                                     },
                                 },
                             },
@@ -193,11 +193,11 @@ export default (prisma: PrismaClient) => {
 
                 usersHub.map((r) => {
                     usersWithTeacher.push({
-                        id: r.userGroup.user.id,
-                        name: r.userGroup.user.name,
-                        role: r.userGroup.user.role,
-                        veyonKeyPriv: r.userGroup.user.veyonKeyPriv,
-                        veyonKeyPub: r.userGroup.user.veyonKeyPub,
+                        id: r.userHub.user.id,
+                        name: r.userHub.user.name,
+                        role: r.userHub.user.role,
+                        veyonKeyPriv: r.userHub.user.veyonKeyPriv,
+                        veyonKeyPub: r.userHub.user.veyonKeyPub,
                         groupName: group,
                     });
                 });
