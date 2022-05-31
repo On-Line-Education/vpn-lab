@@ -4,7 +4,9 @@ import crypto from "crypto";
 import { VpnRpcHubType, VpnRpcUserAuthType } from "vpnrpc";
 import { routerViewLocationKey } from "vue-router";
 import randomString from "../Helpsers/randomString";
+import Roles from "../Helpsers/roles";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
+import VeyonConnector from "../Veyon/veyonConnector";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
@@ -25,6 +27,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
 
                 let namesToCheck = [];
+
                 data.csv.forEach((row: { name: string }) => {
                     namesToCheck.push({ name: row.name });
                 });
@@ -36,7 +39,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         "Istnieje już co najmniej jeden użytkownik z podaną nazwą."
                     );
                 }
-                console.log(data);
 
                 if (data.newHub) {
                     let server = await prisma.server.findFirst();
@@ -72,6 +74,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     ).id;
                 }
 
+                let veyonConnector = new VeyonConnector()
                 data.csv.forEach(
                     async (user: {
                         name: string;
@@ -79,6 +82,14 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         password: string;
                         passcode: string;
                     }) => {
+                        let pubKey = null, 
+                        privKey = null;
+                        if(user.role === Roles.INSTRUCTOR){
+                            // get keypair
+                            let {pub, priv} = await veyonConnector.getKeyPair();
+                            pubKey = pub;
+                            privKey = priv;
+                        }
                         let dbuser = await prisma.user.create({
                             data: {
                                 name: user.name,
@@ -89,8 +100,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                           .update(user.password)
                                           .digest("hex")
                                     : "",
-                                veyonKeyPriv: null,
-                                veyonKeyPub: null,
+                                veyonKeyPriv: privKey,
+                                veyonKeyPub: pubKey,
                                 loginKey: user.passcode
                                     ? crypto
                                           .createHash("SHA256")

@@ -212,7 +212,6 @@ function importData() {
         if (selectHub.value.value != 0) {
             hubName = hubNames.value[selectHub.value.value - 1];
         } else {
-            console.log(customHubName.value.value);
             hubName = customHubName.value.value;
             newHub = true;
         }
@@ -227,7 +226,6 @@ function importData() {
             });
             csv.push(obj);
         });
-        console.log({ csv, newHub, hubName });
         store.getters.getServer
             .import({ csv, newHub, hubName })
             .then((_) => {

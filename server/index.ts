@@ -8,7 +8,9 @@ async function main(): Promise<void> {
     let vpn = new SoftEtherAPI(
         process.env.VPN_HOST,
         parseInt(process.env.VPN_PORT),
-        process.env.VPN_PASSWORD
+        process.env.VPN_PASSWORD,
+        null,
+        false
     );
 
     if (parseInt(process.env.develop) == 1) {

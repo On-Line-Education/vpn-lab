@@ -1,17 +1,21 @@
 version: '3'
 services:
   web:
-    build: .
-    command: npm run dockerstart
+    image: node:17-alpine
+    user: "node"
+    working_dir: /home/node/app
+    command: npm run dockerstart:local
+    # command: npm run dockerstart:dev
     volumes:
-      - .:/usr/app/
-      - /usr/app/node_modules
+      - ./:/home/node/app
     ports:
       - "3000:3000"
       - "4000:4000"
     depends_on:
       - mysql
       - vpn
+    networks:
+      vpn_net:
   mysql:
     image: mysql
     environment:
@@ -21,18 +25,36 @@ services:
       MYSQL_PASSWORD: vpnuser
     ports:
       - "3307:3306"
+    networks:
+      vpn_net:
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+    networks:
+      vpn_net:
   vpn:
     image: siomiz/softethervpn
     ports:
-      - 500:500
-      - 4500:4500
-      - 1701:1701
-      - 1194:1194
-      - 5555:5555
+      - 500:500/udp
+      - 4500:4500/udp
+      - 1701:1701/tcp
+      - 1194:1194/udp
+      - 5555:5555/tcp
     environment:
-     SPW: '!@#%%^&*'
+     SPW: 'Dup@MamauT2'
+    networks:
+      vpn_net:
+    cap_add:
+      - NET_ADMIN
+  veyon-php:
+    build:
+      context: ./veyon-keys
+      dockerfile: Dockerfile
+    networks:
+      vpn_net:
+
+networks:
+  vpn_net:
+    driver: bridge

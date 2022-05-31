@@ -98,4 +98,6 @@ onBeforeMount(() => {
 function alertClose() {
     store.commit("hideAlert");
 }
+
+document.title = store.getters.appName;
 </script>
