@@ -13,8 +13,8 @@ model Hub {
     createdAt DateTime     @default(now())
     updatedAt DateTime     @updatedAt
     title     String       @unique
-    server    Server       @relation(fields: [serverId], references: [id])
-    serverId  Int
+    // server    Server       @relation(fields: [serverId], references: [id])
+    // serverId  Int
     users     UsersInHub[]
 }
 
@@ -40,12 +40,12 @@ model Token {
     expireOn  DateTime
 }
 
-model Server {
-    id           Int     @id @default(autoincrement())
-    name         String
-    presharedKey String? // klucz logowania do vpn
-    Hub          Hub[]
-}
+// model Server {
+//     id           Int     @id @default(autoincrement())
+//     name         String
+//     presharedKey String? // klucz logowania do vpn
+//     Hub          Hub[]
+// }
 
 model UsersGroup {
     userHub   UsersInHub @relation(fields: [userHubId], references: [id])

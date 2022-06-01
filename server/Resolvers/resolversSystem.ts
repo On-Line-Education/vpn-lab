@@ -41,20 +41,20 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
 
                 if (data.newHub) {
-                    let server = await prisma.server.findFirst();
+                    // let server = await prisma.server.findFirst();
 
-                    if (server === null) {
-                        throw new Error(
-                            "Brak danych na temat serwera, skontaktuj się z administratorem systemu."
-                        );
-                    }
+                    // if (server === null) {
+                    //     throw new Error(
+                    //         "Brak danych na temat serwera, skontaktuj się z administratorem systemu."
+                    //     );
+                    // }
 
-                    let serverId = server.id;
+                    // let serverId = server.id;
                     hubId = (
                         await prisma.hub.create({
                             data: {
                                 title: data.hubName,
-                                serverId,
+                                // serverId,
                             },
                         })
                     ).id;

@@ -49,9 +49,41 @@ export default (prisma: PrismaClient) => {
                         userId: u.id,
                     },
                 });
+
+                let userHubs = await prisma.usersInHub.findMany({where:{
+                    user:{
+                        name: u.name
+                    }
+                }, select:{
+                    hub:{
+                        select: {
+                            title: true
+                        }
+                    }
+                }})
+
+                console.log({
+                    token: token.token,
+                    user: {
+                        name: u.name,
+                        role: u.role,
+                        id: u.id,
+                        hubs: userHubs.map(m=>{
+                            return m.hub.title;
+                        })
+                    }
+                });
+
                 return {
                     token: token.token,
-                    user: u
+                    user: {
+                        name: u.name,
+                        role: u.role,
+                        id: u.id,
+                        hubs: userHubs.map(m=>{
+                            return m.hub.title;
+                        })
+                    }
                 };
             },
             async loginViaPassword(_: any, { username, password }: any) {

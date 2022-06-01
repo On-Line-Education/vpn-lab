@@ -14,6 +14,7 @@ export default gql`
         id: Int
         name: String
         role: String
+        hubs: [String]
     }
 
     type ApiUser {

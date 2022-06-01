@@ -75,6 +75,14 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 return true;
             },
+            async getIpSec(_1: any,
+                _2: any,
+                { api }) {
+                    if (!api) {
+                        throw new AuthenticationError("Not authorized");
+                    }
+                    return await vpn.ipsec.get();
+            }
         },
     };
 };
