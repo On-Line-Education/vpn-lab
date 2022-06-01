@@ -1,11 +1,6 @@
 import {
     VpnServerRpc,
-    VpnRpcCreateHub,
-    VpnRpcHubType,
-    VpnRpcHubStatus,
-    VpnRpcEnumHub,
     VpnRpcDeleteHub,
-    VpnRpcSetHubOnline,
     VpnRpcSetGroup,
     VpnRpcEnumGroup,
     VpnRpcDeleteUser,

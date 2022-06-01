@@ -43,7 +43,8 @@ import { useRoute, useRouter } from "vue-router";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
-const mut = mapMutations(["toggleConfigurator", "navbarMinimize"]);
+// const {toggleConfigurator, navbarMinimize} = mapMutations(["toggleConfigurator", "navbarMinimize"]);
+const navbarMinimize = mapMutations(["navbarMinimize"]);
 const currentRouteName = computed(() => {
     return route.name;
 });
@@ -59,7 +60,7 @@ function checkPerms(route) {
 checkPerms(currentRouteName);
 watch(currentRouteName, (r) => checkPerms(r));
 
-const navbarMinimize = mapMutations(["navbarMinimize"]);
+// const navbarMinimize = mapMutations(["navbarMinimize"]);
 
 const alertClasses = computed(() => {
     return {
@@ -92,7 +93,16 @@ const isErrorAlert = computed(() => {
 });
 
 onBeforeMount(() => {
-    store.state.isTransparent = "bg-transparent";
+    // store.state.isTransparent = "bg-transparent";
+    const onResizeEvent = () =>{
+        if(window.innerWidth < 1200){
+            store.dispatch('toggleSidebarColor', "bg-white")
+        } else {
+            store.dispatch('toggleSidebarColor', "bg-transparent")
+        }
+    }
+    window.addEventListener('resize', onResizeEvent);
+    onResizeEvent();
 });
 
 function alertClose() {

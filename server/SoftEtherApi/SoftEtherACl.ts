@@ -1,6 +1,5 @@
 import {
     VpnAccess,
-    VpnIpProtocolNumber,
     VpnRpcAddAccess,
     VpnRpcDeleteAccess,
     VpnRpcEnumAccessList,

@@ -15,6 +15,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
+                if(user && user.role !== Roles.ADMIN){
+                    throw new AuthenticationError("Not authorized");
+                }
                 let hubId = 0;
 
                 if (
@@ -127,6 +130,48 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 );
                 return true;
             },
+            async getIpSec(_1: any,
+                _2: any,
+                { user ,api }) {
+                    if (!(api || user)) {
+                        throw new AuthenticationError("Not authorized");
+                    }
+                    return await vpn.ipsec.get();
+            },
+            async setIpSec(_:any, 
+                {ipsec}: any, 
+                { user ,api }){
+                    if (!(api || user)) {
+                        throw new AuthenticationError("Not authorized");
+                    }
+                    if(user && user.role !== Roles.ADMIN){
+                        throw new AuthenticationError("Not authorized");
+                    }
+
+                    let curentConfig = await vpn.ipsec.get();
+
+                    ipsec.L2TP_Raw_bool;
+                    ipsec.L2TP_IPsec_bool;
+                    ipsec.EtherIP_IPsec_bool;
+                    ipsec.IPsec_Secret_str;
+                    ipsec.L2TP_DefaultHub_str;
+
+                    console.log({
+                        
+        L2TP_Raw_bool: ipsec.L2TP_Raw_bool,
+        L2TP_IPsec_bool: ipsec.L2TP_IPsec_bool,
+        EtherIP_IPsec_bool: ipsec.EtherIP_IPsec_bool,
+        IPsec_Secret_str: ipsec.IPsec_Secret_str,
+        L2TP_DefaultHub_str: ipsec.L2TP_DefaultHub_str,
+                    })
+
+                    return await vpn.ipsec.set(
+                        ipsec.L2TP_Raw_bool, 
+                        ipsec.L2TP_IPsec_bool,
+                        ipsec.EtherIP_IPsec_bool, 
+                        ipsec.IPsec_Secret_str ? ipsec.IPsec_Secret_str : curentConfig.IPsec_Secret_str,
+                        ipsec.L2TP_DefaultHub_str);
+                }
         },
     };
 };

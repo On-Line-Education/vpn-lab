@@ -53,6 +53,9 @@ export default createStore({
         sidebarType(state, payload) {
             state.isTransparent = payload;
         },
+        toggleSidebar(state) {
+            state.showSidenav = !state.showSidenav;
+        },
         navbarFixed(state) {
             if (state.isNavFixed === false) {
                 state.isNavFixed = true;

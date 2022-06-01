@@ -336,4 +336,54 @@ export default class Connection {
     getUser() {
         return this._user;
     }
+    async getIPsec() {
+        return await this._apollo.query({
+            query: gql`
+                query GetIpSec {
+                    getIpSec {
+                        L2TP_Raw_bool
+                        L2TP_IPsec_bool
+                        EtherIP_IPsec_bool
+                        IPsec_Secret_str
+                        L2TP_DefaultHub_str
+                    }
+                }
+            `,
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    
+    async setIPsec(L2TP_Raw, L2TP_IPsec, EtherIP_IPsec, IPsec_Secret, L2TP_DefaultHub) {
+        return await this._apollo.query({
+            query: gql`
+                query SetIpSec($ipsec: IPSec) {
+                    setIpSec(ipsec: $ipsec) {
+                        L2TP_Raw_bool
+                        L2TP_IPsec_bool
+                        EtherIP_IPsec_bool
+                        IPsec_Secret_str
+                        L2TP_DefaultHub_str
+                    }
+                }
+            `,
+            variables: {
+                ipsec: {
+                    L2TP_Raw_bool: L2TP_Raw,
+                    L2TP_IPsec_bool: L2TP_IPsec,
+                    EtherIP_IPsec_bool: EtherIP_IPsec,
+                    IPsec_Secret_str: IPsec_Secret,
+                    L2TP_DefaultHub_str: L2TP_DefaultHub
+                }
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
 }

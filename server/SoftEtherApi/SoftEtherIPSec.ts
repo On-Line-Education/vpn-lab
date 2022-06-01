@@ -1,14 +1,5 @@
 import {
     VpnServerRpc,
-    VpnRpcCreateHub,
-    VpnRpcHubType,
-    VpnRpcHubStatus,
-    VpnRpcEnumHub,
-    VpnRpcDeleteHub,
-    VpnRpcSetHubOnline,
-    VpnRpcSetGroup,
-    VpnRpcEnumGroup,
-    VpnRpcDeleteUser,
     VpnIPsecServices,
 } from "vpnrpc";
 
@@ -18,7 +9,7 @@ export default class SoftEtherIPSec {
         this.api = api;
     }
 
-    public async create(L2TP_Raw_bool: boolean = false,
+    public async set(L2TP_Raw_bool: boolean = false,
         L2TP_IPsec_bool: boolean = false,
         EtherIP_IPsec_bool: boolean = false,
         IPsec_Secret_str: string,
@@ -31,7 +22,7 @@ export default class SoftEtherIPSec {
                 IPsec_Secret_str,
                 L2TP_DefaultHub_str,
             });
-            return await this.api.SetIPsecServices(in_ipsec_services);
+        return await this.api.SetIPsecServices(in_ipsec_services);
     }
 
     public async get(): Promise<VpnIPsecServices> {

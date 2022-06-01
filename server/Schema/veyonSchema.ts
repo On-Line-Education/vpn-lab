@@ -30,20 +30,11 @@ export default gql`
         secureNATOption: SecureNATOption
     }
 
-    type IPSec {
-        L2TP_Raw_bool: Boolean,
-        L2TP_IPsec_bool: Boolean,
-        EtherIP_IPsec_bool: Boolean,
-        IPsec_Secret_str: String,
-        L2TP_DefaultHub_str: String
-    }
-
     type Query {
         getVeyonKeys(hubName: String, username: String): VeyonKeys
         changeUserGroupToTeacher(
             studentName: String
             teacherName: String
         ): Boolean
-        getIpSec: IPSec
     }
 `;
