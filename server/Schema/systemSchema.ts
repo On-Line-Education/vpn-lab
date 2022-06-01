@@ -30,9 +30,26 @@ export default gql`
         L2TP_DefaultHub_str: String
     }
 
+    type FileOutput {
+        id: Int
+        name: String
+        url: String
+        permission: String
+    }
+
+    enum Permission {
+        ADMIN
+        INSTRUCTOR
+        USER
+    }
+
     type Query {
         import(data: Import): Boolean
         getIpSec: IPSecOutput
         setIpSec(ipsec: IPSec): IPSecOutput
+        getFilesList: [FileOutput]
+        addFileEntry(name: String, permission: Permission, url: String): Boolean
+        deleteFileEntry(id: Int): Boolean
+        getRoles: [String]
     }
 `;

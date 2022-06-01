@@ -356,7 +356,6 @@ export default class Connection {
             },
         });
     }
-    
     async setIPsec(L2TP_Raw, L2TP_IPsec, EtherIP_IPsec, IPsec_Secret, L2TP_DefaultHub) {
         return await this._apollo.query({
             query: gql`
@@ -385,5 +384,74 @@ export default class Connection {
                 },
             },
         });
+    }
+    async getRoles() {
+        return await this._apollo.query({
+            query: gql`
+                query Roles {
+                    getRoles
+                }
+            `,
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async getFiles() {
+        return await this._apollo.query({
+            query: gql`
+                query GetFilesList {
+                    getFilesList {
+                        id
+                        name
+                        url
+                        permission
+                    }
+                }
+            `,
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async addFile(name, url, permission ) {
+        return await this._apollo.query({
+            query: gql`
+                query Query($name: String, $permission: Permission, $url: String) {
+                    addFileEntry(name: $name, permission: $permission, url: $url)
+                }
+            `,
+            variables: {
+                name,
+                permission,
+                url
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async deleteFile(id){
+        return await this._apollo.query({
+            query: gql`
+                query Query($deleteFileEntryId: Int) {
+                    deleteFileEntry(id: $deleteFileEntryId)
+                }
+            `,
+            variables:{
+                deleteFileEntryId: id
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        })
     }
 }

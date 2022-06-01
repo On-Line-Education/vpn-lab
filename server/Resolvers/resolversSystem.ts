@@ -136,6 +136,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     if (!(api || user)) {
                         throw new AuthenticationError("Not authorized");
                     }
+                    if(user && user.role !== Roles.ADMIN){
+                        throw new AuthenticationError("Not authorized");
+                    }
                     return await vpn.ipsec.get();
             },
             async setIpSec(_:any, 
@@ -156,22 +159,92 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     ipsec.IPsec_Secret_str;
                     ipsec.L2TP_DefaultHub_str;
 
-                    console.log({
-                        
-        L2TP_Raw_bool: ipsec.L2TP_Raw_bool,
-        L2TP_IPsec_bool: ipsec.L2TP_IPsec_bool,
-        EtherIP_IPsec_bool: ipsec.EtherIP_IPsec_bool,
-        IPsec_Secret_str: ipsec.IPsec_Secret_str,
-        L2TP_DefaultHub_str: ipsec.L2TP_DefaultHub_str,
-                    })
-
                     return await vpn.ipsec.set(
                         ipsec.L2TP_Raw_bool, 
                         ipsec.L2TP_IPsec_bool,
                         ipsec.EtherIP_IPsec_bool, 
                         ipsec.IPsec_Secret_str ? ipsec.IPsec_Secret_str : curentConfig.IPsec_Secret_str,
                         ipsec.L2TP_DefaultHub_str);
+                },
+            async getFilesList(_1:any, 
+                _2: any, 
+                { user }) {
+                    if (!user) {
+                        throw new AuthenticationError("Not authorized");
+                    }
+
+                    let filesList = [];
+                    if(user.role === Roles.INSTRUCTOR){
+                        filesList = await prisma.files.findMany({
+                            where:{
+                                permission: Roles.INSTRUCTOR,
+                                OR: {
+                                    permission: Roles.USER
+                                }
+                            }
+                        });
+                    } else if(user.role === Roles.ADMIN) {
+                        filesList = await prisma.files.findMany();
+                    } else {
+                        filesList = await prisma.files.findMany({
+                            where:{
+                                permission: user.role
+                            }
+                        });
+                    }
+
+                    return filesList;
+                },
+            async addFileEntry(_:any, 
+                { name, permission, url }: any, 
+                { user }){  
+                    if (!user) {
+                        throw new AuthenticationError("Not authorized");
+                    }
+                    Roles.ADMIN
+                    Roles.INSTRUCTOR
+                    Roles.USER
+
+                    if(![Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER].includes(permission)){
+                        throw new AuthenticationError("Nieprawidłowa rola");
+                    }
+
+                    await prisma.files.create({
+                        data:{
+                            name,
+                            permission,
+                            url
+                        }
+                    });
+                    return true;
+            },
+            async deleteFileEntry(_:any, 
+                { id }: any, 
+                { user }){
+                    if (!user) {
+                        throw new AuthenticationError("Not authorized");
+                    }
+
+                    await prisma.files.delete({
+                        where:{
+                            id: id
+                        }
+                    });
+                    return true;
+            },
+            async getRoles(_:any, 
+                { id }: any, 
+                { user, api }){
+                    if (!(api || user)) {
+                        throw new AuthenticationError("Not authorized");
+                    }
+                    return [Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER];
                 }
         },
+        Permission: {
+            ADMIN: Roles.ADMIN,
+            INSTRUCTOR: Roles.INSTRUCTOR,
+            USER: Roles.USER
+        }
     };
 };

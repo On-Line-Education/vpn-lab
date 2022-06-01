@@ -1,43 +1,43 @@
 generator client {
-    provider      = "prisma-client-js"
-    binaryTargets = ["native"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Hub {
-    id        Int          @id @default(autoincrement())
-    createdAt DateTime     @default(now())
-    updatedAt DateTime     @updatedAt
-    title     String       @unique
-    // server    Server       @relation(fields: [serverId], references: [id])
-    // serverId  Int
-    users     UsersInHub[]
+  id        Int          @id @default(autoincrement())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  title     String       @unique
+  // server    Server       @relation(fields: [serverId], references: [id])
+  // serverId  Int
+  users     UsersInHub[]
 }
 
 model User {
-    id           Int          @id @default(autoincrement())
-    name         String       @unique // same as vpnName
-    passHash     String
-    veyonKeyPub  String?      @db.Text
-    veyonKeyPriv String?      @db.Text
-    loginKey     String?      @unique
-    vpnPass      String // TODO: Generate password
-    role         String
-    hubs         UsersInHub[]
-    Token        Token[]
+  id           Int          @id @default(autoincrement())
+  name         String       @unique // same as vpnName
+  passHash     String
+  veyonKeyPub  String?      @db.Text
+  veyonKeyPriv String?      @db.Text
+  loginKey     String?      @unique
+  vpnPass      String // TODO: Generate password
+  role         String
+  hubs         UsersInHub[]
+  Token        Token[]
 }
 
 model Token {
-    id        Int      @id @default(autoincrement())
-    user      User     @relation(fields: [userId], references: [id])
-    userId    Int
-    token     String
-    createdAt DateTime @default(now())
-    expireOn  DateTime
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  token     String
+  createdAt DateTime @default(now())
+  expireOn  DateTime
 }
 
 // model Server {
@@ -48,20 +48,27 @@ model Token {
 // }
 
 model UsersGroup {
-    userHub   UsersInHub @relation(fields: [userHubId], references: [id])
-    userHubId Int
-    groupName String
+  userHub   UsersInHub @relation(fields: [userHubId], references: [id])
+  userHubId Int
+  groupName String
 
-    @@id([userHubId])
+  @@id([userHubId])
 }
 
 model UsersInHub {
-    id     Int  @id @default(autoincrement())
-    user   User @relation(fields: [userId], references: [id])
-    userId Int
-    hub    Hub  @relation(fields: [hubId], references: [id])
-    hubId  Int
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  hub    Hub  @relation(fields: [hubId], references: [id])
+  hubId  Int
 
-    // @@id([userId, hubId])
-    UsersGroup UsersGroup[]
+  // @@id([userId, hubId])
+  UsersGroup UsersGroup[]
+}
+
+model Files {
+  id         Int    @id @default(autoincrement())
+  name       String
+  permission String
+  url        String
 }

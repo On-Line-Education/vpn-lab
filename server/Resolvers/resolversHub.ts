@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
 import { example as defaultACL } from "../SoftEtherApi/SoftEtherData/VpnAccessDataIPv4";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
+import Roles from "../Helpsers/roles";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
@@ -19,6 +20,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             ) {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
+                }
+                if(user && [Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Not authorized");
                 }
                 let createHub = await vpn.hub.create(
                     hubName,
@@ -88,6 +92,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
+                if(user && [Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Not authorized");
+                }
                 return await vpn.hub.update(
                     hubName,
                     hubType,
@@ -116,11 +123,17 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
+                if(user && [Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Not authorized");
+                }
                 return await vpn.hub.delete(hubName);
             },
             async getHubUsers(_: any, { hubName }: any, guard: { user; api }) {
                 if (!(guard.api || guard.user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
+                }
+                if(guard.user && [Roles.ADMIN, Roles.INSTRUCTOR].includes(guard.user.role)){
+                    throw new AuthenticationError("Not authorized");
                 }
                 let users = [];
                 let dbUsers = (

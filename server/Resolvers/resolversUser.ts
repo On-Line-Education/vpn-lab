@@ -181,6 +181,9 @@ export default (prisma: PrismaClient) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
+                if(user && [Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                    throw new AuthenticationError("Not authorized");
+                }
 
                 let usersWithTeacher = [];
 
@@ -243,6 +246,9 @@ export default (prisma: PrismaClient) => {
             ) {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
+                }
+                if(user && [Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                    throw new AuthenticationError("Not authorized");
                 }
 
                 let teachersInGroups = [];

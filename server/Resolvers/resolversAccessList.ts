@@ -1,5 +1,6 @@
 import { AuthenticationError } from "apollo-server-express";
 import { VpnIpProtocolNumber } from "vpnrpc";
+import Roles from "../Helpsers/roles";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
 export default (vpn: SoftEtherAPI) => {
@@ -7,6 +8,9 @@ export default (vpn: SoftEtherAPI) => {
         Query: {
             async getHubAccessLists(_: any, { hubName }: any, { user, api }) {
                 if (!(api || user)) {
+                    throw new AuthenticationError("Not authorized");
+                }
+                if(user && [Roles.ADMIN].includes(user.role)){
                     throw new AuthenticationError("Not authorized");
                 }
                 return JSON.stringify(await vpn.acl.list(hubName));
@@ -19,7 +23,9 @@ export default (vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Not authorized");
                 }
-                console.log(accessList);
+                if(user && [Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Not authorized");
+                }
                 if (accessList.SrcMacMask_bin) {
                     accessList.SrcMacMask_bin = new Uint8Array(
                         accessList.SrcMacMask_bin
@@ -50,7 +56,6 @@ export default (vpn: SoftEtherAPI) => {
                         accessList.SrcIpAddress6_bin
                     );
                 }
-                console.log(accessList);
                 if (accessList.IsIPv6_bool) {
                     return JSON.stringify(
                         await vpn.acl.addAlIpv6(hubName, accessList)
