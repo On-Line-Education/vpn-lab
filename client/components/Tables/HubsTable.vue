@@ -24,12 +24,12 @@
                             >
                                 Nazwa
                             </th>
-                            <th
+                            <!-- <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7 ps-2"
                                 @click="tableSorter.sort('school')"
                             >
                                 Szkoła
-                            </th>
+                            </th> -->
                             <th
                                 class="text-center text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="tableSorter.sort('status')"
@@ -56,11 +56,11 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
+                            <!-- <td>
                                 <p class="text-xs font-weight-bold mb-0">
                                     {{ hub.school }}
                                 </p>
-                            </td>
+                            </td> -->
                             <td class="align-middle text-center text-sm">
                                 <vsud-badge
                                     v-if="hub.working"

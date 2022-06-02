@@ -9,7 +9,7 @@
                 @reload="reload"
             />
         </div>
-        <div class="d-flex">
+        <div class="d-flex" v-if="isAdmin">
             <div class="mb-4 card full-width">
                 <div class="p-3 card-body flex-space-between">
                     <div class="d-flex flex-row-reverse justify-content-between">

@@ -16,7 +16,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
                 if(user && user.role !== Roles.ADMIN){
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let hubId = 0;
 
@@ -134,10 +134,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 _2: any,
                 { user ,api }) {
                     if (!(api || user)) {
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
                     if(user && user.role !== Roles.ADMIN){
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
                     return await vpn.ipsec.get();
             },
@@ -145,10 +145,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 {ipsec}: any, 
                 { user ,api }){
                     if (!(api || user)) {
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
                     if(user && user.role !== Roles.ADMIN){
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
 
                     let curentConfig = await vpn.ipsec.get();
@@ -170,17 +170,18 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 _2: any, 
                 { user }) {
                     if (!user) {
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
 
                     let filesList = [];
                     if(user.role === Roles.INSTRUCTOR){
                         filesList = await prisma.files.findMany({
                             where:{
-                                permission: Roles.INSTRUCTOR,
-                                OR: {
-                                    permission: Roles.USER
-                                }
+                                OR: [{
+                                    permission: Roles.USER,
+                                }, {
+                                    permission: Roles.INSTRUCTOR,
+                                }]
                             }
                         });
                     } else if(user.role === Roles.ADMIN) {
@@ -199,7 +200,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 { name, permission, url }: any, 
                 { user }){  
                     if (!user) {
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
                     Roles.ADMIN
                     Roles.INSTRUCTOR
@@ -222,7 +223,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 { id }: any, 
                 { user }){
                     if (!user) {
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
 
                     await prisma.files.delete({
@@ -236,7 +237,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 { id }: any, 
                 { user, api }){
                     if (!(api || user)) {
-                        throw new AuthenticationError("Not authorized");
+                        throw new AuthenticationError("Nie masz uprawnień");
                     }
                     return [Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER];
                 }

@@ -8,10 +8,10 @@ export default (vpn: SoftEtherAPI) => {
         Query: {
             async getHubAccessLists(_: any, { hubName }: any, { user, api }) {
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return JSON.stringify(await vpn.acl.list(hubName));
             },
@@ -21,10 +21,10 @@ export default (vpn: SoftEtherAPI) => {
                 { user, api }
             ) {
                 if (!(api || user)) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 if (accessList.SrcMacMask_bin) {
                     accessList.SrcMacMask_bin = new Uint8Array(

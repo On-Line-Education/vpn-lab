@@ -21,7 +21,7 @@
                     </template>
                 </sidenav-collapse>
             </li>
-            <li class="nav-item" v-if="hasRole('user')">
+            <li class="nav-item">
                 <sidenav-collapse navText="FTP" :to="{ name: 'FTP' }">
                     <template v-slot:icon>
                         <i class="fas fa-solid fa-folder-tree" />

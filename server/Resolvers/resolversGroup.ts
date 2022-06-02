@@ -44,8 +44,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
 
                 await prisma.usersGroup.deleteMany({
@@ -68,8 +68,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.group.create(group);
             },
@@ -81,8 +81,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let userhub = await prisma.usersInHub.findFirst({
                     where: {

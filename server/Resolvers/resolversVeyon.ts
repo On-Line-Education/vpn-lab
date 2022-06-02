@@ -8,7 +8,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
         Query: {
             async getVeyonKeys(_: any, { hubName, username }: any, { api }) {
                 if (!api) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let u = await prisma.user.findFirst({
                     where: {
@@ -32,7 +32,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 { api }
             ) {
                 if (!api) {
-                    throw new AuthenticationError("Not authorized");
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
 
                 if (

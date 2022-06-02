@@ -21,8 +21,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let createHub = await vpn.hub.create(
                     hubName,
@@ -92,8 +92,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.hub.update(
                     hubName,
@@ -123,8 +123,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && [Roles.ADMIN].includes(user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(user && ![Roles.ADMIN].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.hub.delete(hubName);
             },
@@ -132,8 +132,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(guard.api || guard.user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(guard.user && [Roles.ADMIN, Roles.INSTRUCTOR].includes(guard.user.role)){
-                    throw new AuthenticationError("Not authorized");
+                if(guard.user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(guard.user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let users = [];
                 let dbUsers = (

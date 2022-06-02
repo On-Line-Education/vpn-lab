@@ -57,7 +57,7 @@ export default class Connection {
                 password: payload.password,
             },
         });
-        this._token = res.data.loginViaKey.token;
+        this._token = res.data.loginViaPassword.token;
         await this._setUser();
         return res;
     }

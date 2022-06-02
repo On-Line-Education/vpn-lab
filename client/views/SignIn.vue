@@ -119,7 +119,7 @@ var loginCode = ref(null),
     disableButtons = ref(false);
 
 function passwordLogin() {
-    store.dispatch("loginViaPassword", { username, password });
+    store.dispatch("loginViaPassword", { username: username.value.value, password: password.value.value });
 }
 
 function codeLogin() {

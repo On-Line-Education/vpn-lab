@@ -112,7 +112,6 @@ export default createStore({
                 .loginViaPassword(payload)
                 .then((res) => {
                     state.loggedIn = true;
-                    state.server.getUser();
                     commit("loginState");
                 })
                 .catch((e) => {
