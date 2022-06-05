@@ -111,7 +111,7 @@ export default gql`
 
     type HubUserEntry {
         user: HubUser
-        group: String
+        groups: [String]
     }
 
     type Query {

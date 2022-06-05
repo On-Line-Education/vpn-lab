@@ -133,8 +133,6 @@ function save() {
         etherIpIpsecValue = etherIpIpsec.value.checked;
         ipsecSecretValue = ipsecSecret.value.value;
 
-        console.log({ s:selectHub.value.value,defaultHub: defaultHubName, l2tpRaw: l2tpRawValue, l2tpIpsec: l2tpIpsecValue, etherIpIpsec: etherIpIpsecValue, ipsecSecret: ipsecSecretValue })
-
         store.getters.getServer
             .setIPsec(l2tpRawValue, l2tpIpsecValue, etherIpIpsecValue, ipsecSecretValue, defaultHubName)
             .then(async (ipsec) => {

@@ -10,7 +10,8 @@ async function main(): Promise<void> {
         parseInt(process.env.VPN_PORT),
         process.env.VPN_PASSWORD,
         null,
-        false
+        false,
+        process.env.NODE_ENV != 'production'
     );
 
     if (parseInt(process.env.develop) == 1) {

@@ -66,7 +66,6 @@ const newPasswordRepeat = ref();
 const oldPassword = ref();
 
 async function save() {
-    console.log({ op: oldPassword.value.value, np: newPassword.value.value });
     if (newPassword.value.value !== newPasswordRepeat.value.value) {
         store.commit("setError", { message: "Podane hasła nie są takie same" });
         return;
@@ -81,7 +80,6 @@ async function save() {
         newPassword: newPassword.value.value,
         oldPassword: oldPassword.value.value,
     });
-    console.log(res);
     if (res.data.changeUserSettings) {
         store.commit("showAlert", { message: "Zmiany zostały zapisane" });
     } else {

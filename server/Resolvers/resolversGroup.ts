@@ -113,8 +113,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
-                console.log({ gr, userName, group, hubName });
-
                 return true;
             },
             async getGroupsInHub(_: any, { hubName }: any, { user, api }) {

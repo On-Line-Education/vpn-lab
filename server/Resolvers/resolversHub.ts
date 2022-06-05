@@ -43,7 +43,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 return createHub;
             },
             async listHubs(_1: any, _2: any, { user, api }) {
-                console.log({ user, api });
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
@@ -151,7 +150,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 ).map((usr) => {
                     return {
                         name: usr.user.name,
-                        group: usr.UsersGroup[0]?.groupName ?? "",
+                        groups: usr.UsersGroup,
                     };
                 });
 
@@ -159,7 +158,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     (user) => {
                         dbUsers.forEach((dbu) => {
                             if (dbu.name === user.Name_str) {
-                                users.push({ user, group: dbu.group });
+                                users.push({ user, groups: dbu.groups.map(e=>{
+                                    return e.groupName;
+                                }) });
                             }
                         });
                     }

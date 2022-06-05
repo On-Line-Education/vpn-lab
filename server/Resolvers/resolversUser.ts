@@ -62,18 +62,6 @@ export default (prisma: PrismaClient) => {
                     }
                 }})
 
-                console.log({
-                    token: token.token,
-                    user: {
-                        name: u.name,
-                        role: u.role,
-                        id: u.id,
-                        hubs: userHubs.map(m=>{
-                            return m.hub.title;
-                        })
-                    }
-                });
-
                 return {
                     token: token.token,
                     user: {

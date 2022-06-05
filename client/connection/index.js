@@ -170,7 +170,7 @@ export default class Connection {
                             NumLogin_u32
                             Realname_utf
                         }
-                        group
+                        groups
                     }
                 }
             `,

@@ -18,9 +18,10 @@ export default class SoftEtherAPI {
         port: number,
         password: string,
         hubName: string = "",
-        rejectUntrustCert: boolean = false
+        rejectUntrustCert: boolean = false,
+        debug: boolean = true
     ) {
-        VPN.VpnServerRpc.SetDebugMode(true);
+        VPN.VpnServerRpc.SetDebugMode(debug);
         this.api = new VPN.VpnServerRpc(
             localhost,
             port,

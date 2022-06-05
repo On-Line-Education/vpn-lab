@@ -18,8 +18,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let s = await vpn.hub.getSecureNATOption(hubName);
 
-                console.log(s);
-
                 return {
                     pubKey: u.veyonKeyPub,
                     privKey: u.veyonKeyPriv,
