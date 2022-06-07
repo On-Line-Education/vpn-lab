@@ -124,7 +124,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             user.name,
                             user.name,
                             VpnRpcUserAuthType.Password,
-                            dbuser.vpnPass
+                            dbuser.vpnPass,
+                            user.role == Roles.INSTRUCTOR ? user.name+"_"+Date.now()+"_vpn_group" : null
                         );
                     }
                 );

@@ -4,11 +4,15 @@ import {
     VpnRpcUserAuthType,
     VpnServerRpc,
 } from "vpnrpc";
+import SoftEtherAPI from "./SoftEtherAPI";
+import VpnGroup from "./SoftEtherData/VpnGroup";
 
 export default class SoftEtherUser {
     protected api: VpnServerRpc;
-    constructor(api: VpnServerRpc) {
-        this.api = api;
+    protected parent: SoftEtherAPI; 
+    constructor(parent: SoftEtherAPI) {
+        this.api = parent.getApi();
+        this.parent = parent;
     }
 
     public async createUser(
@@ -16,7 +20,8 @@ export default class SoftEtherUser {
         userName: string,
         fullName: string,
         authType: VpnRpcUserAuthType,
-        password: string
+        password: string,
+        groupName: string = null
     ) {
         let data: VpnRpcSetUser = new VpnRpcSetUser({
             HubName_str: hubName,
@@ -24,7 +29,33 @@ export default class SoftEtherUser {
             Realname_utf: fullName,
             AuthType_u32: authType,
             Auth_Password_str: password,
+            ExpireTime_dt: null,
+            GroupName_str: groupName
         });
+
+        if(groupName != null){
+            let groupList = await this.parent.group.list(hubName),
+                flag = false;
+            for (let index in groupList.GroupList) {
+                if (groupList.GroupList[index].Name_str == groupName || groupList.GroupList[index].Realname_utf == groupName){
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag){
+                let groupData = new VpnGroup()
+                
+                groupData = {
+                    ...groupData,
+                    HubName_str: hubName,
+                    Name_str: groupName,
+                    Realname_utf: groupName,
+                    Note_utf: userName +"_"+fullName,
+                    UsePolicy_bool: false
+                };
+                await this.parent.group.create(groupData);
+            }
+        }
 
         return await this.api.CreateUser(data);
     }

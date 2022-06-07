@@ -8,11 +8,14 @@ import {
     VpnRpcSetHubOnline,
     VpnVhOption,
 } from "vpnrpc";
+import SoftEtherAPI from "./SoftEtherAPI";
 
 export default class SoftEtherHub {
     protected api: VpnServerRpc;
-    constructor(api: VpnServerRpc) {
-        this.api = api;
+    protected parent: SoftEtherAPI; 
+    constructor(parent: SoftEtherAPI) {
+        this.api = parent.getApi();
+        this.parent = parent;
     }
 
     public async create(

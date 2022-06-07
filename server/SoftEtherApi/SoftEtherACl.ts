@@ -5,6 +5,7 @@ import {
     VpnRpcEnumAccessList,
     VpnServerRpc,
 } from "vpnrpc";
+import SoftEtherAPI from "./SoftEtherAPI";
 
 import VpnAccessDataIPv4 from "./SoftEtherData/VpnAccessDataIPv4";
 import VpnAccessDataIPv6 from "./SoftEtherData/VpnAccessDataIPv6";
@@ -12,8 +13,10 @@ import VpnAccessDataIPv6 from "./SoftEtherData/VpnAccessDataIPv6";
 // Access List
 export default class SoftEtherAl {
     protected api: VpnServerRpc;
-    constructor(api: VpnServerRpc) {
-        this.api = api;
+    protected parent: SoftEtherAPI; 
+    constructor(parent: SoftEtherAPI) {
+        this.api = parent.getApi();
+        this.parent = parent;
     }
 
     public async addAlIpv4(

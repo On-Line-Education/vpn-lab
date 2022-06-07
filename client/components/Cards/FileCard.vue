@@ -51,19 +51,7 @@ const { id, name, path, isAdmin } = defineProps({
 const emit = defineEmits(["reload"]);
 
 function download() {
-  fetch(path)
-    .then((response) => response.blob())
-    .then((blob) => {
-      const blobURL = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobURL;
-      a.style = "display: none";
-
-      if (name && name.length) a.download = name;
-      document.body.appendChild(a);
-      a.click();
-    })
-    .catch((e) => store.commit("setError", e));
+  window.open(path,'_blank');
 }
 
 async function del() {

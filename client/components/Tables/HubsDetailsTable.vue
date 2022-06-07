@@ -54,7 +54,7 @@
                             <td>
                                 <p
                                     class="text-xs font-weight-bold mb-0"
-                                    v-if="user.group"
+                                    v-if="user.group.length > 0"
                                 >
                                 <span v-for="(group, index) in user.group">
                                     <span v-if="index+1==user.group.length || user.group.length < 2">
@@ -66,7 +66,7 @@
                                 </span>
                                 </p>
                                 <p class="text-xs font-weight-bold mb-0" v-else>
-                                    ---BRAK---
+                                    -
                                 </p>
                             </td>
                             <!-- <td class="align-middle text-center text-sm">

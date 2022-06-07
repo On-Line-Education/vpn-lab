@@ -29,11 +29,11 @@ export default class SoftEtherAPI {
             password,
             rejectUntrustCert
         );
-        this.user = new SoftEtherUser(this.api);
-        this.hub = new SoftEtherHub(this.api);
-        this.acl = new SoftEtherACl(this.api);
-        this.group = new SoftEtherGroup(this.api);
-        this.ipsec = new SoftEtherIPSec(this.api);
+        this.user = new SoftEtherUser(this);
+        this.hub = new SoftEtherHub(this);
+        this.acl = new SoftEtherACl(this);
+        this.group = new SoftEtherGroup(this);
+        this.ipsec = new SoftEtherIPSec(this);
     }
 
     public async getServerInfo(): Promise<VPN.VpnRpcServerInfo> {
@@ -42,5 +42,9 @@ export default class SoftEtherAPI {
 
     public async getServerStatus(): Promise<VPN.VpnRpcServerStatus> {
         return await this.api.GetServerStatus();
+    }
+
+    public getApi() {
+        return this.api;
     }
 }

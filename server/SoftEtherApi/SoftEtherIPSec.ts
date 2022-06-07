@@ -2,11 +2,14 @@ import {
     VpnServerRpc,
     VpnIPsecServices,
 } from "vpnrpc";
+import SoftEtherAPI from "./SoftEtherAPI";
 
 export default class SoftEtherIPSec {
     protected api: VpnServerRpc;
-    constructor(api: VpnServerRpc) {
-        this.api = api;
+    protected parent: SoftEtherAPI; 
+    constructor(parent: SoftEtherAPI) {
+        this.api = parent.getApi();
+        this.parent = parent;
     }
 
     public async set(L2TP_Raw_bool: boolean = false,

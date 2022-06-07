@@ -5,12 +5,15 @@ import {
     VpnRpcEnumGroup,
     VpnRpcDeleteUser,
 } from "vpnrpc";
+import SoftEtherAPI from "./SoftEtherAPI";
 import VpnGroup from "./SoftEtherData/VpnGroup";
 
 export default class SoftEtherGroup {
     protected api: VpnServerRpc;
-    constructor(api: VpnServerRpc) {
-        this.api = api;
+    protected parent: SoftEtherAPI; 
+    constructor(parent: SoftEtherAPI) {
+        this.api = parent.getApi();
+        this.parent = parent;
     }
 
     public async create(vpnGroup: VpnGroup): Promise<VpnRpcSetGroup> {
