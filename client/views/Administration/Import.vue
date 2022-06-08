@@ -20,7 +20,7 @@
                     ref="selectHub"
                     @change="selectHubChanged"
                 >
-                    <option selected value="0">Nowy Hub</option>
+                    <option selected value="0" v-if="isAdmin">Nowy Hub</option>
                     <option
                         v-for="(name, index) in hubNames"
                         :value="index + 1"
@@ -35,6 +35,7 @@
                     class="form-control d-flex justify-content-start mb-3"
                     ref="customHubName"
                     :disabled="disableCustomHubName"
+                    v-if="isAdmin"
                 />
                 <input
                     titleColor="opacity-7"
@@ -45,6 +46,7 @@
                     class="form-control mb-3"
                     buttonVaiant="gradient"
                     ref="file"
+                    accept=".csv"
                     @change="newFile()"
                 />
                 <button
@@ -105,6 +107,8 @@ const selectHub = ref();
 const disableCustomHubName = ref(false);
 const customHubName = ref();
 
+const isAdmin = store.getters.getRole == "admin";
+
 function selectHubChanged() {
     if (selectHub.value.value != 0) {
         disableCustomHubName.value = true;
@@ -115,8 +119,14 @@ function selectHubChanged() {
 
 onMounted(async () => {
     try {
-        let hubs = await store.getters.getServer.listHubs();
-        hubs.data.listHubs.HubList.forEach((hub) => {
+        let hubs = [];
+        if(isAdmin){
+            hubs = (await store.getters.getServer.listHubs()).data.listHubs.HubList;
+        } else {
+            hubs = (await store.getters.getServer.listUserHubs(store.getters.getServer.getUser().name)).data.listUserHubs.HubList;
+        }
+        
+        hubs.forEach((hub) => {
             hubNames.value.push(hub.HubName_str);
         });
     } catch (e) {

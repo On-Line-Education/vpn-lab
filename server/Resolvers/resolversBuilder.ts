@@ -16,7 +16,7 @@ export default class ResolversBuilder {
             ResolversHub(prisma, vpn),
             ResolversAccessList(vpn),
             ResolversVeyon(prisma, vpn),
-            ResolversUser(prisma),
+            ResolversUser(prisma, vpn),
             ResolversSystem(prisma, vpn),
             resolversGroup(prisma, vpn),
         ];

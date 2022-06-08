@@ -19,6 +19,7 @@
             <div class="p-3 card-body flex-space-between">
                 <div class="d-flex flex-row-reverse justify-content-between">
                     <div class="numbers">
+                        <h3>Dodaj hub</h3>
                         <label>Nazwa huba:</label>
                         <input
                             type="text"
@@ -112,14 +113,12 @@ async function addHub() {
         return;
     }
 
-    // add hub and instructor
-
-try{
-    await store.getters.getServer.createNewHub(hn, iname, ipassword, ipasscode);
-} catch(e){
-    store.commit("setError", e);
-    return;
-}
+    try{
+        await store.getters.getServer.createNewHub(hn, iname, ipassword, ipasscode);
+    } catch(e){
+        store.commit("setError", e);
+        return;
+    }
     hubname.value.value = "";
     instructorName.value.value = "";
     instructorPassword.value.value = "";

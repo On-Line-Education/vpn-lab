@@ -28,7 +28,7 @@
                     </template>
                 </sidenav-collapse>
             </li>
-            <li class="nav-item" v-if="hasRole('admin')">
+            <li class="nav-item" v-if="hasRole('instructor')">
                 <sidenav-collapse
                     navText="Administracja"
                     :to="{ name: 'Administracja' }"

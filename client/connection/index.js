@@ -171,6 +171,7 @@ export default class Connection {
                             Realname_utf
                         }
                         groups
+                        role
                     }
                 }
             `,
@@ -455,7 +456,6 @@ export default class Connection {
         })
     }
     async createNewHub(hubName, instructorName, instructorPassword, instructorPasscode) {
-        console.log({hubName, instructorName, instructorPassword, instructorPasscode});
         return await this._apollo.mutate({
             mutation: gql`
                 mutation CreateNewHub($hubName: String, $instructorName: String, $instructorPassword: String, $instructorPasscode: String) {
@@ -474,5 +474,86 @@ export default class Connection {
                 },
             },
         });
+    }
+    async createUser(hubname, username, password, passcode, role){
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation CreateUser($hubname: String, $username: String, $password: String, $passcode: String, $role: Permission) {
+                    createUser(hubname: $hubname, username: $username, password: $password, passcode: $passcode, role: $role)
+                }
+            `,
+            variables: {
+                hubname, 
+                username, 
+                password, 
+                passcode, 
+                role
+            }, 
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            }
+        })
+    }
+    async deleteUser(hubname, username){
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation DeleteUser($hubname: String, $username: String) {
+                    deleteUser(hubname: $hubname, username: $username)
+                }
+            `,
+            variables: {
+                hubname, 
+                username
+            }, 
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            }
+        })
+    }
+    async listUserHubs(username) {
+        return await this._apollo.query({
+            query: gql`
+                query ListUserHubs($username: String) {
+                    listUserHubs(username: $username) {
+                        NumHub_u32
+                        HubList {
+                            HubName_str
+                            Online_bool
+                            HubType_u32
+                            NumUsers_u32
+                            NumGroups_u32
+                            NumSessions_u32
+                            NumMacTables_u32
+                            NumIpTables_u32
+                            LastCommTime_dt
+                            LastLoginTime_dt
+                            CreatedTime_dt
+                            NumLogin_u32
+                            IsTrafficFilled_bool
+                            Recv_BroadcastBytes_u64
+                            Recv_BroadcastCount_u64
+                            Recv_UnicastBytes_u64
+                            Recv_UnicastCount_u64
+                            Send_BroadcastBytes_u64
+                            Send_BroadcastCount_u64
+                            Send_UnicastBytes_u64
+                            Send_UnicastCount_u64
+                        }
+                    }
+                }
+            `,
+            variables: {
+                username
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            }
+        })
     }
 }

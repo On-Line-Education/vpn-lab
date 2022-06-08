@@ -1,4 +1,5 @@
 import {
+    VpnRpcDeleteUser,
     VpnRpcEnumUser,
     VpnRpcSetUser,
     VpnRpcUserAuthType,
@@ -87,6 +88,18 @@ export default class SoftEtherUser {
             GroupName_str: groupName,
         });
         return await this.api.SetUser(data);
+    }
+
+    public async deleteUser(
+        hubname: string,
+        username: string
+    ): Promise<VpnRpcDeleteUser> {
+        let in_rpc_delete_user: VpnRpcDeleteUser = new VpnRpcDeleteUser(
+            {
+                HubName_str: hubname,
+                Name_str: username,
+            });
+        return await this.api.DeleteUser(in_rpc_delete_user);
     }
 
     // public async update(

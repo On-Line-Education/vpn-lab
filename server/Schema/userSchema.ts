@@ -41,6 +41,12 @@ export default gql`
         user: User
     }
 
+    enum Permission {
+        ADMIN
+        INSTRUCTOR
+        USER
+    }
+
     type Query {
         loginViaKey(loginKey: String): LoginKeyOutput
         loginViaPassword(username: String, password: String): Token
@@ -51,5 +57,7 @@ export default gql`
 
     type Mutation {
         changeUserSettings(settings: UserSettings): Boolean
+        createUser(hubname: String, username: String, password: String, passcode: String, role: Permission): Boolean
+        deleteUser(hubname: String, username: String): Boolean
     }
 `;

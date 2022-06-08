@@ -213,10 +213,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         if (!user) {
                             throw new AuthenticationError("Nie masz uprawnień");
                         }
-                        Roles.ADMIN
-                        Roles.INSTRUCTOR
-                        Roles.USER
-    
+                        if(user && ![Roles.ADMIN].includes(user.role)){
+                            throw new AuthenticationError("Nie masz uprawnień");
+                        }
                         if(![Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER].includes(permission)){
                             throw new AuthenticationError("Nieprawidłowa rola");
                         }
@@ -234,6 +233,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     { id }: any, 
                     { user }){
                         if (!user) {
+                            throw new AuthenticationError("Nie masz uprawnień");
+                        }
+                        if(user && ![Roles.ADMIN].includes(user.role)){
                             throw new AuthenticationError("Nie masz uprawnień");
                         }
     

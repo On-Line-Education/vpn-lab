@@ -3,8 +3,11 @@ import { AuthenticationError } from "apollo-server-express";
 import randomString from "../Helpsers/randomString";
 import crypto from "crypto";
 import Roles from "../Helpsers/roles";
+import VeyonConnector from "../Veyon/veyonConnector";
+import { VpnRpcUserAuthType } from "vpnrpc";
+import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
-export default (prisma: PrismaClient) => {
+export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
         Query: {
             getCurrentUser(_1: any, _2: any, { user, api }) {
@@ -305,6 +308,141 @@ export default (prisma: PrismaClient) => {
 
                 return true;
             },
+            async createUser(_: any,
+                { hubname, username, password, passcode, role },
+                { user, api }
+            ){
+                if (!user) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                if(await prisma.user.findFirst({
+                    where:{
+                        name: username,
+                        OR:{
+                            loginKey: passcode
+                        }
+                    }
+                }) != null) {
+                    throw new Error("Istnieje już użytkownik z taką nazwą lub kodem dostępu");
+                }
+
+                let hub = (
+                    await prisma.hub.findFirst({
+                        where: { title: hubname },
+                    })
+                );
+
+                if(hub == null) {
+                    throw new Error("Hub nie istnieje");
+                }
+
+                let hubId = hub.id;
+                let veyonConnector = new VeyonConnector()
+                let pubKey = null, 
+                privKey = null;
+                if(role === Roles.INSTRUCTOR){
+                    let {pub, priv} = await veyonConnector.getKeyPair();
+                    pubKey = pub;
+                    privKey = priv;
+                }
+
+                let dbuser = await prisma.user.create({
+                    data: {
+                        name: username,
+                        role: role,
+                        passHash: crypto
+                                  .createHash("SHA256")
+                                  .update(password)
+                                  .digest("hex"),
+                        veyonKeyPriv: privKey,
+                        veyonKeyPub: pubKey,
+                        loginKey: crypto
+                                  .createHash("SHA256")
+                                  .update(passcode)
+                                  .digest("hex"),
+                        vpnPass: randomString(16),
+                        hubs: {
+                            create: {
+                                hubId,
+                            },
+                        },
+                    },
+                });
+
+                await vpn.user.createUser(
+                    hubname,
+                    username,
+                    username,
+                    VpnRpcUserAuthType.Password,
+                    dbuser.vpnPass,
+                    role == Roles.INSTRUCTOR ? username+"_"+Date.now()+"_vpn_group" : null
+                );
+                
+                return true;
+            },
+            async deleteUser(_: any,
+                { hubname, username },
+                { user, api }
+            ){
+                if (!user) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                let dbuser = await prisma.user.findFirst({
+                    where:{
+                        name: username,
+                    }
+                });
+
+                let uih = await prisma.usersInHub.findFirst({
+                    where:{
+                        userId: dbuser.id
+                    }
+                });
+
+                let uig = await prisma.usersGroup.findMany({
+                    where:{
+                        userHub:{
+                            userId: dbuser.id
+                        }
+                    }
+                })
+
+                for (let entry in uig) {
+                    await prisma.usersGroup.delete({
+                        where:{
+                            id: uig[entry].id
+                        }
+                    });
+                }
+
+                await prisma.usersInHub.delete({
+                    where: {
+                        id: uih.id
+                    }
+                });
+
+                await prisma.user.delete({
+                    where: {
+                        id: dbuser.id
+                    }
+                });
+
+                await vpn.user.deleteUser(hubname, username);
+                return true;
+            }
+        },
+        Permission: {
+            ADMIN: Roles.ADMIN,
+            INSTRUCTOR: Roles.INSTRUCTOR,
+            USER: Roles.USER
         }
     };
 };

@@ -8,8 +8,15 @@
         iconBackground="bg-gradient-warning"
     />
     <div class="card mb-4" v-else>
-        <div class="card-header pb-0">
+        <div class="card-header pb-0 flex-space-between">
             <h6>Lista Użytkowników</h6>
+            <vsud-input
+                type="text"
+                placeholder="Szukaj"
+                name="search"
+                size="sm"
+                @keyup="reactiveHub.hub.search($event.target.value)"
+            ></vsud-input>
         </div>
         <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
@@ -18,19 +25,22 @@
                         <tr>
                             <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7"
+                                @click="reactiveHub.hub.sort('username')"
                             >
                                 Nazwa użytkownika
                             </th>
                             <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7 ps-2"
+                                @click="reactiveHub.hub.sort('group')"
                             >
                                 Grupa
                             </th>
-                            <!-- <th
-                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                            <th
+                                class="text-uppercase text-secondary font-weight-bolder opacity-7 ps-2"
+                                @click="reactiveHub.hub.sort('role')"
                             >
-                                Status
-                            </th> -->
+                                Rola
+                            </th>
                             <th
                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
                             >
@@ -52,6 +62,27 @@
                                 </div>
                             </td>
                             <td>
+                                <div
+                                    class="d-flex px-2 py-1"
+                                    v-if="user.group.length > 0"
+                                >
+                                    <div
+                                        class="d-flex flex-column justify-content-center"
+                                        v-for="(group, index) in user.group"
+                                    >
+                                        <h6 class="mb-0 text-sm" v-if="index+1==user.group.length || user.group.length < 2">
+                                    {{ group }} 
+                                        </h6>
+                                        <h6 class="mb-0 text-sm" v-else>
+                                    {{ group }}, 
+                                        </h6>
+                                    </div>
+                                </div>
+                                <p class="text-xs font-weight-bold mb-0" v-else>
+                                    -
+                                </p>
+                            </td>
+                            <!-- <td>
                                 <p
                                     class="text-xs font-weight-bold mb-0"
                                     v-if="user.group.length > 0"
@@ -68,6 +99,17 @@
                                 <p class="text-xs font-weight-bold mb-0" v-else>
                                     -
                                 </p>
+                            </td> -->
+                            <td>
+                                <div class="d-flex px-2 py-1">
+                                    <div
+                                        class="d-flex flex-column justify-content-center"
+                                    >
+                                        <h6 class="mb-0 text-sm">
+                                            {{ user.role }}
+                                        </h6>
+                                    </div>
+                                </div>
                             </td>
                             <!-- <td class="align-middle text-center text-sm">
                                 <vsud-badge
@@ -95,33 +137,6 @@
                                 >
                             </td> -->
                             <td class="align-middle">
-                                <!-- <vsud-button
-                                    color="warning"
-                                    variant="outline"
-                                    size="sm"
-                                    :disabled="!user.group"
-                                    @click="removeFromGroup(user.username)"
-                                >
-                                    Usuń z grupy
-                                </vsud-button>
-                                <vsud-button
-                                    color="info"
-                                    variant="outline"
-                                    size="sm"
-                                    @click="changeGroup(user.username)"
-                                    v-if="user.group"
-                                >
-                                    Zmień grupę
-                                </vsud-button>
-                                <vsud-button
-                                    color="success"
-                                    variant="outline"
-                                    size="sm"
-                                    @click="addToGroup(user.username)"
-                                    v-else
-                                >
-                                    Dodaj do grupy
-                                </vsud-button> -->
                                 <vsud-button
                                     color="info"
                                     variant="outline"
@@ -130,10 +145,74 @@
                                 >
                                     Edytuj grupy
                                 </vsud-button>
+                                <vsud-button
+                                    color="danger"
+                                    variant="outline"
+                                    size="sm"
+                                    @click="deleteUser(user.username)"
+                                    v-if="isInstructor && user.role.toUpperCase() != 'INSTRUCTOR'"
+                                >
+                                    Usuń
+                                </vsud-button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex" v-if="isInstructor">
+        <div class="mb-4 card full-width">
+            <div class="p-3 card-body flex-space-between">
+                <div class="d-flex flex-row-reverse justify-content-between">
+                    <div class="numbers">
+                        <h3>Dodaj konto</h3>
+                        <label>Nazwa konta:</label>
+                        <input
+                            type="text"
+                            placeholder="Nazwa konta"
+                            name="name"
+                            class="form-control d-flex justify-content-start mb-3"
+                            ref="userName"
+                        />
+                        <label>Hasło:</label>
+                        <input
+                            type="password"
+                            placeholder="Hasło"
+                            name="password"
+                            class="form-control d-flex justify-content-start mb-3"
+                            ref="userPassword"
+                        />
+                        <label>Kod dostępu:</label>
+                        <input
+                            type="password"
+                            placeholder="Kod dostępu"
+                            name="passcode"
+                            class="form-control d-flex justify-content-start mb-3"
+                            ref="userPasscode"
+                        />
+                        <div v-if="isAdmin">
+                            <label>Uprawnienia:</label>
+                            <select
+                                class="form-control mb-3"
+                                ref="selectedPermission"
+                            >
+                                <option
+                                    v-for="perm in permissions"
+                                    :value="perm"
+                                >
+                                    {{ perm }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <vsud-button
+                    variant="gradient"
+                    color="success"
+                    @click="addUser"
+                    >Dodaj</vsud-button
+                >
             </div>
         </div>
     </div>
@@ -281,7 +360,7 @@
                         <button
                             type="button"
                             class="btn-close text-dark"
-                            @click="closaCantModal()"
+                            @click="closeCantModal()"
                             aria-label="Close"
                         >
                             <span aria-hidden="true">×</span>
@@ -292,7 +371,7 @@
                         <button
                             type="button"
                             class="btn bg-gradient-secondary"
-                            @click="closaCantModal()"
+                            @click="closeCantModal()"
                         >
                             Zamknij
                         </button>
@@ -307,6 +386,7 @@
 import VsudButton from "../Basic/VsudButton.vue";
 import VsudAvatar from "../Basic/VsudAvatar.vue";
 import VsudBadge from "../Basic/VsudBadge.vue";
+import VsudInput from "../Basic/VsudInput.vue";
 import Card from "../Cards/Card.vue";
 import { ref, reactive } from "vue";
 import { onMounted } from "@vue/runtime-core";
@@ -321,6 +401,11 @@ const { hubname } = defineProps({
 
 const store = useStore();
 
+const isAdmin = store.getters.getRole == "admin";
+const isInstructor = isAdmin || store.getters.getRole == "instructor";
+const permissions = ref();
+const selectedPermission = ref();
+
 const groups = reactive([]);
 const newGroup = ref();
 const newGroupCheckbox = ref();
@@ -333,6 +418,10 @@ const showGroupsEdit = ref();
 const selectedUserGroups = reactive({groups:[]});
 const selectedUser = reactive({username:''});
 
+const userName = ref();
+const userPassword = ref();
+const userPasscode = ref();
+
 const cantModal = ref();
 
 const usureModal = ref();
@@ -344,8 +433,57 @@ const date = computed(() => {
     return Date.now();
 });
 
-function closaCantModal() {
+function closeCantModal() {
     cantModal.value.style.display = "none";
+}
+
+async function addUser() {
+    let name = userName.value.value,
+        passcode = userPasscode.value.value,
+        password = userPassword.value.value,
+        permission = "USER";
+
+    if(name == null || name.trim() == ""){
+        store.commit("setError", {
+            message: "Należy podać nazwę użytkownika",
+        });
+        return;
+    }
+    if(passcode == null || passcode.trim() == ""){
+        store.commit("setError", {
+            message: "Należy podać hasło dla konta użytkownika",
+        });
+        return;
+    }
+    if(password == null || password.trim() == ""){
+        store.commit("setError", {
+            message: "Należy podać kod dostępu dla konta użytkownika",
+        });
+        return;
+    }
+
+    if(isAdmin){
+        permission = selectedPermission.value.value.toUpperCase()
+    }
+
+    await store.getters.getServer.createUser(hubname, name, password, passcode, permission);
+    userName.value.value = "";
+    userPasscode.value.value = "";
+    userPassword.value.value = "";
+    await refresh();
+    await refreshUsers();
+}
+
+async function deleteUser(username) {
+    usureModal.value.style.display = "block";
+    const cl = async () => {
+        closeUsureModal();
+        await store.getters.getServer.deleteUser(hubname, username);
+        usureYesModal.value.removeEventListener("click", cl);
+        await refresh();
+        await refreshUsers();
+    };
+    usureYesModal.value.addEventListener("click", cl);
 }
 
 function updateGroupData() {
@@ -353,7 +491,7 @@ function updateGroupData() {
     if(username == null || username.trim() == ""){
         return;
     }
-    selectedUserGroups.groups = reactiveHub.hub.find(e=>{
+    selectedUserGroups.groups = reactiveHub.hub.sortData.data.find(e=>{
         return e.username == username;
     }).group;
 }
@@ -372,6 +510,7 @@ async function refreshUsers() {
         hubUsers.push({
             username: userGroup.user.Name_str,
             group: userGroup.groups ? userGroup.groups : [],
+            role: userGroup.role
         });
     });
     reactiveHub.hub = new TableSorter(hubUsers.map((el, index) => {
@@ -385,6 +524,8 @@ async function refresh() {
     groups.value = (
         await store.getters.getServer.listSystemGroupsInHub(hubname)
     ).data.listSystemGroups;
+    let perms = await store.getters.getServer.getRoles();
+    permissions.value = perms.data.getRoles;
 }
 
 async function addUserToGroup() {

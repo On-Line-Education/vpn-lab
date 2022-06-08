@@ -56,6 +56,29 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     v.HubList[i]["Send_UnicastCount_u64"] =
                         v.HubList[i]["Ex.Recv.UnicastCount_u64"];
                 }
+
+                return v;
+            },
+            async listUserHubs(_1: any, {username}: any, { user, api }) {
+                let v = await this.listHubs(null, null, { user, api });
+
+                let userHubs = (await prisma.usersInHub.findMany({
+                    where: {
+                        user:{
+                            name: username
+                        }
+                    },
+                    select: {
+                        hub: true
+                    }
+                })).map(h=>{
+                    return h.hub.title;
+                })
+
+                v.HubList = v.HubList.filter(hub=>{
+                    return userHubs.includes(hub.HubName_str)  
+                })
+
                 return v;
             },
             async getHubStatus(_: any, { hubName }: any, { user, api }) {
@@ -97,6 +120,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     return {
                         name: usr.user.name,
                         groups: usr.UsersGroup,
+                        role: usr.user.role
                     };
                 });
 
@@ -106,7 +130,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             if (dbu.name === user.Name_str) {
                                 users.push({ user, groups: dbu.groups.map(e=>{
                                     return e.groupName;
-                                }) });
+                                }), role: dbu.role });
                             }
                         });
                     }
@@ -117,8 +141,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
         },
         Mutation: {
             async createNewHub(_: any, { hubName, instructorName, instructorPassword, instructorPasscode }: any, { user, api }){
-                console.log(hubName, instructorName, instructorPassword, instructorPasscode);
-
 
                 if(await prisma.hub.findFirst({
                     where: {

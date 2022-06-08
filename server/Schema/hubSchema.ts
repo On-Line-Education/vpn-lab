@@ -112,10 +112,12 @@ export default gql`
     type HubUserEntry {
         user: HubUser
         groups: [String]
+        role: String
     }
 
     type Query {
         listHubs: HubsList
+        listUserHubs(username: String): HubsList
         getHub(hubName: String): HubGet
         getHubStatus(hubName: String): HubStatus
         getHubUsers(hubName: String): [HubUserEntry]
