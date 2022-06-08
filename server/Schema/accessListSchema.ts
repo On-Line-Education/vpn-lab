@@ -90,6 +90,9 @@ export default gql`
 
     type Query {
         getHubAccessLists(hubName: String): String
+    }
+
+    type Mutation {
         addHubAccessList(hubName: String, accessList: AccessListData): String
     }
 

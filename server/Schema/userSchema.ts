@@ -45,8 +45,11 @@ export default gql`
         loginViaKey(loginKey: String): LoginKeyOutput
         loginViaPassword(username: String, password: String): Token
         getCurrentUser: User
-        changeUserSettings(settings: UserSettings): Boolean
         getAllUsersInStudentsGroup(username: String, group: String): [ApiUser]
         getTeachersInUserGroups(username: String): TeachersWithUserVPNData
+    }
+
+    type Mutation {
+        changeUserSettings(settings: UserSettings): Boolean
     }
 `;

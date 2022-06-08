@@ -15,6 +15,8 @@ export default (vpn: SoftEtherAPI) => {
                 }
                 return JSON.stringify(await vpn.acl.list(hubName));
             },
+        },
+        Mutation: {
             async addHubAccessList(
                 _: any,
                 { hubName, accessList }: any,

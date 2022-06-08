@@ -44,12 +44,16 @@ export default gql`
     }
 
     type Query {
-        import(data: Import): Boolean
         getIpSec: IPSecOutput
-        setIpSec(ipsec: IPSec): IPSecOutput
         getFilesList: [FileOutput]
+        getRoles: [String]
+    }
+
+    type Mutation {
+        import(data: Import): Boolean
+        setIpSec(ipsec: IPSec): IPSecOutput
         addFileEntry(name: String, permission: Permission, url: String): Boolean
         deleteFileEntry(id: Int): Boolean
-        getRoles: [String]
+
     }
 `;

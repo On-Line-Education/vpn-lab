@@ -39,7 +39,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="user in reactiveHub.hub" :key="user.key">
+                        <tr v-for="user in reactiveHub.hub.sortData.data" :key="user.key">
                             <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
@@ -313,6 +313,7 @@ import { onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { watch } from "@vue/runtime-core";
 import { computed } from "@vue/reactivity";
+import TableSorter from "../../plugins/table-sorter";
 
 const { hubname } = defineProps({
     hubname: String,
@@ -373,10 +374,10 @@ async function refreshUsers() {
             group: userGroup.groups ? userGroup.groups : [],
         });
     });
-    reactiveHub.hub = hubUsers.map((el, index) => {
+    reactiveHub.hub = new TableSorter(hubUsers.map((el, index) => {
         el.key = date + index;
         return el;
-    });
+    }));
     updateGroupData();
 }
 

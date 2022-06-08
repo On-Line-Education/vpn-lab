@@ -24,6 +24,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     secureNATOption: s,
                 };
             },
+        },
+        Mutation: {
             async changeUserGroupToTeacher(
                 _: any,
                 { studentName, teacherName }: any,
@@ -73,6 +75,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 return true;
             },
-        },
+        }
     };
 };

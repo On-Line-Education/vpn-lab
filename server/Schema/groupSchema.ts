@@ -58,14 +58,17 @@ export default gql`
 
     type Query {
         listGroups(hubName: String): [Group]
+        getGroupsInHub(hubName: String): [String]
+        listSystemGroups(hubName: String): [String]
+    }
+
+    type Mutation {
         createGroup(group: GroupInput): Group
         addUserToGroup(
             userName: String
             group: String
             hubName: String
         ): Boolean
-        getGroupsInHub(hubName: String): [String]
-        listSystemGroups(hubName: String): [String]
         removeFromSystemGroup(
             hubName: String
             username: String

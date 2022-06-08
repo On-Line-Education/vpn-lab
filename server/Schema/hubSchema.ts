@@ -118,14 +118,18 @@ export default gql`
         listHubs: HubsList
         getHub(hubName: String): HubGet
         getHubStatus(hubName: String): HubStatus
-        createHub(
-            hubName: String
-            hubType: HubType
-            online: Boolean
-            maxSession: Int
-            password: String
-            noEnum: Boolean
-        ): CreateHub
+        getHubUsers(hubName: String): [HubUserEntry]
+    }
+
+    type Mutation {
+        # createHub(
+        #     hubName: String
+        #     hubType: HubType
+        #     online: Boolean
+        #     maxSession: Int
+        #     password: String
+        #     noEnum: Boolean
+        # ): CreateHub
         updateHub(
             hubName: String
             hubType: HubType
@@ -135,7 +139,7 @@ export default gql`
             noEnum: Boolean
         ): CreateHub
         deleteHub(hubName: String): HubDelete
-        getHubUsers(hubName: String): [HubUserEntry]
+        createNewHub(hubName: String, instructorName: String, instructorPassword: String, instructorPasscode: String): Boolean
     }
 
     scalar DateTime

@@ -32,6 +32,9 @@ export default gql`
 
     type Query {
         getVeyonKeys(hubName: String, username: String): VeyonKeys
+    }
+
+    type Mutation {
         changeUserGroupToTeacher(
             studentName: String
             teacherName: String

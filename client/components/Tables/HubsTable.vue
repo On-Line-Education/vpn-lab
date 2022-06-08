@@ -92,7 +92,8 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer"></div>
+        <div class="card-footer"> 
+        </div>
     </div>
 </template>
 
@@ -102,8 +103,10 @@ import VsudBadge from "../Basic/VsudBadge.vue";
 import VsudButton from "../Basic/VsudButton.vue";
 import VsudInput from "../Basic/VsudInput.vue";
 import { useRouter } from "vue-router";
-import { reactive } from "vue";
+import { onMounted } from "vue";
 import TableSorter from "../../plugins/table-sorter";
+import { useStore } from "vuex";
+const store = useStore();
 
 const router = useRouter();
 

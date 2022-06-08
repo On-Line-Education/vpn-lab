@@ -221,9 +221,9 @@ export default class Connection {
         });
     }
     async addUserToGroup(hubName, group, userName) {
-        return await this._apollo.query({
-            query: gql`
-                query CreateGroup(
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation CreateGroup(
                     $userName: String
                     $group: String
                     $hubName: String
@@ -244,9 +244,9 @@ export default class Connection {
         });
     }
     async changeUserSettings({ newPassword, oldPassword }) {
-        return await this._apollo.query({
-            query: gql`
-                query Query($settings: UserSettings) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation ChangeUserSettings($settings: UserSettings) {
                     changeUserSettings(settings: $settings)
                 }
             `,
@@ -264,9 +264,9 @@ export default class Connection {
         });
     }
     async removeFromSystemGroup(hubName, username, group) {
-        return await this._apollo.query({
-            query: gql`
-                query Query(
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation RemoveFromSystemGroup(
                     $hubName: String
                     $username: String
                     $group: String
@@ -296,9 +296,9 @@ export default class Connection {
         this._user = null;
     }
     async import(importObj) {
-        return await this._apollo.query({
-            query: gql`
-                query Query($data: Import) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation Import($data: Import) {
                     import(data: $data)
                 }
             `,
@@ -357,9 +357,9 @@ export default class Connection {
         });
     }
     async setIPsec(L2TP_Raw, L2TP_IPsec, EtherIP_IPsec, IPsec_Secret, L2TP_DefaultHub) {
-        return await this._apollo.query({
-            query: gql`
-                query SetIpSec($ipsec: IPSec) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation SetIpSec($ipsec: IPSec) {
                     setIpSec(ipsec: $ipsec) {
                         L2TP_Raw_bool
                         L2TP_IPsec_bool
@@ -419,9 +419,9 @@ export default class Connection {
         });
     }
     async addFile(name, url, permission ) {
-        return await this._apollo.query({
-            query: gql`
-                query Query($name: String, $permission: Permission, $url: String) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation AddFileEntry($name: String, $permission: Permission, $url: String) {
                     addFileEntry(name: $name, permission: $permission, url: $url)
                 }
             `,
@@ -438,9 +438,9 @@ export default class Connection {
         });
     }
     async deleteFile(id){
-        return await this._apollo.query({
-            query: gql`
-                query Query($deleteFileEntryId: Int) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation DeleteFileEntry($deleteFileEntryId: Int) {
                     deleteFileEntry(id: $deleteFileEntryId)
                 }
             `,
@@ -453,5 +453,26 @@ export default class Connection {
                 },
             },
         })
+    }
+    async createNewHub(hubName, instructorName, instructorPassword, instructorPasscode) {
+        console.log({hubName, instructorName, instructorPassword, instructorPasscode});
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation CreateNewHub($hubName: String, $instructorName: String, $instructorPassword: String, $instructorPasscode: String) {
+                    createNewHub(hubName: $hubName, instructorName: $instructorName, instructorPassword: $instructorPassword, instructorPasscode: $instructorPasscode)
+                }
+            `,
+            variables: {
+                hubName,
+                instructorName,
+                instructorPassword,
+                instructorPasscode
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
     }
 }

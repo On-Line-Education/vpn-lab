@@ -11,6 +11,57 @@ import VeyonConnector from "../Veyon/veyonConnector";
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
         Query: {
+            async getIpSec(_1: any,
+                _2: any,
+                { user ,api }) {
+                    if (!(api || user)) {
+                        throw new AuthenticationError("Nie masz uprawnień");
+                    }
+                    if(user && user.role !== Roles.ADMIN){
+                        throw new AuthenticationError("Nie masz uprawnień");
+                    }
+                    return await vpn.ipsec.get();
+            },
+            async getFilesList(_1:any, 
+                _2: any, 
+                { user }) {
+                    if (!user) {
+                        throw new AuthenticationError("Nie masz uprawnień");
+                    }
+
+                    let filesList = [];
+                    if(user.role === Roles.INSTRUCTOR){
+                        filesList = await prisma.files.findMany({
+                            where:{
+                                OR: [{
+                                    permission: Roles.USER,
+                                }, {
+                                    permission: Roles.INSTRUCTOR,
+                                }]
+                            }
+                        });
+                    } else if(user.role === Roles.ADMIN) {
+                        filesList = await prisma.files.findMany();
+                    } else {
+                        filesList = await prisma.files.findMany({
+                            where:{
+                                permission: user.role
+                            }
+                        });
+                    }
+
+                    return filesList;
+                },
+            async getRoles(_:any, 
+                { id }: any, 
+                { user, api }){
+                    if (!(api || user)) {
+                        throw new AuthenticationError("Nie masz uprawnień");
+                    }
+                    return [Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER];
+                }
+        },
+        Mutation: {
             async import(_1: any, { data }: any, { user, api }) {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
@@ -131,17 +182,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 );
                 return true;
             },
-            async getIpSec(_1: any,
-                _2: any,
-                { user ,api }) {
-                    if (!(api || user)) {
-                        throw new AuthenticationError("Nie masz uprawnień");
-                    }
-                    if(user && user.role !== Roles.ADMIN){
-                        throw new AuthenticationError("Nie masz uprawnień");
-                    }
-                    return await vpn.ipsec.get();
-            },
             async setIpSec(_:any, 
                 {ipsec}: any, 
                 { user ,api }){
@@ -167,81 +207,43 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         ipsec.IPsec_Secret_str ? ipsec.IPsec_Secret_str : curentConfig.IPsec_Secret_str,
                         ipsec.L2TP_DefaultHub_str);
                 },
-            async getFilesList(_1:any, 
-                _2: any, 
-                { user }) {
-                    if (!user) {
-                        throw new AuthenticationError("Nie masz uprawnień");
-                    }
-
-                    let filesList = [];
-                    if(user.role === Roles.INSTRUCTOR){
-                        filesList = await prisma.files.findMany({
-                            where:{
-                                OR: [{
-                                    permission: Roles.USER,
-                                }, {
-                                    permission: Roles.INSTRUCTOR,
-                                }]
+                async addFileEntry(_:any, 
+                    { name, permission, url }: any, 
+                    { user }){  
+                        if (!user) {
+                            throw new AuthenticationError("Nie masz uprawnień");
+                        }
+                        Roles.ADMIN
+                        Roles.INSTRUCTOR
+                        Roles.USER
+    
+                        if(![Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER].includes(permission)){
+                            throw new AuthenticationError("Nieprawidłowa rola");
+                        }
+    
+                        await prisma.files.create({
+                            data:{
+                                name,
+                                permission,
+                                url
                             }
                         });
-                    } else if(user.role === Roles.ADMIN) {
-                        filesList = await prisma.files.findMany();
-                    } else {
-                        filesList = await prisma.files.findMany({
-                            where:{
-                                permission: user.role
-                            }
-                        });
-                    }
-
-                    return filesList;
+                        return true;
                 },
-            async addFileEntry(_:any, 
-                { name, permission, url }: any, 
-                { user }){  
-                    if (!user) {
-                        throw new AuthenticationError("Nie masz uprawnień");
-                    }
-                    Roles.ADMIN
-                    Roles.INSTRUCTOR
-                    Roles.USER
-
-                    if(![Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER].includes(permission)){
-                        throw new AuthenticationError("Nieprawidłowa rola");
-                    }
-
-                    await prisma.files.create({
-                        data:{
-                            name,
-                            permission,
-                            url
+                async deleteFileEntry(_:any, 
+                    { id }: any, 
+                    { user }){
+                        if (!user) {
+                            throw new AuthenticationError("Nie masz uprawnień");
                         }
-                    });
-                    return true;
-            },
-            async deleteFileEntry(_:any, 
-                { id }: any, 
-                { user }){
-                    if (!user) {
-                        throw new AuthenticationError("Nie masz uprawnień");
-                    }
-
-                    await prisma.files.delete({
-                        where:{
-                            id: id
-                        }
-                    });
-                    return true;
-            },
-            async getRoles(_:any, 
-                { id }: any, 
-                { user, api }){
-                    if (!(api || user)) {
-                        throw new AuthenticationError("Nie masz uprawnień");
-                    }
-                    return [Roles.ADMIN, Roles.INSTRUCTOR, Roles.USER];
-                }
+    
+                        await prisma.files.delete({
+                            where:{
+                                id: id
+                            }
+                        });
+                        return true;
+                },
         },
         Permission: {
             ADMIN: Roles.ADMIN,
