@@ -51,3 +51,8 @@
 .mw-fc {
     max-width: fit-content;
 }
+
+.modal-custom {
+    background-color: rgba(0.25,0.25,0.25,0.5);
+    z-index: 10050;
+}
