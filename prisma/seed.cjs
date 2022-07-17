@@ -17,7 +17,6 @@ const prisma = new PrismaClient();
 
 async function main() {
     console.log(`Start seeding ...`);
-    // const userData: Prisma.UserCreateInput[];
     let seedCount = 50;
     let usersInHub = 15;
 
@@ -46,17 +45,12 @@ async function main() {
     for (let i = 0; i < seedCount; i++) {
         let password = faker.random.alphaNumeric(8);
         let title = faker.lorem.word() + "_" + parseInt(Math.random() * 1000);
-        // let passHash = crypto
-        //     .createHash("SHA256")
-        //     .update(password)
-        //     .digest("hex");
 
         let users = [];
 
         for (let j = 0; j < usersInHub; j++) {
             let password = faker.random.alphaNumeric(8);
             let name = faker.name.firstName();
-            // let vpnName = name + "_VPN_" + parseInt(Math.random() * 1000);
             while (names.includes(name)) {
                 name = faker.random.alpha(8);
             }
@@ -90,16 +84,11 @@ async function main() {
             };
             console.dir("USER PASS: " + password);
             console.dir(fakeUser);
-            // let user = await prisma.user.create({
-            //     data: fakeUser,
-            // });
-            // users.push(user.id);
             users.push(fakeUser);
         }
 
         let fakeHub = {
             title,
-            // passHash,
             users: users,
             password,
         };
@@ -112,7 +101,6 @@ async function main() {
         console.dir({
             data: {
                 title: h.title,
-                // passHash: h.passHash,
                 users: {
                     create: h.users.map((e) => {
                         return {
@@ -199,11 +187,13 @@ async function main() {
     console.log(`Seeding finished.`);
 }
 
-// main()
-//     .catch((e) => {
-//         console.error(e);
-//         process.exit(1);
-//     })
-//     .finally(async () => {
-//         await prisma.$disconnect();
-//     });
+if (process.env.ENABLE_SEEDING.toLocaleLowerCase() == "true") {
+    main()
+        .catch((e) => {
+            console.error(e);
+            process.exit(1);
+        })
+        .finally(async () => {
+            await prisma.$disconnect();
+        });
+}

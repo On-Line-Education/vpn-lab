@@ -4,8 +4,12 @@ services:
     image: node:17-alpine
     user: "node"
     working_dir: /home/node/app
+    # local dev
     command: npm run dockerstart:local
+    # stagging
     # command: npm run dockerstart:dev
+    # production
+    # command: dockerstart:prod
     volumes:
       - ./:/home/node/app
     ports:
@@ -43,7 +47,7 @@ services:
       - 1194:1194/udp
       - 5555:5555/tcp
     environment:
-     SPW: 'Dup@MamauT2'
+     SPW: 'Abc@alphaT2'
     networks:
       vpn_net:
     cap_add:

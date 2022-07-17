@@ -75,6 +75,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 return true;
             },
-        }
+        },
     };
 };

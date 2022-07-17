@@ -53,7 +53,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                     distinct: ["groupName"],
                 });
-            }
+            },
         },
         Mutation: {
             async removeFromSystemGroup(
@@ -64,7 +64,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
 
@@ -88,7 +91,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
                 return await vpn.group.create(group);
@@ -101,7 +107,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let userhub = await prisma.usersInHub.findFirst({
@@ -135,6 +144,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 return true;
             },
-        }
+        },
     };
 };

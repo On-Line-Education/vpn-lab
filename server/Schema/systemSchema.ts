@@ -15,19 +15,26 @@ export default gql`
     }
 
     type IPSecOutput {
-        L2TP_Raw_bool: Boolean,
-        L2TP_IPsec_bool: Boolean,
-        EtherIP_IPsec_bool: Boolean,
-        IPsec_Secret_str: String,
+        L2TP_Raw_bool: Boolean
+        L2TP_IPsec_bool: Boolean
+        EtherIP_IPsec_bool: Boolean
+        IPsec_Secret_str: String
         L2TP_DefaultHub_str: String
     }
 
     input IPSec {
-        L2TP_Raw_bool: Boolean,
-        L2TP_IPsec_bool: Boolean,
-        EtherIP_IPsec_bool: Boolean,
-        IPsec_Secret_str: String,
+        L2TP_Raw_bool: Boolean
+        L2TP_IPsec_bool: Boolean
+        EtherIP_IPsec_bool: Boolean
+        IPsec_Secret_str: String
         L2TP_DefaultHub_str: String
+    }
+
+    input FileEdit {
+        id: Int
+        name: String
+        url: String
+        permission: String
     }
 
     type FileOutput {
@@ -54,6 +61,6 @@ export default gql`
         setIpSec(ipsec: IPSec): IPSecOutput
         addFileEntry(name: String, permission: Permission, url: String): Boolean
         deleteFileEntry(id: Int): Boolean
-
+        editFileEntry(data: FileEdit): Boolean
     }
 `;

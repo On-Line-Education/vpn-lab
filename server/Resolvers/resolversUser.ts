@@ -53,17 +53,20 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
-                let userHubs = await prisma.usersInHub.findMany({where:{
-                    user:{
-                        name: u.name
-                    }
-                }, select:{
-                    hub:{
-                        select: {
-                            title: true
-                        }
-                    }
-                }})
+                let userHubs = await prisma.usersInHub.findMany({
+                    where: {
+                        user: {
+                            name: u.name,
+                        },
+                    },
+                    select: {
+                        hub: {
+                            select: {
+                                title: true,
+                            },
+                        },
+                    },
+                });
 
                 return {
                     token: token.token,
@@ -71,10 +74,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         name: u.name,
                         role: u.role,
                         id: u.id,
-                        hubs: userHubs.map(m=>{
+                        hubs: userHubs.map((m) => {
                             return m.hub.title;
-                        })
-                    }
+                        }),
+                    },
                 };
             },
             async loginViaPassword(_: any, { username, password }: any) {
@@ -130,7 +133,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
 
@@ -196,7 +202,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!(api || user)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
 
@@ -308,44 +317,50 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 return true;
             },
-            async createUser(_: any,
+            async createUser(
+                _: any,
                 { hubname, username, password, passcode, role },
                 { user, api }
-            ){
+            ) {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
 
-                if(await prisma.user.findFirst({
-                    where:{
-                        name: username,
-                        OR:{
-                            loginKey: passcode
-                        }
-                    }
-                }) != null) {
-                    throw new Error("Istnieje już użytkownik z taką nazwą lub kodem dostępu");
+                if (
+                    (await prisma.user.findFirst({
+                        where: {
+                            name: username,
+                            OR: {
+                                loginKey: passcode,
+                            },
+                        },
+                    })) != null
+                ) {
+                    throw new Error(
+                        "Istnieje już użytkownik z taką nazwą lub kodem dostępu"
+                    );
                 }
 
-                let hub = (
-                    await prisma.hub.findFirst({
-                        where: { title: hubname },
-                    })
-                );
+                let hub = await prisma.hub.findFirst({
+                    where: { title: hubname },
+                });
 
-                if(hub == null) {
+                if (hub == null) {
                     throw new Error("Hub nie istnieje");
                 }
 
                 let hubId = hub.id;
-                let veyonConnector = new VeyonConnector()
-                let pubKey = null, 
-                privKey = null;
-                if(role === Roles.INSTRUCTOR){
-                    let {pub, priv} = await veyonConnector.getKeyPair();
+                let veyonConnector = new VeyonConnector();
+                let pubKey = null,
+                    privKey = null;
+                if (role === Roles.INSTRUCTOR) {
+                    let { pub, priv } = await veyonConnector.getKeyPair();
                     pubKey = pub;
                     privKey = priv;
                 }
@@ -355,15 +370,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         name: username,
                         role: role,
                         passHash: crypto
-                                  .createHash("SHA256")
-                                  .update(password)
-                                  .digest("hex"),
+                            .createHash("SHA256")
+                            .update(password)
+                            .digest("hex"),
                         veyonKeyPriv: privKey,
                         veyonKeyPub: pubKey,
                         loginKey: crypto
-                                  .createHash("SHA256")
-                                  .update(passcode)
-                                  .digest("hex"),
+                            .createHash("SHA256")
+                            .update(passcode)
+                            .digest("hex"),
                         vpnPass: randomString(16),
                         hubs: {
                             create: {
@@ -379,70 +394,72 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     username,
                     VpnRpcUserAuthType.Password,
                     dbuser.vpnPass,
-                    role == Roles.INSTRUCTOR ? username+"_"+Date.now()+"_vpn_group" : null
+                    role == Roles.INSTRUCTOR
+                        ? username + "_" + Date.now() + "_vpn_group"
+                        : null
                 );
-                
+
                 return true;
             },
-            async deleteUser(_: any,
-                { hubname, username },
-                { user, api }
-            ){
+            async deleteUser(_: any, { hubname, username }, { user, api }) {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if(user && ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)){
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
 
                 let dbuser = await prisma.user.findFirst({
-                    where:{
+                    where: {
                         name: username,
-                    }
+                    },
                 });
 
                 let uih = await prisma.usersInHub.findFirst({
-                    where:{
-                        userId: dbuser.id
-                    }
+                    where: {
+                        userId: dbuser.id,
+                    },
                 });
 
                 let uig = await prisma.usersGroup.findMany({
-                    where:{
-                        userHub:{
-                            userId: dbuser.id
-                        }
-                    }
-                })
+                    where: {
+                        userHub: {
+                            userId: dbuser.id,
+                        },
+                    },
+                });
 
                 for (let entry in uig) {
                     await prisma.usersGroup.delete({
-                        where:{
-                            id: uig[entry].id
-                        }
+                        where: {
+                            id: uig[entry].id,
+                        },
                     });
                 }
 
                 await prisma.usersInHub.delete({
                     where: {
-                        id: uih.id
-                    }
+                        id: uih.id,
+                    },
                 });
 
                 await prisma.user.delete({
                     where: {
-                        id: dbuser.id
-                    }
+                        id: dbuser.id,
+                    },
                 });
 
                 await vpn.user.deleteUser(hubname, username);
                 return true;
-            }
+            },
         },
         Permission: {
             ADMIN: Roles.ADMIN,
             INSTRUCTOR: Roles.INSTRUCTOR,
-            USER: Roles.USER
-        }
+            USER: Roles.USER,
+        },
     };
 };

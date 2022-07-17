@@ -5,19 +5,21 @@ import schema from "./Schema/schema";
 import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
 import cors from "cors";
 import loginResolver from "./Helpsers/loginResolver";
-import fs from 'fs';
-import https from 'https';
-import http from 'http';
+import fs from "fs";
+import https from "https";
+import http from "http";
+import { PrismaClient } from "@prisma/client";
 
 export default async function createServer(
     resolvers: ResolversBuilder,
-    vpn: SoftEtherAPI
+    vpn: SoftEtherAPI,
+    db: PrismaClient
 ) {
     const app = express();
 
     const apolloServer = new ApolloServer({
         typeDefs: schema,
-        resolvers: resolvers.build(vpn),
+        resolvers: resolvers.build(vpn, db),
         context: async ({ req }) => {
             const token = req.headers.authorization || "";
 
@@ -25,7 +27,7 @@ export default async function createServer(
 
             return { user: context.user, api: context.apiCall };
         },
-        introspection: process.env.NODE_ENV !== 'production'
+        introspection: process.env.NODE_ENV !== "production",
     });
 
     await apolloServer.start();
@@ -37,30 +39,29 @@ export default async function createServer(
         path: "/api",
     });
 
-    let httpServer;
-    if (process.env.NODE_ENV == 'production') {
+    let httpServer: http.Server | https.Server;
+    if (process.env.NODE_ENV == "production") {
         // Assumes certificates are in a .ssl folder off of the package root.
         // Make sure these files are secured.
         httpServer = https.createServer(
-          {
-            key: fs.readFileSync(`../ssl/server.key`),
-            cert: fs.readFileSync(`../ssl/server.crt`)
-          },
-    
-          app,
-        );
-      } else {
-        httpServer = http.createServer(app);
-      }
+            {
+                key: fs.readFileSync(`../ssl/server.key`),
+                cert: fs.readFileSync(`../ssl/server.crt`),
+            },
 
-    
-    await   httpServer.listen({ port: process.env.SERVER_PORT || 3000 }, ()=>{
+            app
+        );
+    } else {
+        httpServer = http.createServer(app);
+    }
+
+    await httpServer.listen({ port: process.env.SERVER_PORT || 3000 }, () => {
         console.log(
-                    `Server listening on localhost:${process.env.SERVER_PORT || 3000}${
-                        apolloServer.graphqlPath
-                    }`
-                )
-    })
+            `Server listening on localhost:${process.env.SERVER_PORT || 3000}${
+                apolloServer.graphqlPath
+            }`
+        );
+    });
 
     // app.listen({ port: process.env.SERVER_PORT || 3000 }, () =>
     //     console.log(

@@ -17,17 +17,25 @@
             >
                 <ul class="navbar-nav justify-content-end flex-row">
                     <li class="nav-item d-flex align-items-center">
+                        <div class="px-0 text-body">
+                            <i class="fa-solid fa-user me-sm-1"></i>
+                            <span>{{ user.name }}</span>
+                        </div>
+                    </li>
+                    <li class="nav-item ps-3 d-flex align-items-center">
                         <router-link
                             :to="{ name: 'Wyloguj' }"
                             class="px-0 nav-link font-weight-bold"
                             :class="textWhite ? textWhite : 'text-body'"
                         >
                             <!-- <i class="fas fa-user me-sm-1"></i> -->
-                            <i class="fa-solid fa-arrow-right-from-bracket me-sm-1"></i>
+                            <i
+                                class="fa-solid fa-arrow-right-from-bracket me-sm-1"
+                            ></i>
                             <span class="d-sm-inline d-none">Wyloguj się </span>
                         </router-link>
                     </li>
-                    
+
                     <li
                         class="nav-item d-xl-none ps-3 d-flex align-items-center"
                     >
@@ -51,7 +59,7 @@
 </template>
 <script setup>
 import Breadcrumbs from "./Breadcrumbs.vue";
-import { defineProps, computed, onUpdated, ref } from "vue";
+import { computed, onUpdated, ref } from "vue";
 import { mapMutations, mapActions, useStore } from "vuex";
 import { useRoute } from "vue-router";
 
@@ -71,7 +79,7 @@ const { navbarMinimize, toggleConfigurator } = mapMutations([
 const { toggleSidebarColor } = mapActions(["toggleSidebarColor"]);
 
 const toggleSidebar = () => {
-    store.commit('toggleSidebar');
+    store.commit("toggleSidebar");
     // navbarMinimize();
 };
 const currentRouteName = computed(() => {
@@ -91,4 +99,5 @@ onUpdated(() => {
         }
     });
 });
+const user = store.getters.getServer.getUser();
 </script>

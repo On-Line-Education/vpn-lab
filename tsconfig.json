@@ -11,7 +11,7 @@
         "outDir": "dist/",
         "esModuleInterop": true,
         "allowJs": true,
-        "target": "ES3"
+        "target": "ES5" //ES3
     },
     "include": [
         "client/**/*.ts",

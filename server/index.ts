@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import ResolversBuilder from "./Resolvers/resolversBuilder";
 import createServer from "./server";
 import SoftEtherAPI from "./SoftEtherApi/SoftEtherAPI";
@@ -11,15 +12,16 @@ async function main(): Promise<void> {
         process.env.VPN_PASSWORD,
         null,
         false,
-        process.env.NODE_ENV != 'production'
+        process.env.NODE_ENV != "production"
     );
 
     if (parseInt(process.env.develop) == 1) {
         process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
     }
+    let db = new PrismaClient();
 
     let rb = new ResolversBuilder();
-    await createServer(rb, vpn);
+    await createServer(rb, vpn, db);
 }
 
 main().then((_) => {

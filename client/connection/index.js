@@ -438,6 +438,28 @@ export default class Connection {
             },
         });
     }
+    async editFile(name, url, permission, id) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation EditFileEntry($data: FileEdit) {
+                    editFileEntry(data: $data)
+                }
+            `,
+            variables: {
+                "data": {
+                    id,
+                    name,
+                    url,
+                    permission
+                }
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
     async deleteFile(id){
         return await this._apollo.mutate({
             mutation: gql`

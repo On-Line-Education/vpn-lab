@@ -13,8 +13,6 @@ model Hub {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   title     String       @unique
-  // server    Server       @relation(fields: [serverId], references: [id])
-  // serverId  Int
   users     UsersInHub[]
 }
 
@@ -25,7 +23,7 @@ model User {
   veyonKeyPub  String?      @db.Text
   veyonKeyPriv String?      @db.Text
   loginKey     String?      @unique
-  vpnPass      String // TODO: Generate password
+  vpnPass      String
   role         String
   hubs         UsersInHub[]
   Token        Token[]
@@ -40,15 +38,8 @@ model Token {
   expireOn  DateTime
 }
 
-// model Server {
-//     id           Int     @id @default(autoincrement())
-//     name         String
-//     presharedKey String? // klucz logowania do vpn
-//     Hub          Hub[]
-// }
-
 model UsersGroup {
-  id     Int  @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   userHub   UsersInHub @relation(fields: [userHubId], references: [id])
   userHubId Int
   groupName String
@@ -61,7 +52,6 @@ model UsersInHub {
   hub    Hub  @relation(fields: [hubId], references: [id])
   hubId  Int
 
-  // @@id([userId, hubId])
   UsersGroup UsersGroup[]
 }
 

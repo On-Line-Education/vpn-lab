@@ -9,16 +9,15 @@ import ResolversSystem from "./resolversSystem";
 import resolversGroup from "./resolversGroup";
 
 export default class ResolversBuilder {
-    public build(vpn: SoftEtherAPI): any {
-        let resolver = {},
-            prisma = new PrismaClient();
+    public build(vpn: SoftEtherAPI, db: PrismaClient): any {
+        let resolver = {};
         let res = [
-            ResolversHub(prisma, vpn),
+            ResolversHub(db, vpn),
             ResolversAccessList(vpn),
-            ResolversVeyon(prisma, vpn),
-            ResolversUser(prisma, vpn),
-            ResolversSystem(prisma, vpn),
-            resolversGroup(prisma, vpn),
+            ResolversVeyon(db, vpn),
+            ResolversUser(db, vpn),
+            ResolversSystem(db, vpn),
+            resolversGroup(db, vpn),
         ];
 
         res.forEach((r) => {

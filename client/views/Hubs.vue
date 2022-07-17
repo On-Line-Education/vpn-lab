@@ -1,6 +1,10 @@
 <template>
     <div class="py-4 container-fluid">
-        <div class="row" v-if="reactiveHubs.hubs != null" :key="reactiveHubs.hubs.length">
+        <div
+            class="row"
+            v-if="reactiveHubs.hubs != null"
+            :key="reactiveHubs.hubs.length"
+        >
             <div class="col-12">
                 <HubsTable :hubs="reactiveHubs.hubs" />
             </div>
@@ -54,10 +58,7 @@
                         />
                     </div>
                 </div>
-                <vsud-button
-                    variant="gradient"
-                    color="success"
-                    @click="addHub"
+                <vsud-button variant="gradient" color="success" @click="addHub"
                     >Dodaj</vsud-button
                 >
             </div>
@@ -81,41 +82,45 @@ const instructorPasscode = ref();
 
 const reactiveHubs = reactive({ hubs: null });
 
-
 async function addHub() {
     let hn = hubname.value.value,
-    iname = instructorName.value.value,
-    ipassword = instructorPassword.value.value,
-    ipasscode = instructorPasscode.value.value;
+        iname = instructorName.value.value,
+        ipassword = instructorPassword.value.value,
+        ipasscode = instructorPasscode.value.value;
 
-    if(hn == null || hn.trim() == ""){
+    if (hn == null || hn.trim() == "") {
         store.commit("setError", {
             message: "Należy podać nazwę huba",
         });
         return;
     }
-    if(iname == null || iname.trim() == ""){
+    if (iname == null || iname.trim() == "") {
         store.commit("setError", {
             message: "Należy podać nazwę dla konta instruktora",
         });
         return;
     }
-    if(ipassword == null || ipassword.trim() == ""){
+    if (ipassword == null || ipassword.trim() == "") {
         store.commit("setError", {
             message: "Należy podać hasło dla konta instruktora",
         });
         return;
     }
-    if(ipasscode == null || ipasscode.trim() == ""){
+    if (ipasscode == null || ipasscode.trim() == "") {
         store.commit("setError", {
             message: "Należy podać kod dostępu dla konta instruktora",
         });
         return;
     }
 
-    try{
-        await store.getters.getServer.createNewHub(hn, iname, ipassword, ipasscode);
-    } catch(e){
+    try {
+        await store.getters.getServer.createNewHub(
+            hn,
+            iname,
+            ipassword,
+            ipasscode
+        );
+    } catch (e) {
         store.commit("setError", e);
         return;
     }
@@ -123,7 +128,7 @@ async function addHub() {
     instructorName.value.value = "";
     instructorPassword.value.value = "";
     instructorPasscode.value.value = "";
-    store.commit('showAlert', {message: "Hub został utworzony"});
+    store.commit("showAlert", { message: "Hub został utworzony" });
     await refreshHubs();
 }
 
@@ -135,7 +140,6 @@ async function refreshHubs() {
         hubs.data.listHubs.HubList.forEach((hub) => {
             hubsList.push({
                 name: hub.HubName_str,
-                school: "TODO",
                 status: hub.Online_bool ? "Online" : "Offline",
                 working: hub.Online_bool,
                 id: id++,
