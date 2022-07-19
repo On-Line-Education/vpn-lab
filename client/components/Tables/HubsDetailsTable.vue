@@ -49,7 +49,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="user in reactiveHub.hub.sortData.data" :key="user.key">
+                        <tr
+                            v-for="user in reactiveHub.hub.sortData.data"
+                            :key="user.key"
+                        >
                             <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
@@ -70,11 +73,18 @@
                                         class="d-flex flex-column justify-content-center"
                                         v-for="(group, index) in user.group"
                                     >
-                                        <h6 class="mb-0 text-sm" v-if="index+1==user.group.length || user.group.length < 2">
-                                    {{ group }} 
+                                        <h6
+                                            class="mb-0 text-sm"
+                                            v-if="
+                                                index + 1 ==
+                                                    user.group.length ||
+                                                user.group.length < 2
+                                            "
+                                        >
+                                            {{ group }}
                                         </h6>
                                         <h6 class="mb-0 text-sm" v-else>
-                                    {{ group }}, 
+                                            {{ group }},
                                         </h6>
                                     </div>
                                 </div>
@@ -107,7 +117,13 @@
                                     variant="outline"
                                     size="sm"
                                     @click="deleteUser(user.username)"
-                                    v-if="isInstructor && user.role.toUpperCase() != 'INSTRUCTOR'"
+                                    v-if="
+                                        isInstructor &&
+                                        ((user.role.toUpperCase() ===
+                                            'INSTRUCTOR' &&
+                                            instructorsCount > 1) ||
+                                            user.role.toUpperCase() === 'USER')
+                                    "
                                 >
                                     Usuń
                                 </vsud-button>
@@ -164,19 +180,21 @@
                         </div>
                     </div>
                 </div>
-                <vsud-button
-                    variant="gradient"
-                    color="success"
-                    @click="addUser"
+                <vsud-button variant="gradient" color="success" @click="addUser"
                     >Dodaj</vsud-button
                 >
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <!-- Modal -->
-        <div class="modal modal-custom" tabindex="-1" role="dialog" ref="showGroupsEdit">
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="showGroupsEdit"
+        >
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -192,16 +210,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <div
-                                class="form-check"
-                            >
+                            <div class="form-check">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
                                     v-model="newGroup"
-                                    :disabled="
-                                        (groups.value?.length ?? 0) == 0
-                                    "
+                                    :disabled="(groups.value?.length ?? 0) == 0"
                                     ref="newGroupCheckbox"
                                     v-on:change="newGroupChanged"
                                 />
@@ -209,10 +223,7 @@
                                     >Nowa grupa</label
                                 >
                             </div>
-                            <select
-                                class="form-control"
-                                ref="selectedGroup"
-                            >
+                            <select class="form-control" ref="selectedGroup">
                                 <option
                                     v-for="group in groups.value"
                                     :value="group"
@@ -235,12 +246,26 @@
                         >
                             Dodaj
                         </button>
-                        <hr v-if="selectedUserGroups.groups?.length ?? 0 > 0">
+                        <hr v-if="selectedUserGroups.groups?.length ?? 0 > 0" />
                         <div>
-                            <div class="d-flex" style="list-style-type: none; font-size: 24px" v-for="group in selectedUserGroups.groups">
-                                <button class="btn btn-outline-danger" style="margin-right: 5px" @click="removeFromGroup(selectedUser.username, group)">
+                            <div
+                                class="d-flex"
+                                style="list-style-type: none; font-size: 24px"
+                                v-for="group in selectedUserGroups.groups"
+                            >
+                                <button
+                                    class="btn btn-outline-danger"
+                                    style="margin-right: 5px"
+                                    @click="
+                                        removeFromGroup(
+                                            selectedUser.username,
+                                            group
+                                        )
+                                    "
+                                >
                                     Usuń
-                                </button> {{group}}
+                                </button>
+                                {{ group }}
                             </div>
                         </div>
                     </div>
@@ -258,9 +283,14 @@
         </div>
     </div>
 
-    <div class="col-md-4" style="z-index: 10;">
+    <div class="col-md-4" style="z-index: 10000">
         <!-- Modal -->
-        <div class="modal modal-custom" tabindex="-1" role="dialog" ref="usureModal">
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="usureModal"
+        >
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -295,13 +325,20 @@
         </div>
     </div>
 
-    <div class="col-md-4" style="z-index: 10;">
+    <div class="col-md-4" style="z-index: 10001">
         <!-- Modal -->
-        <div class="modal modal-custom" tabindex="-1" role="dialog" ref="cantModal">
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="cantModal"
+        >
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Nie można wykonać tej operacji</h5>
+                        <h5 class="modal-title">
+                            Nie można wykonać tej operacji
+                        </h5>
                         <button
                             type="button"
                             class="btn-close text-dark"
@@ -311,7 +348,10 @@
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
-                    <div class="modal-body">Próbujesz przypisać użytkownika do grupy, w której już się znajduje</div>
+                    <div class="modal-body">
+                        Próbujesz przypisać użytkownika do grupy, w której już
+                        się znajduje
+                    </div>
                     <div class="modal-footer">
                         <button
                             type="button"
@@ -360,8 +400,8 @@ const inputGroupNameModal = ref();
 const inputGroupDoneModal = ref();
 
 const showGroupsEdit = ref();
-const selectedUserGroups = reactive({groups:[]});
-const selectedUser = reactive({username:''});
+const selectedUserGroups = reactive({ groups: [] });
+const selectedUser = reactive({ username: "" });
 
 const userName = ref();
 const userPassword = ref();
@@ -378,13 +418,23 @@ const date = computed(() => {
     return Date.now();
 });
 
+const instructorsCount = computed(() => {
+    return reactiveHub.hub.sortData.data.filter((el) => {
+        return el.role.toUpperCase() === "INSTRUCTOR";
+    }).length;
+});
+
 function closeCantModal() {
     cantModal.value.style.display = "none";
 }
 
 function newGroupChanged() {
-    selectedGroup.value.style.display = newGroupCheckbox.value.checked ? "none" : "block";
-    inputGroupNameModal.value.style.display = newGroupCheckbox.value.checked ? "block" : "none";
+    selectedGroup.value.style.display = newGroupCheckbox.value.checked
+        ? "none"
+        : "block";
+    inputGroupNameModal.value.style.display = newGroupCheckbox.value.checked
+        ? "block"
+        : "none";
 }
 
 async function addUser() {
@@ -393,30 +443,36 @@ async function addUser() {
         password = userPassword.value.value,
         permission = "USER";
 
-    if(name == null || name.trim() == ""){
+    if (name == null || name.trim() == "") {
         store.commit("setError", {
             message: "Należy podać nazwę użytkownika",
         });
         return;
     }
-    if(passcode == null || passcode.trim() == ""){
+    if (password == null || password.trim() == "") {
         store.commit("setError", {
             message: "Należy podać hasło dla konta użytkownika",
         });
         return;
     }
-    if(password == null || password.trim() == ""){
+    if (passcode == null || passcode.trim() == "") {
         store.commit("setError", {
             message: "Należy podać kod dostępu dla konta użytkownika",
         });
         return;
     }
 
-    if(isAdmin){
-        permission = selectedPermission.value.value.toUpperCase()
+    if (isAdmin) {
+        permission = selectedPermission.value.value.toUpperCase();
     }
 
-    await store.getters.getServer.createUser(hubname, name, password, passcode, permission);
+    await store.getters.getServer.createUser(
+        hubname,
+        name,
+        password,
+        passcode,
+        permission
+    );
     userName.value.value = "";
     userPasscode.value.value = "";
     userPassword.value.value = "";
@@ -438,10 +494,10 @@ async function deleteUser(username) {
 
 function updateGroupData() {
     let username = selectedUser.username;
-    if(username == null || username.trim() == ""){
+    if (username == null || username.trim() == "") {
         return;
     }
-    selectedUserGroups.groups = reactiveHub.hub.sortData.data.find(e=>{
+    selectedUserGroups.groups = reactiveHub.hub.sortData.data.find((e) => {
         return e.username == username;
     }).group;
 }
@@ -460,13 +516,15 @@ async function refreshUsers() {
         hubUsers.push({
             username: userGroup.user.Name_str,
             group: userGroup.groups ? userGroup.groups : [],
-            role: userGroup.role
+            role: userGroup.role,
         });
     });
-    reactiveHub.hub = new TableSorter(hubUsers.map((el, index) => {
-        el.key = date + index;
-        return el;
-    }));
+    reactiveHub.hub = new TableSorter(
+        hubUsers.map((el, index) => {
+            el.key = date + index;
+            return el;
+        })
+    );
     updateGroupData();
 }
 
@@ -495,15 +553,11 @@ async function addUserToGroup() {
         }
     }
 
-    if(selectedUserGroups.groups.includes(groupName)){
+    if (selectedUserGroups.groups.includes(groupName)) {
         cantModal.value.style.display = "block";
         return;
     }
-    await store.getters.getServer.addUserToGroup(
-        hubname,
-        groupName,
-        username
-    );
+    await store.getters.getServer.addUserToGroup(hubname, groupName, username);
     await refresh();
     await refreshUsers();
 }
@@ -511,10 +565,12 @@ async function addUserToGroup() {
 onMounted(async () => {
     await refresh();
     await refreshUsers();
-    newGroupCheckbox.value.checked = (groups.value?.length ?? 0) == 0
-    newGroupChanged()
-    selectedGroup.value.style.display = (groups.value?.length ?? 0) > 0 ? selectedGroup.value.style.display : "none";
-    
+    newGroupCheckbox.value.checked = (groups.value?.length ?? 0) == 0;
+    newGroupChanged();
+    selectedGroup.value.style.display =
+        (groups.value?.length ?? 0) > 0
+            ? selectedGroup.value.style.display
+            : "none";
 });
 
 function closeModal() {
@@ -565,7 +621,11 @@ function removeFromGroup(username, group) {
     usureModal.value.style.display = "block";
     const cl = async () => {
         closeUsureModal();
-        await store.getters.getServer.removeFromSystemGroup(hubname, username, group);
+        await store.getters.getServer.removeFromSystemGroup(
+            hubname,
+            username,
+            group
+        );
         usureYesModal.value.removeEventListener("click", cl);
         await refreshUsers();
     };

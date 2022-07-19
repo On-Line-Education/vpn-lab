@@ -81,7 +81,14 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 data.csv.forEach((row: { name: string; passcode: string }) => {
                     namesToCheck.push({ name: row.name });
-                    passCodesToCheck.push({ loginKey: row.passcode });
+                    if (row.passcode) {
+                        passCodesToCheck.push({
+                            loginKey: crypto
+                                .createHash("SHA256")
+                                .update(row.passcode)
+                                .digest("hex"),
+                        });
+                    }
                 });
 
                 if (

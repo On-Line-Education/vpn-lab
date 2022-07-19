@@ -310,7 +310,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (user && ![Roles.ADMIN].includes(user.role)) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                return await vpn.hub.delete(hubName);
+
+                await prisma.hub.delete({
+                    where: {
+                        title: hubName,
+                    },
+                });
+
+                await vpn.hub.delete(hubName);
+                return true;
             },
         },
         HubType: {

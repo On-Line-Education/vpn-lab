@@ -57,7 +57,21 @@ export default gql`
 
     type Mutation {
         changeUserSettings(settings: UserSettings): Boolean
-        createUser(hubname: String, username: String, password: String, passcode: String, role: Permission): Boolean
+        createUser(
+            hubname: String
+            username: String
+            password: String
+            passcode: String
+            role: Permission
+        ): Boolean
+        updateUser(
+            hubname: String
+            oldname: String
+            username: String
+            password: String
+            passcode: String
+            role: Permission
+        ): Boolean
         deleteUser(hubname: String, username: String): Boolean
     }
 `;

@@ -1,6 +1,6 @@
 {
-    "watch": ["dist/server"],
-    "ext": ".js",
+    "watch": ["server"],
+    "ext": ".ts",
     "ignore": [],
-    "exec": "node ./dist/server/index.js"
+    "exec": "npx ts-node ./server/index.ts"
   }

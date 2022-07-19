@@ -401,6 +401,84 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 return true;
             },
+            async updateUser(
+                _: any,
+                { hubname, oldname, username, password, passcode, role },
+                { user, api }
+            ) {
+                if (!user) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+                if (user && ![Roles.ADMIN].includes(user.role)) {
+                    throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                if (
+                    (await prisma.user.findFirst({
+                        where: {
+                            name: username,
+                            OR: {
+                                loginKey: passcode,
+                            },
+                        },
+                    })) != null
+                ) {
+                    throw new Error(
+                        "Istnieje już użytkownik z taką nazwą lub kodem dostępu"
+                    );
+                }
+                let currUser = await prisma.user.findFirst({
+                    where: {
+                        name: oldname,
+                    },
+                });
+                // console.log({
+                //     currUser,
+                //     hubname,
+                //     oldname,
+                //     username,
+                //     password,
+                //     passcode,
+                //     role,
+                // });
+
+                let veyonConnector = new VeyonConnector();
+                let pubKey = null,
+                    privKey = null;
+                if (role === Roles.INSTRUCTOR && !currUser.veyonKeyPriv) {
+                    let { pub, priv } = await veyonConnector.getKeyPair();
+                    pubKey = pub;
+                    privKey = priv;
+                }
+
+                await prisma.user.update({
+                    where: {
+                        name: oldname,
+                    },
+                    data: {
+                        name: username,
+                        role: role,
+                        passHash: password
+                            ? crypto
+                                  .createHash("SHA256")
+                                  .update(password)
+                                  .digest("hex")
+                            : currUser.passHash,
+                        veyonKeyPriv: privKey ? privKey : currUser.veyonKeyPriv,
+                        veyonKeyPub: pubKey ? pubKey : currUser.veyonKeyPub,
+                        loginKey: passcode
+                            ? crypto
+                                  .createHash("SHA256")
+                                  .update(passcode)
+                                  .digest("hex")
+                            : currUser.loginKey,
+                    },
+                });
+
+                // await vpn.user.update(hubname, oldname, username);
+
+                return true;
+            },
             async deleteUser(_: any, { hubname, username }, { user, api }) {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");

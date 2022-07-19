@@ -6,7 +6,7 @@
             :key="reactiveHubs.hubs.length"
         >
             <div class="col-12">
-                <HubsTable :hubs="reactiveHubs.hubs" />
+                <HubsTable :hubs="reactiveHubs.hubs" @reload="refreshHubs()" />
             </div>
         </div>
         <card
@@ -17,50 +17,55 @@
             iconClass="text-white fas fa-solid fa-spinner"
             iconBackground="bg-gradient-warning"
         />
-    </div>
-    <div class="d-flex" v-if="isAdmin">
-        <div class="mb-4 card full-width">
-            <div class="p-3 card-body flex-space-between">
-                <div class="d-flex flex-row-reverse justify-content-between">
-                    <div class="numbers">
-                        <h3>Dodaj hub</h3>
-                        <label>Nazwa huba:</label>
-                        <input
-                            type="text"
-                            placeholder="Nazwa huba"
-                            name="name"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="hubname"
-                        />
-                        <label>Nazwa konta instruktora:</label>
-                        <input
-                            type="text"
-                            placeholder="Nazwa konta instruktora"
-                            name="name"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="instructorName"
-                        />
-                        <label>Hasło instruktora:</label>
-                        <input
-                            type="password"
-                            placeholder="Hasło instruktora"
-                            name="password"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="instructorPassword"
-                        />
-                        <label>Kod dostępu instruktora:</label>
-                        <input
-                            type="password"
-                            placeholder="Kod dostępu instruktora"
-                            name="passcode"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="instructorPasscode"
-                        />
+        <div class="d-flex" v-if="isAdmin">
+            <div class="mb-4 card full-width">
+                <div class="p-3 card-body flex-space-between">
+                    <div
+                        class="d-flex flex-row-reverse justify-content-between"
+                    >
+                        <div class="numbers">
+                            <h3>Dodaj hub</h3>
+                            <label>Nazwa huba:</label>
+                            <input
+                                type="text"
+                                placeholder="Nazwa huba"
+                                name="name"
+                                class="form-control d-flex justify-content-start mb-3"
+                                ref="hubname"
+                            />
+                            <label>Nazwa konta instruktora:</label>
+                            <input
+                                type="text"
+                                placeholder="Nazwa konta instruktora"
+                                name="name"
+                                class="form-control d-flex justify-content-start mb-3"
+                                ref="instructorName"
+                            />
+                            <label>Hasło instruktora:</label>
+                            <input
+                                type="password"
+                                placeholder="Hasło instruktora"
+                                name="password"
+                                class="form-control d-flex justify-content-start mb-3"
+                                ref="instructorPassword"
+                            />
+                            <label>Kod dostępu instruktora:</label>
+                            <input
+                                type="password"
+                                placeholder="Kod dostępu instruktora"
+                                name="passcode"
+                                class="form-control d-flex justify-content-start mb-3"
+                                ref="instructorPasscode"
+                            />
+                        </div>
                     </div>
+                    <vsud-button
+                        variant="gradient"
+                        color="success"
+                        @click="addHub"
+                        >Dodaj</vsud-button
+                    >
                 </div>
-                <vsud-button variant="gradient" color="success" @click="addHub"
-                    >Dodaj</vsud-button
-                >
             </div>
         </div>
     </div>

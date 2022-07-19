@@ -13,7 +13,7 @@ export default class Connection {
 
     constructor() {
         this._link = createHttpLink({
-            uri: require('../config').ENV.API_URL,
+            uri: require("../config").ENV.API_URL,
         });
         this._apollo = new ApolloClient({
             link: this._link,
@@ -357,7 +357,13 @@ export default class Connection {
             },
         });
     }
-    async setIPsec(L2TP_Raw, L2TP_IPsec, EtherIP_IPsec, IPsec_Secret, L2TP_DefaultHub) {
+    async setIPsec(
+        L2TP_Raw,
+        L2TP_IPsec,
+        EtherIP_IPsec,
+        IPsec_Secret,
+        L2TP_DefaultHub
+    ) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation SetIpSec($ipsec: IPSec) {
@@ -376,8 +382,8 @@ export default class Connection {
                     L2TP_IPsec_bool: L2TP_IPsec,
                     EtherIP_IPsec_bool: EtherIP_IPsec,
                     IPsec_Secret_str: IPsec_Secret,
-                    L2TP_DefaultHub_str: L2TP_DefaultHub
-                }
+                    L2TP_DefaultHub_str: L2TP_DefaultHub,
+                },
             },
             context: {
                 headers: {
@@ -419,17 +425,25 @@ export default class Connection {
             },
         });
     }
-    async addFile(name, url, permission ) {
+    async addFile(name, url, permission) {
         return await this._apollo.mutate({
             mutation: gql`
-                mutation AddFileEntry($name: String, $permission: Permission, $url: String) {
-                    addFileEntry(name: $name, permission: $permission, url: $url)
+                mutation AddFileEntry(
+                    $name: String
+                    $permission: Permission
+                    $url: String
+                ) {
+                    addFileEntry(
+                        name: $name
+                        permission: $permission
+                        url: $url
+                    )
                 }
             `,
             variables: {
                 name,
                 permission,
-                url
+                url,
             },
             context: {
                 headers: {
@@ -446,12 +460,12 @@ export default class Connection {
                 }
             `,
             variables: {
-                "data": {
+                data: {
                     id,
                     name,
                     url,
-                    permission
-                }
+                    permission,
+                },
             },
             context: {
                 headers: {
@@ -460,35 +474,15 @@ export default class Connection {
             },
         });
     }
-    async deleteFile(id){
+    async deleteFile(id) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation DeleteFileEntry($deleteFileEntryId: Int) {
                     deleteFileEntry(id: $deleteFileEntryId)
                 }
             `,
-            variables:{
-                deleteFileEntryId: id
-            },
-            context: {
-                headers: {
-                    authorization: this._token,
-                },
-            },
-        })
-    }
-    async createNewHub(hubName, instructorName, instructorPassword, instructorPasscode) {
-        return await this._apollo.mutate({
-            mutation: gql`
-                mutation CreateNewHub($hubName: String, $instructorName: String, $instructorPassword: String, $instructorPasscode: String) {
-                    createNewHub(hubName: $hubName, instructorName: $instructorName, instructorPassword: $instructorPassword, instructorPasscode: $instructorPasscode)
-                }
-            `,
             variables: {
-                hubName,
-                instructorName,
-                instructorPassword,
-                instructorPasscode
+                deleteFileEntryId: id,
             },
             context: {
                 headers: {
@@ -497,28 +491,111 @@ export default class Connection {
             },
         });
     }
-    async createUser(hubname, username, password, passcode, role){
+    async createNewHub(
+        hubName,
+        instructorName,
+        instructorPassword,
+        instructorPasscode
+    ) {
         return await this._apollo.mutate({
             mutation: gql`
-                mutation CreateUser($hubname: String, $username: String, $password: String, $passcode: String, $role: Permission) {
-                    createUser(hubname: $hubname, username: $username, password: $password, passcode: $passcode, role: $role)
+                mutation CreateNewHub(
+                    $hubName: String
+                    $instructorName: String
+                    $instructorPassword: String
+                    $instructorPasscode: String
+                ) {
+                    createNewHub(
+                        hubName: $hubName
+                        instructorName: $instructorName
+                        instructorPassword: $instructorPassword
+                        instructorPasscode: $instructorPasscode
+                    )
                 }
             `,
             variables: {
-                hubname, 
-                username, 
-                password, 
-                passcode, 
-                role
-            }, 
+                hubName,
+                instructorName,
+                instructorPassword,
+                instructorPasscode,
+            },
             context: {
                 headers: {
                     authorization: this._token,
                 },
-            }
-        })
+            },
+        });
     }
-    async deleteUser(hubname, username){
+    async createUser(hubname, username, password, passcode, role) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation CreateUser(
+                    $hubname: String
+                    $username: String
+                    $password: String
+                    $passcode: String
+                    $role: Permission
+                ) {
+                    createUser(
+                        hubname: $hubname
+                        username: $username
+                        password: $password
+                        passcode: $passcode
+                        role: $role
+                    )
+                }
+            `,
+            variables: {
+                hubname,
+                username,
+                password,
+                passcode,
+                role,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async updateUser(hubname, oldname, username, password, passcode, role) {
+        return await this._apollo.mutate({
+            mutation: gql`
+                mutation UpdateUser(
+                    $hubname: String
+                    $oldname: String
+                    $username: String
+                    $password: String
+                    $passcode: String
+                    $role: Permission
+                ) {
+                    updateUser(
+                        hubname: $hubname
+                        oldname: $oldname
+                        username: $username
+                        password: $password
+                        passcode: $passcode
+                        role: $role
+                    )
+                }
+            `,
+            variables: {
+                hubname,
+                oldname,
+                username,
+                password,
+                passcode,
+                role,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+    }
+    async deleteUser(hubname, username) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation DeleteUser($hubname: String, $username: String) {
@@ -526,15 +603,15 @@ export default class Connection {
                 }
             `,
             variables: {
-                hubname, 
-                username
-            }, 
+                hubname,
+                username,
+            },
             context: {
                 headers: {
                     authorization: this._token,
                 },
-            }
-        })
+            },
+        });
     }
     async listUserHubs(username) {
         return await this._apollo.query({
@@ -569,13 +646,32 @@ export default class Connection {
                 }
             `,
             variables: {
-                username
+                username,
             },
             context: {
                 headers: {
                     authorization: this._token,
                 },
-            }
-        })
+            },
+        });
+    }
+    async deleteHub(hubName) {
+        return await this._apollo.query({
+            query: gql`
+                mutation DeleteHub($hubName: String) {
+                    deleteHub(hubName: $hubName) {
+                        HubName_str
+                    }
+                }
+            `,
+            variables: {
+                hubName,
+            },
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
     }
 }

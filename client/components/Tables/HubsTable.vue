@@ -24,12 +24,6 @@
                             >
                                 Nazwa
                             </th>
-                            <!-- <th
-                                class="text-uppercase text-secondary font-weight-bolder opacity-7 ps-2"
-                                @click="tableSorter.sort('school')"
-                            >
-                                Szkoła
-                            </th> -->
                             <th
                                 class="text-center text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="tableSorter.sort('status')"
@@ -56,11 +50,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <!-- <td>
-                                <p class="text-xs font-weight-bold mb-0">
-                                    {{ hub.school }}
-                                </p>
-                            </td> -->
                             <td class="align-middle text-center text-sm">
                                 <vsud-badge
                                     v-if="hub.working"
@@ -86,13 +75,63 @@
                                 >
                                     Więcej
                                 </vsud-button>
+                                <vsud-button
+                                    @click="del(hub.name)"
+                                    color="danger"
+                                    variant="outline"
+                                    size="sm"
+                                    v-if="isAdmin"
+                                >
+                                    Usuń
+                                </vsud-button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <div class="card-footer"> 
+        <div class="card-footer"></div>
+    </div>
+
+    <div class="col-md-4" style="z-index: 10">
+        <!-- Modal -->
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="usureModal"
+        >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Czy na pewno?</h5>
+                        <button
+                            type="button"
+                            class="btn-close text-dark"
+                            @click="closeUsureModal()"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn bg-gradient-secondary"
+                            @click="closeUsureModal()"
+                        >
+                            Nie
+                        </button>
+                        <button
+                            type="button"
+                            class="btn bg-gradient-primary"
+                            ref="usureYesModal"
+                        >
+                            Tak
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -103,9 +142,9 @@ import VsudBadge from "../Basic/VsudBadge.vue";
 import VsudButton from "../Basic/VsudButton.vue";
 import VsudInput from "../Basic/VsudInput.vue";
 import { useRouter } from "vue-router";
-import { onMounted } from "vue";
 import TableSorter from "../../plugins/table-sorter";
 import { useStore } from "vuex";
+import { ref } from "@vue/reactivity";
 const store = useStore();
 
 const router = useRouter();
@@ -114,9 +153,47 @@ const { hubs } = defineProps({
     hubs: Array,
 });
 
+const usureModal = ref();
+
+const emit = defineEmits(["reload"]);
+
 const tableSorter = new TableSorter(hubs);
+
+const isAdmin = store.getters.getRole == "admin";
 
 function more(hubname) {
     router.push({ name: "HUB", params: { hubname } });
+}
+
+async function del(hubname) {
+    usureModal.value.style.display = "block";
+    const cl = async () => {
+        closeUsureModal();
+        try {
+            let users = (await store.getters.getServer.listHubUsers(hubname))
+                .data.getHubUsers;
+
+            // delete all users
+            for (let index in users) {
+                console.log(users[index].user.Name_str);
+                await store.getters.getServer.deleteUser(
+                    hubname,
+                    users[index].user.Name_str
+                );
+            }
+
+            await store.getters.getServer.deleteHub(hubname);
+            usureModal.value.removeEventListener("click", cl);
+            emit("reload");
+        } catch (e) {
+            store.commit("setError", e);
+            return;
+        }
+    };
+    usureModal.value.addEventListener("click", cl);
+}
+
+async function closeUsureModal() {
+    usureModal.value.style.display = "none";
 }
 </script>
