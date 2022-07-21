@@ -163,6 +163,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         let dbuser = await prisma.user.create({
                             data: {
                                 name: user.name,
+                                username: user.name,
                                 role: user.role,
                                 passHash: user.password
                                     ? crypto

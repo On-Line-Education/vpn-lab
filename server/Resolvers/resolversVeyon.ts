@@ -6,6 +6,7 @@ import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
         Query: {
+            // username must be vpn name
             async getVeyonKeys(_: any, { hubName, username }: any, { api }) {
                 if (!api) {
                     throw new AuthenticationError("Nie masz uprawnień");
@@ -26,6 +27,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
         },
         Mutation: {
+            // studentName and teacherName must be vpn name
             async changeUserGroupToTeacher(
                 _: any,
                 { studentName, teacherName }: any,
