@@ -4,6 +4,7 @@ export default gql`
     input UserSettings {
         newPassword: String
         oldPassword: String!
+        username: String
     }
 
     type Token {
@@ -24,7 +25,7 @@ export default gql`
         username: String
         role: String
         veyonKeyPriv: String
-        veyonKeyPub: String
+        veyonKeyPub: String 
         groupName: String
     }
 

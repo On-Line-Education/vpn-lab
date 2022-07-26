@@ -19,7 +19,7 @@
                     <li class="nav-item d-flex align-items-center">
                         <div class="px-0 text-body">
                             <i class="fa-solid fa-user me-sm-1"></i>
-                            <span>{{ user.name }}</span>
+                            <span>{{ username }}</span>
                         </div>
                     </li>
                     <li class="nav-item ps-3 d-flex align-items-center">
@@ -59,7 +59,7 @@
 </template>
 <script setup>
 import Breadcrumbs from "./Breadcrumbs.vue";
-import { computed, onUpdated, ref } from "vue";
+import { computed, onMounted, onUpdated, reactive, ref, watch } from "vue";
 import { mapMutations, mapActions, useStore } from "vuex";
 import { useRoute } from "vue-router";
 
@@ -85,6 +85,15 @@ const toggleSidebar = () => {
 const currentRouteName = computed(() => {
     return route.name;
 });
+
+const username = computed(() => {
+    return store.state.username;
+});
+
+onMounted(() => {
+    store.commit("setUsername", store.getters.getServer.getUser().username);
+});
+
 onUpdated(() => {
     window.addEventListener("scroll", () => {
         if (!navbar.classList) return;
@@ -99,5 +108,4 @@ onUpdated(() => {
         }
     });
 });
-const user = store.getters.getServer.getUser();
 </script>

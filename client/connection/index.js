@@ -172,6 +172,7 @@ export default class Connection {
                         }
                         groups
                         role
+                        username
                     }
                 }
             `,
@@ -244,7 +245,7 @@ export default class Connection {
             },
         });
     }
-    async changeUserSettings({ newPassword, oldPassword }) {
+    async changeUserSettings({ newPassword, oldPassword, username }) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation ChangeUserSettings($settings: UserSettings) {
@@ -255,6 +256,7 @@ export default class Connection {
                 settings: {
                     newPassword,
                     oldPassword,
+                    username,
                 },
             },
             context: {
@@ -315,24 +317,28 @@ export default class Connection {
     }
     async _setUser() {
         if (!this._user) {
-            let user = await this._apollo.query({
-                query: gql`
-                    query GetCurrentUser {
-                        getCurrentUser {
-                            id
-                            name
-                            role
-                        }
-                    }
-                `,
-                context: {
-                    headers: {
-                        authorization: this._token,
-                    },
-                },
-            });
-            this._user = user.data.getCurrentUser;
+            await this.refreshUser();
         }
+    }
+    async refreshUser() {
+        let user = await this._apollo.query({
+            query: gql`
+                query GetCurrentUser {
+                    getCurrentUser {
+                        id
+                        name
+                        role
+                        username
+                    }
+                }
+            `,
+            context: {
+                headers: {
+                    authorization: this._token,
+                },
+            },
+        });
+        this._user = user.data.getCurrentUser;
     }
     getUser() {
         return this._user;
@@ -494,6 +500,7 @@ export default class Connection {
     async createNewHub(
         hubName,
         instructorName,
+        instructorUsername,
         instructorPassword,
         instructorPasscode
     ) {
@@ -502,12 +509,14 @@ export default class Connection {
                 mutation CreateNewHub(
                     $hubName: String
                     $instructorName: String
+                    $instructorUsername: String
                     $instructorPassword: String
                     $instructorPasscode: String
                 ) {
                     createNewHub(
                         hubName: $hubName
                         instructorName: $instructorName
+                        instructorUsername: $instructorUsername
                         instructorPassword: $instructorPassword
                         instructorPasscode: $instructorPasscode
                     )
@@ -516,6 +525,7 @@ export default class Connection {
             variables: {
                 hubName,
                 instructorName,
+                instructorUsername,
                 instructorPassword,
                 instructorPasscode,
             },
@@ -526,11 +536,12 @@ export default class Connection {
             },
         });
     }
-    async createUser(hubname, username, password, passcode, role) {
+    async createUser(hubname, name, username, password, passcode, role) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation CreateUser(
                     $hubname: String
+                    $name: String
                     $username: String
                     $password: String
                     $passcode: String
@@ -538,6 +549,7 @@ export default class Connection {
                 ) {
                     createUser(
                         hubname: $hubname
+                        name: $name
                         username: $username
                         password: $password
                         passcode: $passcode
@@ -547,6 +559,7 @@ export default class Connection {
             `,
             variables: {
                 hubname,
+                name,
                 username,
                 password,
                 passcode,
@@ -559,20 +572,18 @@ export default class Connection {
             },
         });
     }
-    async updateUser(hubname, oldname, username, password, passcode, role) {
-        return await this._apollo.mutate({
+    async updateUser(vpnname, username, password, passcode, role) {
+        let updated = await this._apollo.mutate({
             mutation: gql`
                 mutation UpdateUser(
-                    $hubname: String
-                    $oldname: String
+                    $vpnname: String
                     $username: String
                     $password: String
                     $passcode: String
                     $role: Permission
                 ) {
                     updateUser(
-                        hubname: $hubname
-                        oldname: $oldname
+                        vpnname: $vpnname
                         username: $username
                         password: $password
                         passcode: $passcode
@@ -581,8 +592,7 @@ export default class Connection {
                 }
             `,
             variables: {
-                hubname,
-                oldname,
+                vpnname,
                 username,
                 password,
                 passcode,
@@ -594,6 +604,8 @@ export default class Connection {
                 },
             },
         });
+        await this.refreshUser();
+        return updated;
     }
     async deleteUser(hubname, username) {
         return await this._apollo.mutate({

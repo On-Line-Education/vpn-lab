@@ -175,7 +175,6 @@ async function del(hubname) {
 
             // delete all users
             for (let index in users) {
-                console.log(users[index].user.Name_str);
                 await store.getters.getServer.deleteUser(
                     hubname,
                     users[index].user.Name_str

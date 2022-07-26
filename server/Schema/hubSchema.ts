@@ -137,6 +137,7 @@ export default gql`
         createNewHub(
             hubName: String
             instructorName: String
+            instructorUsername: String
             instructorPassword: String
             instructorPasscode: String
         ): Boolean

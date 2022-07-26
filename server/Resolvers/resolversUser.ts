@@ -281,7 +281,13 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 _: any,
                 {
                     settings,
-                }: { settings: { newPassword; oldPassword; username } },
+                }: {
+                    settings: {
+                        newPassword: string;
+                        oldPassword: string;
+                        username: string;
+                    };
+                },
                 { user, api }
             ) {
                 if (!user) {
@@ -296,27 +302,44 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (user.passHash !== oldPass) {
                     throw new Error("Podane hasło jest nieprawidłowe");
                 }
+
+                let data = {};
+
                 if (
-                    !/(?=.*[0-9])(?=.*[A-Z])(.*[a-zA-Z0-9.*]){8,}$/g.test(
-                        settings.newPassword
-                    )
+                    settings.newPassword !== "" &&
+                    settings.newPassword !== null
                 ) {
-                    throw new Error(
-                        "Hasło musi składać się z minimum 8 znaków, posiadać minimum jedną dużą literę oraz cyfrę"
-                    );
+                    if (
+                        !/(?=.*[0-9])(?=.*[A-Z])(.*[a-zA-Z0-9.*]){8,}$/g.test(
+                            settings.newPassword
+                        )
+                    ) {
+                        throw new Error(
+                            "Hasło musi składać się z minimum 8 znaków, posiadać minimum jedną dużą literę oraz cyfrę"
+                        );
+                    }
+                    let newPass = crypto
+                        .createHash("SHA256")
+                        .update(settings.newPassword)
+                        .digest("hex");
+                    data["passHash"] = newPass;
                 }
-                let newPass = crypto
-                    .createHash("SHA256")
-                    .update(settings.newPassword)
-                    .digest("hex");
+
+                if (settings.username) {
+                    if (settings.username.length < 3) {
+                        throw new Error(
+                            "Nazwa użytkownika musi mieć minimum 3 znaki"
+                        );
+                    }
+                    data["username"] = settings.username;
+                }
 
                 await prisma.user.update({
                     where: {
                         id: user.id,
                     },
                     data: {
-                        passHash: newPass,
-                        username: settings.username,
+                        ...data,
                     },
                 });
 

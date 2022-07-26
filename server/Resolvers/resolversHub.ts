@@ -156,6 +156,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 {
                     hubName,
                     instructorName,
+                    instructorUsername,
                     instructorPassword,
                     instructorPasscode,
                 }: any,
@@ -227,7 +228,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     data: {
                         name: instructorName,
                         role: Roles.INSTRUCTOR,
-                        username: instructorName,
+                        username: instructorUsername,
                         passHash: crypto
                             .createHash("SHA256")
                             .update(instructorPassword)

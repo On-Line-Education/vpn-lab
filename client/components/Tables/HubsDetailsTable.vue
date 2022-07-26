@@ -25,6 +25,12 @@
                         <tr>
                             <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7"
+                                @click="reactiveHub.hub.sort('name')"
+                            >
+                                Nazwa VPN użytkownika
+                            </th>
+                            <th
+                                class="text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="reactiveHub.hub.sort('username')"
                             >
                                 Nazwa użytkownika
@@ -53,6 +59,17 @@
                             v-for="user in reactiveHub.hub.sortData.data"
                             :key="user.key"
                         >
+                            <td>
+                                <div class="d-flex px-2 py-1">
+                                    <div
+                                        class="d-flex flex-column justify-content-center"
+                                    >
+                                        <h6 class="mb-0 text-sm">
+                                            {{ user.name }}
+                                        </h6>
+                                    </div>
+                                </div>
+                            </td>
                             <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
@@ -108,7 +125,7 @@
                                     color="info"
                                     variant="outline"
                                     size="sm"
-                                    @click="changeGroups(user.username)"
+                                    @click="changeGroups(user.name)"
                                 >
                                     Edytuj grupy
                                 </vsud-button>
@@ -116,7 +133,7 @@
                                     color="danger"
                                     variant="outline"
                                     size="sm"
-                                    @click="deleteUser(user.username)"
+                                    @click="deleteUser(user.name)"
                                     v-if="
                                         isInstructor &&
                                         ((user.role.toUpperCase() ===
@@ -140,6 +157,14 @@
                 <div class="d-flex flex-row-reverse justify-content-between">
                     <div class="numbers">
                         <h3>Dodaj konto</h3>
+                        <label>Nazwa VPN konta:</label>
+                        <input
+                            type="text"
+                            placeholder="Nazwa konta"
+                            name="name"
+                            class="form-control d-flex justify-content-start mb-3"
+                            ref="vpnUserName"
+                        />
                         <label>Nazwa konta:</label>
                         <input
                             type="text"
@@ -403,6 +428,7 @@ const showGroupsEdit = ref();
 const selectedUserGroups = reactive({ groups: [] });
 const selectedUser = reactive({ username: "" });
 
+const vpnUserName = ref();
 const userName = ref();
 const userPassword = ref();
 const userPasscode = ref();
@@ -438,12 +464,19 @@ function newGroupChanged() {
 }
 
 async function addUser() {
-    let name = userName.value.value,
+    let name = vpnUserName.value.value,
+        username = userName.value.value,
         passcode = userPasscode.value.value,
         password = userPassword.value.value,
         permission = "USER";
 
     if (name == null || name.trim() == "") {
+        store.commit("setError", {
+            message: "Należy podać nazwę VPN użytkownika",
+        });
+        return;
+    }
+    if (username == null || username.trim() == "") {
         store.commit("setError", {
             message: "Należy podać nazwę użytkownika",
         });
@@ -469,6 +502,7 @@ async function addUser() {
     await store.getters.getServer.createUser(
         hubname,
         name,
+        username,
         password,
         passcode,
         permission
@@ -514,9 +548,10 @@ async function refreshUsers() {
     let users = await store.getters.getServer.listHubUsers(hubname);
     users.data.getHubUsers.forEach((userGroup) => {
         hubUsers.push({
-            username: userGroup.user.Name_str,
+            name: userGroup.user.Name_str,
             group: userGroup.groups ? userGroup.groups : [],
             role: userGroup.role,
+            username: userGroup.username,
         });
     });
     reactiveHub.hub = new TableSorter(

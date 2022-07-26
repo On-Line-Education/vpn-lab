@@ -29,6 +29,12 @@
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="reactiveUsers.users.sort('name')"
                             >
+                                Nazwa VPN
+                            </th>
+                            <th
+                                class="text-uppercase text-secondary font-weight-bolder opacity-7"
+                                @click="reactiveUsers.users.sort('username')"
+                            >
                                 Nazwa
                             </th>
                             <th
@@ -63,6 +69,17 @@
                                         class="d-flex flex-column justify-content-center"
                                     >
                                         <h6 class="mb-0 text-sm">
+                                            {{ user.username }}
+                                        </h6>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex px-2 py-1">
+                                    <div
+                                        class="d-flex flex-column justify-content-center"
+                                    >
+                                        <h6 class="mb-0 text-sm">
                                             {{ user.hub }}
                                         </h6>
                                     </div>
@@ -70,7 +87,7 @@
                             </td>
                             <td class="align-middle">
                                 <vsud-button
-                                    @click="edit(user.name, user.hub)"
+                                    @click="edit(user.name, user.username)"
                                     color="info"
                                     variant="outline"
                                     size="sm"
@@ -115,7 +132,6 @@
                             name="name"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="userName"
-                            readonly
                         />
                         <label>Hasło:</label>
                         <input
@@ -202,16 +218,14 @@ const date = computed(() => {
     return Date.now();
 });
 
-let currName = "",
-    currHubname = "";
+let currName = "";
 
-function edit(username, hubname) {
+function edit(name, username) {
     userName.value.value = username;
-    currName = username;
-    currHubname = hubname;
+    currName = name;
     selectedPermission.value.value = reactiveUsers.users.sortData.data.find(
         (user) => {
-            return user.name === username;
+            return user.name === name;
         }
     ).role;
     editModal.value.style.display = "block";
@@ -236,12 +250,13 @@ async function refreshUsers() {
             let users = await store.getters.getServer.listHubUsers(
                 hubsList[index].name
             );
-            console.log(users);
+            
             users.data.getHubUsers.forEach((userGroup) => {
                 hubUsers.push({
                     name: userGroup.user.Name_str,
                     hub: hubsList[index].name,
                     role: userGroup.role,
+                    username: userGroup.username,
                 });
             });
         }
@@ -264,8 +279,6 @@ async function refresh() {
 }
 
 async function save() {
-    // editModal.value.style.display = "block";
-    // const cl = async () => {
     closeEditModal();
     try {
         let name = userName.value.value,
@@ -281,11 +294,8 @@ async function save() {
         }
 
         permission = selectedPermission.value.value.toUpperCase();
-
         await store.getters.getServer.updateUser(
-            currHubname,
-            // currName,
-            name,
+            currName,
             name,
             password,
             passcode,
@@ -300,8 +310,6 @@ async function save() {
         store.commit("setError", e);
         return;
     }
-    // };
-    // editModal.value.addEventListener("click", cl);
 }
 
 async function closeEditModal() {

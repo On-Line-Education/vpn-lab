@@ -10,6 +10,7 @@ async function command(prisma, vpn, args) {
     await prisma.user.create({
         data: {
             name: args[1],
+            username: args[1],
             role: "admin",
             passHash: crypto
                 .createHash("SHA256")

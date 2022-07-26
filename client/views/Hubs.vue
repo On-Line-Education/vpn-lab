@@ -33,13 +33,21 @@
                                 class="form-control d-flex justify-content-start mb-3"
                                 ref="hubname"
                             />
+                            <label>Nazwa VPN konta instruktora:</label>
+                            <input
+                                type="text"
+                                placeholder="Nazwa VPN konta instruktora"
+                                name="name"
+                                class="form-control d-flex justify-content-start mb-3"
+                                ref="instructorName"
+                            />
                             <label>Nazwa konta instruktora:</label>
                             <input
                                 type="text"
                                 placeholder="Nazwa konta instruktora"
                                 name="name"
                                 class="form-control d-flex justify-content-start mb-3"
-                                ref="instructorName"
+                                ref="instructorUsername"
                             />
                             <label>Hasło instruktora:</label>
                             <input
@@ -82,6 +90,7 @@ const isAdmin = store.getters.getRole == "admin";
 
 const hubname = ref();
 const instructorName = ref();
+const instructorUsername = ref();
 const instructorPassword = ref();
 const instructorPasscode = ref();
 
@@ -89,6 +98,7 @@ const reactiveHubs = reactive({ hubs: null });
 
 async function addHub() {
     let hn = hubname.value.value,
+        iusername = instructorUsername.value.value,
         iname = instructorName.value.value,
         ipassword = instructorPassword.value.value,
         ipasscode = instructorPasscode.value.value;
@@ -118,10 +128,15 @@ async function addHub() {
         return;
     }
 
+    if (iusername.trim() === ""){
+        iusername = iname;
+    }
+
     try {
         await store.getters.getServer.createNewHub(
             hn,
             iname,
+            iusername,
             ipassword,
             ipasscode
         );

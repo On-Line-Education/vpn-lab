@@ -62,14 +62,6 @@ export default async function createServer(
             }`
         );
     });
-
-    // app.listen({ port: process.env.SERVER_PORT || 3000 }, () =>
-    //     console.log(
-    //         `Server listening on localhost:${process.env.SERVER_PORT || 3000}${
-    //             apolloServer.graphqlPath
-    //         }`
-    //     )
-    // );
 }
 
 // https://www.apollographql.com/docs/apollo-server/security/terminating-ssl/
