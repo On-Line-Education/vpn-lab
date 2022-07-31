@@ -1,20 +1,24 @@
 VPN LAB
 ==
 
-| npm command        | what it does                             | command                                                                    |
-| ------------------ | ---------------------------------------- | -------------------------------------------------------------------------- |
-| build              | build project                            | npx tsc -b                                                                 |
-| start              | start built project                      | node ./dist/index.js                                                       |
-| dev:server:builder | build project on file change             | npx tsc -w                                                                 |
-| dev:server:watcher | run project on build update              | nodemon                                                                    |
-| build:start        | build project and run                    | npx tsc -b && node ./dist/index.js                                         |
-| dev                | run builder and watcher in the same time | npx concurrently "npm run dev:server:watcher" "npm run dev:server:builder" |
-| dev:serve          | run builder and watcher for frontend     | npx vue-cli-service serve --mode development                               |
-| serve              | run frontend dev server                  | npx vue-clu-service serve                                                  |
+| npm command        | what it does                                       | command                                                                                                                         |
+| ------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| serve              | start app                                          | npx vue-cli-service serve                                                                                                       |
+| start              | start server                                       | npx ts-node server/index.ts                                                                                                     |
+| dev:serve          | start app in development mode                      | npx vue-cli-service serve --mode development                                                                                    |
+| dev:server         | start server with watcher                          | nodemon                                                                                                                         |
+| dev                | shortcut for all dev: commands                     | npx concurrently \"npm run dev:server\" \"npm run dev:serve\"                                                                   |
+| prisma:setup       | migrate migrations                                 | npx prisma migrate deploy                                                                                                       |
+| prisma:setup:local | generate prisma client data and migrate migrations | npx prisma generate && npx prisma migrate deploy                                                                                |
+| prisma:setup:dev   | migrate migrations                                 | npx prisma migrate deploy                                                                                                       |
+| command            | run system command                                 | node ./server/Commands/command.cjs                                                                                              |
+| dockerstart:local  | commands for local env docker                      | npm i && npm run prisma:setup:local && npm run command create:admin admin && npm run dev                                        |
+| dockerstart:dev    | commands for dev env docker                        | npm i && npm run prisma:setup:dev && npm run command create:admin admin && concurrently \"npm run start\" \"npm run dev:serve\" |
+| dockerstart:prod   | commands for prod env docker                       | npm i && npm run prisma:setup && concurrently \"npm run start\" \"npm run serve\"                                               |
 
 Dev Setup
 --
-For developing run in the first terminal tab <code>npm run dev</code> and in the second one <code>npm run dev:serve</code>. First terminal tab will report errors and log for backend and the second one will show output for frontend dev server.
+For developing run in the terminal <code>npm run dev</code>. It will report errors and logs for backend and frontend.
 
 
 Testing VPN Docker
@@ -25,18 +29,18 @@ Install
 --
 To setup this project on your local env, you will need:
 - Softether VPN
-- MySql database
-- NodeJS
+- MySQL database
+- NodeJS v16+
 
 Next you need to:
 - Create <code>.env</code> file in project root dir and copy there content of <code>.env.example</code>
 - Change data in <code>.env</code> so it is correct for your setup
 - Run <code>npm install</code>
-- Run <code>npx prisma migrate dev</code>
-- You can run <code>npx prisma db seed</code> to seed database and VPN IF <code>npx prisma migrate dev</code> didn't seed it (Warning: you shouldn't run it more than one, also it can crash while seeding vpn after db part is done)
+- Run <code>npm run prisma:setup</code>
 - Now you can follow _Dev Setup_ section
 
 Additional info
 --
 To access auth required query, assign user token to Authorization header
 To access data from desktop app, you need to assign desktop_key token to Authorization header
+You can use docker to setup this project
