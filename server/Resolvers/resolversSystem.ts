@@ -110,20 +110,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
 
                 if (data.newHub) {
-                    // let server = await prisma.server.findFirst();
-
-                    // if (server === null) {
-                    //     throw new Error(
-                    //         "Brak danych na temat serwera, skontaktuj się z administratorem systemu."
-                    //     );
-                    // }
-
-                    // let serverId = server.id;
                     hubId = (
                         await prisma.hub.create({
                             data: {
                                 title: data.hubName,
-                                // serverId,
                             },
                         })
                     ).id;
@@ -147,6 +137,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 data.csv.forEach(
                     async (user: {
                         name: string;
+                        username: string;
                         role: string;
                         password: string;
                         passcode: string;
@@ -163,6 +154,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         let dbuser = await prisma.user.create({
                             data: {
                                 name: user.name,
+                                username: user.username,
                                 role: user.role,
                                 passHash: user.password
                                     ? crypto

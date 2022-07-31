@@ -186,6 +186,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     usersWithTeacher.push({
                         id: r.userHub.user.id,
                         name: r.userHub.user.name,
+                        username: r.userHub.user.username,
                         role: r.userHub.user.role,
                         veyonKeyPriv: r.userHub.user.veyonKeyPriv,
                         veyonKeyPub: r.userHub.user.veyonKeyPub,
@@ -262,6 +263,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     teachersInGroups.push({
                         id: r.userHub.user.id,
                         name: r.userHub.user.name,
+                        username: r.userHub.user.username,
                         role: r.userHub.user.role,
                         veyonKeyPriv: r.userHub.user.veyonKeyPriv,
                         veyonKeyPub: r.userHub.user.veyonKeyPub,
@@ -277,7 +279,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
         Mutation: {
             async changeUserSettings(
                 _: any,
-                { settings }: { settings: { newPassword; oldPassword } },
+                {
+                    settings,
+                }: {
+                    settings: {
+                        newPassword: string;
+                        oldPassword: string;
+                        username: string;
+                    };
+                },
                 { user, api }
             ) {
                 if (!user) {
@@ -292,26 +302,44 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (user.passHash !== oldPass) {
                     throw new Error("Podane hasło jest nieprawidłowe");
                 }
+
+                let data = {};
+
                 if (
-                    !/(?=.*[0-9])(?=.*[A-Z])(.*[a-zA-Z0-9.*]){8,}$/g.test(
-                        settings.newPassword
-                    )
+                    settings.newPassword !== "" &&
+                    settings.newPassword !== null
                 ) {
-                    throw new Error(
-                        "Hasło musi składać się z minimum 8 znaków, posiadać minimum jedną dużą literę oraz cyfrę"
-                    );
+                    if (
+                        !/(?=.*[0-9])(?=.*[A-Z])(.*[a-zA-Z0-9.*]){8,}$/g.test(
+                            settings.newPassword
+                        )
+                    ) {
+                        throw new Error(
+                            "Hasło musi składać się z minimum 8 znaków, posiadać minimum jedną dużą literę oraz cyfrę"
+                        );
+                    }
+                    let newPass = crypto
+                        .createHash("SHA256")
+                        .update(settings.newPassword)
+                        .digest("hex");
+                    data["passHash"] = newPass;
                 }
-                let newPass = crypto
-                    .createHash("SHA256")
-                    .update(settings.newPassword)
-                    .digest("hex");
+
+                if (settings.username) {
+                    if (settings.username.length < 3) {
+                        throw new Error(
+                            "Nazwa użytkownika musi mieć minimum 3 znaki"
+                        );
+                    }
+                    data["username"] = settings.username;
+                }
 
                 await prisma.user.update({
                     where: {
                         id: user.id,
                     },
                     data: {
-                        passHash: newPass,
+                        ...data,
                     },
                 });
 
@@ -319,7 +347,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async createUser(
                 _: any,
-                { hubname, username, password, passcode, role },
+                { hubname, name, username, password, passcode, role },
                 { user, api }
             ) {
                 if (!user) {
@@ -335,7 +363,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            name: username,
+                            name: name,
                             OR: {
                                 loginKey: passcode,
                             },
@@ -367,7 +395,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let dbuser = await prisma.user.create({
                     data: {
-                        name: username,
+                        username: username,
+                        name: name,
                         role: role,
                         passHash: crypto
                             .createHash("SHA256")
@@ -390,12 +419,12 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 await vpn.user.createUser(
                     hubname,
-                    username,
-                    username,
+                    name,
+                    name,
                     VpnRpcUserAuthType.Password,
                     dbuser.vpnPass,
                     role == Roles.INSTRUCTOR
-                        ? username + "_" + Date.now() + "_vpn_group"
+                        ? name + "_" + Date.now() + "_vpn_group"
                         : null
                 );
 
@@ -403,7 +432,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async updateUser(
                 _: any,
-                { hubname, oldname, username, password, passcode, role },
+                { vpnname, username, password, passcode, role },
                 { user, api }
             ) {
                 if (!user) {
@@ -416,7 +445,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            name: username,
+                            name: vpnname,
                             OR: {
                                 loginKey: passcode,
                             },
@@ -429,18 +458,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
                 let currUser = await prisma.user.findFirst({
                     where: {
-                        name: oldname,
+                        name: vpnname,
                     },
                 });
-                // console.log({
-                //     currUser,
-                //     hubname,
-                //     oldname,
-                //     username,
-                //     password,
-                //     passcode,
-                //     role,
-                // });
 
                 let veyonConnector = new VeyonConnector();
                 let pubKey = null,
@@ -453,10 +473,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 await prisma.user.update({
                     where: {
-                        name: oldname,
+                        name: vpnname,
                     },
                     data: {
-                        name: username,
+                        username: username,
                         role: role,
                         passHash: password
                             ? crypto
@@ -475,11 +495,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
-                // await vpn.user.update(hubname, oldname, username);
-
                 return true;
             },
-            async deleteUser(_: any, { hubname, username }, { user, api }) {
+            async deleteUser(_: any, { hubname, name }, { user, api }) {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
@@ -492,7 +510,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let dbuser = await prisma.user.findFirst({
                     where: {
-                        name: username,
+                        name: name,
                     },
                 });
 
@@ -530,7 +548,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
-                await vpn.user.deleteUser(hubname, username);
+                await vpn.user.deleteUser(hubname, name);
                 return true;
             },
         },

@@ -4,6 +4,7 @@ import Connection from "../connection";
 export default createStore({
     state: () => ({
         appName: "OEDU VPN",
+        username: "",
         hideConfigButton: false,
         isPinned: true,
         showConfig: false,
@@ -91,6 +92,9 @@ export default createStore({
         setHubsList(state, hubsList) {
             state.hubsList = hubsList;
         },
+        setUsername(state, name) {
+            state.username = name;
+        },
     },
     actions: {
         toggleSidebarColor({ commit }, payload) {
@@ -138,6 +142,9 @@ export default createStore({
     getters: {
         appName(state) {
             return state.appName;
+        },
+        getUsername(state) {
+            return state.username;
         },
         getError(state) {
             return state.lastMessage;

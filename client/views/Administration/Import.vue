@@ -52,6 +52,7 @@
                 <button
                     type="button"
                     class="btn bg-gradient-info"
+                    ref="importButton"
                     @click="importData()"
                 >
                     Importuj
@@ -106,6 +107,7 @@ const hubNames = ref([]);
 const selectHub = ref();
 const disableCustomHubName = ref(false);
 const customHubName = ref();
+const importButton = ref();
 
 const isAdmin = store.getters.getRole == "admin";
 
@@ -120,12 +122,17 @@ function selectHubChanged() {
 onMounted(async () => {
     try {
         let hubs = [];
-        if(isAdmin){
-            hubs = (await store.getters.getServer.listHubs()).data.listHubs.HubList;
+        if (isAdmin) {
+            hubs = (await store.getters.getServer.listHubs()).data.listHubs
+                .HubList;
         } else {
-            hubs = (await store.getters.getServer.listUserHubs(store.getters.getServer.getUser().name)).data.listUserHubs.HubList;
+            hubs = (
+                await store.getters.getServer.listUserHubs(
+                    store.getters.getServer.getUser().name
+                )
+            ).data.listUserHubs.HubList;
         }
-        
+
         hubs.forEach((hub) => {
             hubNames.value.push(hub.HubName_str);
         });
@@ -174,13 +181,14 @@ function returnValue(val) {
                     row.forEach((element) => {
                         previewTitles.value.push(element);
                     });
-                    if (previewTitles.value.length != 4) {
+                    if (previewTitles.value.length != 5) {
                         clearImport();
                         invalid = true;
                         throw new Error("Nieprawidłowa struktura pliku csv");
                     }
                     let csvRequiredTitles = [
                         "name",
+                        "username",
                         "role",
                         "password",
                         "passcode",
@@ -216,6 +224,7 @@ function returnValue(val) {
 
 function importData() {
     try {
+        importButton.value.disabled = true;
         let hubName = "",
             newHub = false,
             csv = [];
@@ -239,13 +248,16 @@ function importData() {
         store.getters.getServer
             .import({ csv, newHub, hubName })
             .then((_) => {
+                importButton.value.disabled = false;
                 store.commit("showAlert", { message: "Import zakończony" });
             })
             .catch((e) => {
+                importButton.value.disabled = false;
                 store.commit("setError", e);
                 console.error(e);
             });
     } catch (e) {
+        importButton.value.disabled = false;
         store.commit("setError", e);
         console.error(e);
     }

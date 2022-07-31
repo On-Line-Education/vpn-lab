@@ -4,6 +4,7 @@ export default gql`
     input UserSettings {
         newPassword: String
         oldPassword: String!
+        username: String
     }
 
     type Token {
@@ -14,15 +15,17 @@ export default gql`
         id: Int
         name: String
         role: String
+        username: String
         hubs: [String]
     }
 
     type ApiUser {
         id: Int
         name: String
+        username: String
         role: String
         veyonKeyPriv: String
-        veyonKeyPub: String
+        veyonKeyPub: String 
         groupName: String
     }
 
@@ -59,14 +62,14 @@ export default gql`
         changeUserSettings(settings: UserSettings): Boolean
         createUser(
             hubname: String
+            name: String
             username: String
             password: String
             passcode: String
             role: Permission
         ): Boolean
         updateUser(
-            hubname: String
-            oldname: String
+            vpnname: String
             username: String
             password: String
             passcode: String

@@ -126,6 +126,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         name: usr.user.name,
                         groups: usr.UsersGroup,
                         role: usr.user.role,
+                        username: usr.user.username,
                     };
                 });
 
@@ -139,6 +140,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                         return e.groupName;
                                     }),
                                     role: dbu.role,
+                                    username: dbu.username,
                                 });
                             }
                         });
@@ -154,6 +156,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 {
                     hubName,
                     instructorName,
+                    instructorUsername,
                     instructorPassword,
                     instructorPasscode,
                 }: any,
@@ -225,6 +228,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     data: {
                         name: instructorName,
                         role: Roles.INSTRUCTOR,
+                        username: instructorUsername,
                         passHash: crypto
                             .createHash("SHA256")
                             .update(instructorPassword)

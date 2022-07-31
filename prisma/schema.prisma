@@ -18,7 +18,8 @@ model Hub {
 
 model User {
   id           Int          @id @default(autoincrement())
-  name         String       @unique // same as vpnName
+  name         String       @unique // vpn name
+  username     String // username in system
   passHash     String
   veyonKeyPub  String?      @db.Text
   veyonKeyPriv String?      @db.Text

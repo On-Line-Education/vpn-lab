@@ -13,6 +13,7 @@ CREATE TABLE `Hub` (
 CREATE TABLE `User` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `username` VARCHAR(191) NOT NULL,
     `passHash` VARCHAR(191) NOT NULL,
     `veyonKeyPub` TEXT NULL,
     `veyonKeyPriv` TEXT NULL,

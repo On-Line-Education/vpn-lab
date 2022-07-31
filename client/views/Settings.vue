@@ -21,12 +21,18 @@
                         @submit.prevent="save()"
                     >
                         <input
+                            type="text"
+                            placeholder="Zmień nazwę"
+                            name="password"
+                            class="form-control d-flex justify-content-start mb-3"
+                            ref="newUsername"
+                        />
+                        <input
                             type="password"
                             placeholder="Zmień hasło"
                             name="password"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="newPassword"
-                            required
                         />
                         <input
                             type="password"
@@ -34,16 +40,19 @@
                             name="passwordRepeat"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="newPasswordRepeat"
-                            required
                         />
                         <input
                             type="password"
-                            placeholder="Powtórz stare hasło"
+                            placeholder="Powtórz aktualne hasło"
                             name="oldpassword"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="oldPassword"
                             required
                         />
+                        <small
+                            >Podanie starego hasła jest wymagane do
+                            potwierdzenia zmian</small
+                        >
                         <input
                             type="submit"
                             class="btn bg-gradient-info"
@@ -61,12 +70,16 @@ import { useStore } from "vuex";
 
 const store = useStore();
 
+const newUsername = ref();
 const newPassword = ref();
 const newPasswordRepeat = ref();
 const oldPassword = ref();
 
 async function save() {
-    if (newPassword.value.value !== newPasswordRepeat.value.value) {
+    if (
+        newPassword.value.value &&
+        newPassword.value.value !== newPasswordRepeat.value.value
+    ) {
         store.commit("setError", { message: "Podane hasła nie są takie same" });
         return;
     }
@@ -76,12 +89,22 @@ async function save() {
         });
         return;
     }
+    if (newUsername.value.value.length < 3) {
+        store.commit("setError", {
+            message: "Nazwa użytkownika musi mieć minimum 3 znaki",
+        });
+        return;
+    }
     let res = await store.getters.getServer.changeUserSettings({
+        username: newUsername.value.value,
         newPassword: newPassword.value.value,
         oldPassword: oldPassword.value.value,
     });
     if (res.data.changeUserSettings) {
         store.commit("showAlert", { message: "Zmiany zostały zapisane" });
+        if (newUsername.value.value) {
+            store.commit("setUsername", newUsername.value.value);
+        }
     } else {
         store.commit("setError", {
             message: "Wystąpił niespodziewany problem",

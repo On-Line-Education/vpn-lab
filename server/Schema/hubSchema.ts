@@ -113,6 +113,7 @@ export default gql`
         user: HubUser
         groups: [String]
         role: String
+        username: String
     }
 
     type Query {
@@ -124,14 +125,6 @@ export default gql`
     }
 
     type Mutation {
-        # createHub(
-        #     hubName: String
-        #     hubType: HubType
-        #     online: Boolean
-        #     maxSession: Int
-        #     password: String
-        #     noEnum: Boolean
-        # ): CreateHub
         updateHub(
             hubName: String
             hubType: HubType
@@ -141,7 +134,13 @@ export default gql`
             noEnum: Boolean
         ): CreateHub
         deleteHub(hubName: String): HubDelete
-        createNewHub(hubName: String, instructorName: String, instructorPassword: String, instructorPasscode: String): Boolean
+        createNewHub(
+            hubName: String
+            instructorName: String
+            instructorUsername: String
+            instructorPassword: String
+            instructorPasscode: String
+        ): Boolean
     }
 
     scalar DateTime

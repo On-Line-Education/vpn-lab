@@ -9,6 +9,7 @@ export default gql`
 
     input CSV {
         name: String
+        username: String
         role: String
         password: String
         passcode: String
