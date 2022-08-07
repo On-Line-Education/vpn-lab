@@ -18,7 +18,7 @@ VPN LAB
 
 Dev Setup
 --
-For developing run in the terminal <code>npm run dev</code>. It will report errors and logs for backend and frontend.
+For developing run in the terminal <code>npm run dev</code>. It will report errors and logs for backend and frontend. Remember to set correct api url in client/config.js
 
 
 Testing VPN Docker
