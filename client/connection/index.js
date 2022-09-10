@@ -25,24 +25,6 @@ export default class Connection {
             },
         });
     }
-
-    async loginViaKey(key) {
-        const res = await this._apollo.query({
-            query: gql`
-                query LoginViaKey($loginKey: String) {
-                    loginViaKey(loginKey: $loginKey) {
-                        token
-                    }
-                }
-            `,
-            variables: {
-                loginKey: key,
-            },
-        });
-        this._token = res.data.loginViaKey.token;
-        await this._setUser();
-        return res;
-    }
     async loginViaPassword(payload) {
         const res = await this._apollo.query({
             query: gql`
@@ -222,22 +204,22 @@ export default class Connection {
             },
         });
     }
-    async addUserToGroup(hubName, group, userName) {
+    async addUserToGroup(hubName, group, vpnName) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation CreateGroup(
-                    $userName: String
-                    $group: String
                     $hubName: String
+                    $group: String
+                    $vpnName: String
                 ) {
                     addUserToGroup(
-                        userName: $userName
-                        group: $group
                         hubName: $hubName
+                        group: $group
+                        vpnName: $vpnName
                     )
                 }
             `,
-            variables: { hubName, group, userName },
+            variables: { hubName, group, vpnName },
             context: {
                 headers: {
                     authorization: this._token,
@@ -266,24 +248,24 @@ export default class Connection {
             },
         });
     }
-    async removeFromSystemGroup(hubName, username, group) {
+    async removeFromSystemGroup(hubName, vpnName, group) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation RemoveFromSystemGroup(
                     $hubName: String
-                    $username: String
+                    $vpnName: String
                     $group: String
                 ) {
                     removeFromSystemGroup(
                         hubName: $hubName
-                        username: $username
+                        vpnName: $vpnName
                         group: $group
                     )
                 }
             `,
             variables: {
                 hubName,
-                username,
+                vpnName,
                 group,
             },
             context: {
@@ -501,8 +483,7 @@ export default class Connection {
         hubName,
         instructorName,
         instructorUsername,
-        instructorPassword,
-        instructorPasscode
+        instructorPassword
     ) {
         return await this._apollo.mutate({
             mutation: gql`
@@ -511,14 +492,12 @@ export default class Connection {
                     $instructorName: String
                     $instructorUsername: String
                     $instructorPassword: String
-                    $instructorPasscode: String
                 ) {
                     createNewHub(
                         hubName: $hubName
                         instructorName: $instructorName
                         instructorUsername: $instructorUsername
                         instructorPassword: $instructorPassword
-                        instructorPasscode: $instructorPasscode
                     )
                 }
             `,
@@ -527,7 +506,6 @@ export default class Connection {
                 instructorName,
                 instructorUsername,
                 instructorPassword,
-                instructorPasscode,
             },
             context: {
                 headers: {
@@ -536,7 +514,7 @@ export default class Connection {
             },
         });
     }
-    async createUser(hubname, name, username, password, passcode, role) {
+    async createUser(hubname, name, username, password, role) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation CreateUser(
@@ -544,7 +522,6 @@ export default class Connection {
                     $name: String
                     $username: String
                     $password: String
-                    $passcode: String
                     $role: Permission
                 ) {
                     createUser(
@@ -552,7 +529,6 @@ export default class Connection {
                         name: $name
                         username: $username
                         password: $password
-                        passcode: $passcode
                         role: $role
                     )
                 }
@@ -562,7 +538,6 @@ export default class Connection {
                 name,
                 username,
                 password,
-                passcode,
                 role,
             },
             context: {
@@ -572,21 +547,19 @@ export default class Connection {
             },
         });
     }
-    async updateUser(vpnname, username, password, passcode, role) {
+    async updateUser(vpnname, username, password, role) {
         let updated = await this._apollo.mutate({
             mutation: gql`
                 mutation UpdateUser(
                     $vpnname: String
                     $username: String
                     $password: String
-                    $passcode: String
                     $role: Permission
                 ) {
                     updateUser(
                         vpnname: $vpnname
                         username: $username
                         password: $password
-                        passcode: $passcode
                         role: $role
                     )
                 }
@@ -595,7 +568,6 @@ export default class Connection {
                 vpnname,
                 username,
                 password,
-                passcode,
                 role,
             },
             context: {

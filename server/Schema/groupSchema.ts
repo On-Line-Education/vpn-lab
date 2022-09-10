@@ -64,14 +64,10 @@ export default gql`
 
     type Mutation {
         createGroup(group: GroupInput): Group
-        addUserToGroup(
-            userName: String
-            group: String
-            hubName: String
-        ): Boolean
+        addUserToGroup(vpnName: String, group: String, hubName: String): Boolean
         removeFromSystemGroup(
             hubName: String
-            username: String
+            vpnName: String
             group: String
         ): Boolean
     }

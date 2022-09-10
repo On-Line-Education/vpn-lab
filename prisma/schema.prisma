@@ -23,7 +23,6 @@ model User {
   passHash     String
   veyonKeyPub  String?      @db.Text
   veyonKeyPriv String?      @db.Text
-  loginKey     String?      @unique
   vpnPass      String
   role         String
   hubs         UsersInHub[]

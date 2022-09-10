@@ -63,7 +63,15 @@
 
     <div class="mb-4 card mw-fc" v-if="csvData.csv != null">
         <div class="card-header pb-0 d-flex justify-content-between">
-            <h6>Podgląd importu</h6>
+            <h6
+                class="tooltip-custom"
+                data-html="true"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="W celu prostrzego odróżnienia nazw użytkowników w systemie, zostaną one poprzedzone przedrostkiem z budowanym z nazwy huba oraz znaku podkreślenia"
+            >
+                Podgląd importu
+            </h6>
             <div>
                 <div
                     class="text-center shadow icon icon-shape border-radius-md bg-gradient-info"
@@ -181,7 +189,7 @@ function returnValue(val) {
                     row.forEach((element) => {
                         previewTitles.value.push(element);
                     });
-                    if (previewTitles.value.length != 5) {
+                    if (previewTitles.value.length != 4) {
                         clearImport();
                         invalid = true;
                         throw new Error("Nieprawidłowa struktura pliku csv");
@@ -191,7 +199,6 @@ function returnValue(val) {
                         "username",
                         "role",
                         "password",
-                        "passcode",
                     ];
                     for (let index in csvRequiredTitles) {
                         if (
@@ -209,9 +216,22 @@ function returnValue(val) {
                     previewTitles.value.push(...titles);
                     return;
                 }
-                let data = [];
+                let data = [],
+                    rotationCounter = 0,
+                    hubname =
+                        selectHub.value.value != 0
+                            ? hubNames.value[selectHub.value.value - 1]
+                            : customHubName.value.value;
                 row.forEach((element) => {
-                    data.push(element);
+                    if (
+                        rotationCounter % 4 === 0 ||
+                        rotationCounter % 4 === 1
+                    ) {
+                        data.push(hubname + "_" + element);
+                    } else {
+                        data.push(element);
+                    }
+                    rotationCounter = (rotationCounter + 1) % 4;
                 });
                 previewData.value.push(data);
             });
@@ -223,6 +243,10 @@ function returnValue(val) {
 }
 
 function importData() {
+    if (csvData.csv === null) {
+        throw new Error("Najpierw wybierz plik csv");
+    }
+
     try {
         importButton.value.disabled = true;
         let hubName = "",
@@ -238,7 +262,18 @@ function importData() {
         previewTitles.value.forEach((name, index) => {
             titles.push({ name, index });
         });
-        previewData.value.forEach((row) => {
+        let data = [];
+        csvData.csv.data.forEach((row, index) => {
+            if (index == 0) {
+                return;
+            }
+            let rowData = [];
+            row.forEach((element) => {
+                rowData.push(element);
+            });
+            data.push(rowData);
+        });
+        data.forEach((row) => {
             let obj = {};
             titles.forEach((title) => {
                 obj[title.name] = row[title.index];

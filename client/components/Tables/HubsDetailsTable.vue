@@ -156,8 +156,23 @@
             <div class="p-3 card-body flex-space-between">
                 <div class="d-flex flex-row-reverse justify-content-between">
                     <div class="numbers">
-                        <h3>Dodaj konto</h3>
-                        <label>Nazwa VPN konta:</label>
+                        <h3
+                            class="tooltip-custom"
+                            data-html="true"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            title="W celu prostrzego odróżnienia nazw użytkowników w systemie, zostaną one poprzedzone przedrostkiem z budowanym z nazwy huba oraz znaku podkreślenia"
+                        >
+                            Dodaj konto
+                        </h3>
+                        <label
+                            class="tooltip-custom"
+                            data-html="true"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            title="Jest to nazwa stała, którą uzytkownik ten będzie się identyfikował w VPN. Nie można jej później zmienić"
+                            >Nazwa VPN konta:</label
+                        >
                         <input
                             type="text"
                             placeholder="Nazwa konta"
@@ -180,14 +195,6 @@
                             name="password"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="userPassword"
-                        />
-                        <label>Kod dostępu:</label>
-                        <input
-                            type="password"
-                            placeholder="Kod dostępu"
-                            name="passcode"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="userPasscode"
                         />
                         <div v-if="isAdmin">
                             <label>Uprawnienia:</label>
@@ -283,7 +290,7 @@
                                     style="margin-right: 5px"
                                     @click="
                                         removeFromGroup(
-                                            selectedUser.username,
+                                            selectedUser.vpnname,
                                             group
                                         )
                                     "
@@ -426,12 +433,11 @@ const inputGroupDoneModal = ref();
 
 const showGroupsEdit = ref();
 const selectedUserGroups = reactive({ groups: [] });
-const selectedUser = reactive({ username: "" });
+const selectedUser = reactive({ vpnname: "" });
 
 const vpnUserName = ref();
 const userName = ref();
 const userPassword = ref();
-const userPasscode = ref();
 
 const cantModal = ref();
 
@@ -466,7 +472,6 @@ function newGroupChanged() {
 async function addUser() {
     let name = vpnUserName.value.value,
         username = userName.value.value,
-        passcode = userPasscode.value.value,
         password = userPassword.value.value,
         permission = "USER";
 
@@ -488,12 +493,6 @@ async function addUser() {
         });
         return;
     }
-    if (passcode == null || passcode.trim() == "") {
-        store.commit("setError", {
-            message: "Należy podać kod dostępu dla konta użytkownika",
-        });
-        return;
-    }
 
     if (isAdmin) {
         permission = selectedPermission.value.value.toUpperCase();
@@ -504,11 +503,9 @@ async function addUser() {
         name,
         username,
         password,
-        passcode,
         permission
     );
     userName.value.value = "";
-    userPasscode.value.value = "";
     userPassword.value.value = "";
     await refresh();
     await refreshUsers();
@@ -527,17 +524,17 @@ async function deleteUser(username) {
 }
 
 function updateGroupData() {
-    let username = selectedUser.username;
-    if (username == null || username.trim() == "") {
+    let vpnname = selectedUser.vpnname;
+    if (vpnname == null || vpnname.trim() == "") {
         return;
     }
     selectedUserGroups.groups = reactiveHub.hub.sortData.data.find((e) => {
-        return e.username == username;
+        return e.name == vpnname;
     }).group;
 }
 
-async function changeGroups(username) {
-    selectedUser.username = username;
+async function changeGroups(vpnname) {
+    selectedUser.vpnname = vpnname;
     updateGroupData();
 
     showGroupsEdit.value.style.display = "block";
@@ -572,7 +569,7 @@ async function refresh() {
 }
 
 async function addUserToGroup() {
-    let username = selectedUser.username;
+    let vpnname = selectedUser.vpnname;
     let groupName = "";
     if (newGroupCheckbox.value?.checked ?? true) {
         groupName = inputGroupNameModal.value.value;
@@ -592,7 +589,9 @@ async function addUserToGroup() {
         cantModal.value.style.display = "block";
         return;
     }
-    await store.getters.getServer.addUserToGroup(hubname, groupName, username);
+
+    await store.getters.getServer.addUserToGroup(hubname, groupName, vpnname);
+    inputGroupNameModal.value.value = "";
     await refresh();
     await refreshUsers();
 }
@@ -616,7 +615,7 @@ async function closeUsureModal() {
     usureModal.value.style.display = "none";
 }
 
-function addToGroup(username) {
+function addToGroup(vpnname) {
     // modal add to group
     inputGroupNameModal.value.value = "";
     inputGroupModal.value.style.display = "block";
@@ -641,7 +640,7 @@ function addToGroup(username) {
         await store.getters.getServer.addUserToGroup(
             hubname,
             groupName,
-            username
+            vpnname
         );
 
         await refresh();
@@ -667,7 +666,7 @@ function removeFromGroup(username, group) {
     usureYesModal.value.addEventListener("click", cl);
 }
 
-function changeGroup(username) {
-    addToGroup(username);
+function changeGroup(vpnname) {
+    addToGroup(vpnname);
 }
 </script>

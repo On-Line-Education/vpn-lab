@@ -24,7 +24,15 @@
                         class="d-flex flex-row-reverse justify-content-between"
                     >
                         <div class="numbers">
-                            <h3>Dodaj hub</h3>
+                            <h3
+                                class="tooltip-custom"
+                                data-html="true"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="W celu prostrzego odróżnienia nazw użytkowników w systemie, zostaną one poprzedzone przedrostkiem z budowanym z nazwy huba oraz znaku podkreślenia"
+                            >
+                                Dodaj hub
+                            </h3>
                             <label>Nazwa huba:</label>
                             <input
                                 type="text"
@@ -33,7 +41,14 @@
                                 class="form-control d-flex justify-content-start mb-3"
                                 ref="hubname"
                             />
-                            <label>Nazwa VPN konta instruktora:</label>
+                            <label
+                                class="tooltip-custom"
+                                data-html="true"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="Jest to nazwa stała, którą uzytkownik ten będzie się identyfikował w VPN. Nie można jej później zmienić"
+                                >Nazwa VPN konta instruktora:</label
+                            >
                             <input
                                 type="text"
                                 placeholder="Nazwa VPN konta instruktora"
@@ -56,14 +71,6 @@
                                 name="password"
                                 class="form-control d-flex justify-content-start mb-3"
                                 ref="instructorPassword"
-                            />
-                            <label>Kod dostępu instruktora:</label>
-                            <input
-                                type="password"
-                                placeholder="Kod dostępu instruktora"
-                                name="passcode"
-                                class="form-control d-flex justify-content-start mb-3"
-                                ref="instructorPasscode"
                             />
                         </div>
                     </div>
@@ -92,7 +99,6 @@ const hubname = ref();
 const instructorName = ref();
 const instructorUsername = ref();
 const instructorPassword = ref();
-const instructorPasscode = ref();
 
 const reactiveHubs = reactive({ hubs: null });
 
@@ -100,8 +106,7 @@ async function addHub() {
     let hn = hubname.value.value,
         iusername = instructorUsername.value.value,
         iname = instructorName.value.value,
-        ipassword = instructorPassword.value.value,
-        ipasscode = instructorPasscode.value.value;
+        ipassword = instructorPassword.value.value;
 
     if (hn == null || hn.trim() == "") {
         store.commit("setError", {
@@ -121,14 +126,8 @@ async function addHub() {
         });
         return;
     }
-    if (ipasscode == null || ipasscode.trim() == "") {
-        store.commit("setError", {
-            message: "Należy podać kod dostępu dla konta instruktora",
-        });
-        return;
-    }
 
-    if (iusername.trim() === ""){
+    if (iusername.trim() === "") {
         iusername = iname;
     }
 
@@ -137,8 +136,7 @@ async function addHub() {
             hn,
             iname,
             iusername,
-            ipassword,
-            ipasscode
+            ipassword
         );
     } catch (e) {
         store.commit("setError", e);
@@ -147,17 +145,21 @@ async function addHub() {
     hubname.value.value = "";
     instructorName.value.value = "";
     instructorPassword.value.value = "";
-    instructorPasscode.value.value = "";
     store.commit("showAlert", { message: "Hub został utworzony" });
     await refreshHubs();
 }
 
 async function refreshHubs() {
     try {
-        let hubs = await store.getters.getServer.listHubs(),
+        let hubs = isAdmin
+                ? await store.getters.getServer.listHubs()
+                : await store.getters.getServer.listUserHubs(),
             hubsList = [],
             id = 0;
-        hubs.data.listHubs.HubList.forEach((hub) => {
+        let fetchedHubs = hubs.data.listHubs
+            ? hubs.data.listHubs
+            : hubs.data.listUserHubs;
+        fetchedHubs.HubList.forEach((hub) => {
             hubsList.push({
                 name: hub.HubName_str,
                 status: hub.Online_bool ? "Online" : "Offline",

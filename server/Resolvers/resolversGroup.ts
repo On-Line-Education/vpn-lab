@@ -58,7 +58,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
         Mutation: {
             async removeFromSystemGroup(
                 _: any,
-                { hubName, username, group }: any,
+                { hubName, vpnName, group }: any,
                 { user, api }
             ) {
                 if (!(api || user)) {
@@ -78,7 +78,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                 title: hubName,
                             },
                             user: {
-                                name: username,
+                                name: vpnName,
                             },
                         },
                         groupName: group,
@@ -101,7 +101,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async addUserToGroup(
                 _: any,
-                { userName, group, hubName },
+                { vpnName, group, hubName },
                 { user, api }
             ) {
                 if (!(api || user)) {
@@ -116,7 +116,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let userhub = await prisma.usersInHub.findFirst({
                     where: {
                         user: {
-                            name: userName,
+                            name: vpnName,
                         },
                         hub: {
                             title: hubName,

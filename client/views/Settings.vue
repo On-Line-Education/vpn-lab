@@ -36,7 +36,7 @@
                         />
                         <input
                             type="password"
-                            placeholder="Powtórz hasło"
+                            placeholder="Powtórz nowe hasło"
                             name="passwordRepeat"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="newPasswordRepeat"
@@ -50,7 +50,7 @@
                             required
                         />
                         <small
-                            >Podanie starego hasła jest wymagane do
+                            >Podanie aktualnego hasła jest wymagane do
                             potwierdzenia zmian</small
                         >
                         <input
