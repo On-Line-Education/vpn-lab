@@ -24,15 +24,15 @@
                         class="d-flex flex-row-reverse justify-content-between"
                     >
                         <div class="numbers">
-                            <h3>Dodaj hub</h3>
-                            <small class="tooltip"
-                                >i<span class="tooltiptext"
-                                    >W celu prostrzego odróżnienia nazw
-                                    użytkowników w systemie, zostaną one
-                                    poprzedzone przedrostkiem z budowanym z
-                                    nazwy huba oraz znaku podkreślenia</span
-                                ></small
+                            <h3
+                                class="tooltip-custom"
+                                data-html="true"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="W celu prostrzego odróżnienia nazw użytkowników w systemie, zostaną one poprzedzone przedrostkiem z budowanym z nazwy huba oraz znaku podkreślenia"
                             >
+                                Dodaj hub
+                            </h3>
                             <label>Nazwa huba:</label>
                             <input
                                 type="text"
@@ -42,14 +42,12 @@
                                 ref="hubname"
                             />
                             <label
-                                >Nazwa VPN konta instruktora:
-                                <small class="tooltip"
-                                    >i<span class="tooltiptext"
-                                        >Jest to nazwa stała, którą uzytkownik
-                                        ten będzie się identyfikował w VPN. Nie
-                                        można jej później zmienić</span
-                                    ></small
-                                ></label
+                                class="tooltip-custom"
+                                data-html="true"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="Jest to nazwa stała, którą uzytkownik ten będzie się identyfikował w VPN. Nie można jej później zmienić"
+                                >Nazwa VPN konta instruktora:</label
                             >
                             <input
                                 type="text"
@@ -158,7 +156,10 @@ async function refreshHubs() {
                 : await store.getters.getServer.listUserHubs(),
             hubsList = [],
             id = 0;
-        hubs.data.listHubs.HubList.forEach((hub) => {
+        let fetchedHubs = hubs.data.listHubs
+            ? hubs.data.listHubs
+            : hubs.data.listUserHubs;
+        fetchedHubs.HubList.forEach((hub) => {
             hubsList.push({
                 name: hub.HubName_str,
                 status: hub.Online_bool ? "Online" : "Offline",

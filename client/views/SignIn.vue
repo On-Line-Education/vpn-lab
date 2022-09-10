@@ -32,6 +32,7 @@
                                             class="form-control"
                                             name="username"
                                             ref="username"
+                                            @keypress="triggerLogin($event)"
                                         />
                                         <label>Hasło</label>
                                         <input
@@ -40,6 +41,7 @@
                                             class="form-control"
                                             name="password"
                                             ref="password"
+                                            @keypress="triggerLogin($event)"
                                         />
                                         <div class="text-center">
                                             <button
@@ -92,6 +94,12 @@ var username = ref(null),
     password = ref(null),
     disableButtons = ref(false);
 
+function triggerLogin(event) {
+    if (event.charCode === 13) {
+        passwordLogin();
+    }
+}
+
 function passwordLogin() {
     disableButtons.value = true;
     store.getters.getServer
@@ -101,12 +109,12 @@ function passwordLogin() {
         })
         .then((res) => {
             disableButtons.value = false;
-            commit("setLoggedIn", true);
-            commit("loginState");
+            store.commit("setLoggedIn", true);
+            store.commit("loginState");
         })
         .catch((e) => {
             disableButtons.value = false;
-            commit("setError", e);
+            store.commit("setError", e);
         });
 }
 

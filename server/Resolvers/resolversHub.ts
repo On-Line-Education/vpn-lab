@@ -62,6 +62,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             async listUserHubs(_1: any, { username }: any, { user, api }) {
                 let v = await this.listHubs(null, null, { user, api });
 
+                if (!username) {
+                    username = user.name;
+                }
+
                 let userHubs = (
                     await prisma.usersInHub.findMany({
                         where: {
@@ -77,7 +81,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     return h.hub.title;
                 });
 
-                v.HubList = v.HubList.filter((hub) => {
+                v.HubList = v.HubList.filter((hub: { HubName_str: string }) => {
                     return userHubs.includes(hub.HubName_str);
                 });
 

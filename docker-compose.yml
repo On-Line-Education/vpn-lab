@@ -16,21 +16,25 @@ services:
       - "3000:3000"
       - "4000:4000"
     depends_on:
-      - mysql
-      - vpn
+      mysql:
+        condition: service_healthy
+      vpn:
+        condition: service_started
     networks:
       vpn_net:
   mysql:
     image: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: sdfhRTH54*@fg4@0
+      MYSQL_ROOT_PASSWORD: sdfhRTH54*7fg470
       MYSQL_DATABASE: vpndb
-      MYSQL_USER: vpnuser
-      MYSQL_PASSWORD: vpnuser
     ports:
       - "3307:3306"
     networks:
       vpn_net:
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
   adminer:
     image: adminer
     ports:

@@ -91,13 +91,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let u = await prisma.user.findFirst({
                     where: {
-                        name: username,
+                        username: username,
                     },
                 });
-
-                if (!u.passHash) {
-                    throw new Error("Nieprawidłowa forma logowania");
+                if (u === null) {
+                    throw new Error(
+                        "Nieprawidłowa nazwa użytkownika (do logowania wybagana jest nazwa w systenie, nie VPN)"
+                    );
                 }
+                //test2_user-11
                 if (
                     u.passHash !=
                     crypto.createHash("SHA256").update(password).digest("hex")
@@ -106,9 +108,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
 
                 if (!u) {
-                    throw new AuthenticationError(
-                        "Nieprawidłowa nazwa użytkownika lub hasło"
-                    );
+                    throw new AuthenticationError("Nieprawidłowe hasło");
                 }
 
                 let expire = new Date(Date.now());

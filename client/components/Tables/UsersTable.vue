@@ -232,7 +232,10 @@ async function refreshUsers() {
                 ? await store.getters.getServer.listHubs()
                 : await store.getters.getServer.listUserHubs(),
             id = 0;
-        hubs.data.listHubs.HubList.forEach((hub) => {
+        let fetchedHubs = hubs.data.listHubs
+            ? hubs.data.listHubs
+            : hubs.data.listUserHubs;
+        fetchedHubs.HubList.forEach((hub) => {
             hubsList.push({
                 name: hub.HubName_str,
                 id: id++,

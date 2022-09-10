@@ -204,22 +204,22 @@ export default class Connection {
             },
         });
     }
-    async addUserToGroup(hubName, group, userName) {
+    async addUserToGroup(hubName, group, vpnName) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation CreateGroup(
-                    $userName: String
-                    $group: String
                     $hubName: String
+                    $group: String
+                    $vpnName: String
                 ) {
                     addUserToGroup(
-                        userName: $userName
-                        group: $group
                         hubName: $hubName
+                        group: $group
+                        vpnName: $vpnName
                     )
                 }
             `,
-            variables: { hubName, group, userName },
+            variables: { hubName, group, vpnName },
             context: {
                 headers: {
                     authorization: this._token,
@@ -248,24 +248,24 @@ export default class Connection {
             },
         });
     }
-    async removeFromSystemGroup(hubName, username, group) {
+    async removeFromSystemGroup(hubName, vpnName, group) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation RemoveFromSystemGroup(
                     $hubName: String
-                    $username: String
+                    $vpnName: String
                     $group: String
                 ) {
                     removeFromSystemGroup(
                         hubName: $hubName
-                        username: $username
+                        vpnName: $vpnName
                         group: $group
                     )
                 }
             `,
             variables: {
                 hubName,
-                username,
+                vpnName,
                 group,
             },
             context: {

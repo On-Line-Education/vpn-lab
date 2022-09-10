@@ -1,5 +1,6 @@
 <template>
     <div class="py-4 container-fluid">
+        <div v-if="files.files.length == 0">Brak plików</div>
         <div class="d-flex" v-for="file in files.files">
             <file-card
                 :name="file.name"

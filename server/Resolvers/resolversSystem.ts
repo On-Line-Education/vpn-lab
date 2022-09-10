@@ -154,8 +154,8 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         });
                         await vpn.user.createUser(
                             data.hubName,
-                            user.name,
-                            user.name,
+                            data.hubName + "_" + user.name,
+                            data.hubName + "_" + user.name,
                             VpnRpcUserAuthType.Password,
                             dbuser.vpnPass,
                             user.role == Roles.INSTRUCTOR
