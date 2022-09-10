@@ -52,31 +52,6 @@
                                             </button>
                                         </div>
                                     </form>
-                                    <p class="text-center mt-4">Lub</p>
-                                    <form
-                                        role="form"
-                                        class="text-star form-group"
-                                        @submit.prevent="codeLogin()"
-                                    >
-                                        <label>Kod dostępu</label>
-                                        <input
-                                            type="password"
-                                            placeholder="Kod dostępu"
-                                            class="form-control"
-                                            name="accessCode"
-                                            ref="loginCode"
-                                        />
-                                        <div class="text-center">
-                                            <button
-                                                class="my-4 mb-2 btn bg-gradient-warning btn-lg w-100"
-                                                type="button"
-                                                :disabled="disableButtons"
-                                                @click="codeLogin()"
-                                            >
-                                                Zaloguj się
-                                            </button>
-                                        </div>
-                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -113,23 +88,42 @@ import { useRouter } from "vue-router";
 const store = useStore();
 const router = useRouter();
 
-var loginCode = ref(null),
-    username = ref(null),
+var username = ref(null),
     password = ref(null),
     disableButtons = ref(false);
 
 function passwordLogin() {
-    store.dispatch("loginViaPassword", { username: username.value.value, password: password.value.value });
-}
-
-function codeLogin() {
-    store.dispatch("loginViaKey", loginCode.value.value);
+    disableButtons.value = true;
+    store.getters.getServer
+        .loginViaPassword({
+            username: username.value.value,
+            password: password.value.value,
+        })
+        .then((res) => {
+            disableButtons.value = false;
+            commit("setLoggedIn", true);
+            commit("loginState");
+        })
+        .catch((e) => {
+            disableButtons.value = false;
+            commit("setError", e);
+        });
 }
 
 watch(
     () => store.getters.isLoggedIn,
     (isLoggedIn, old) => {
         if (isLoggedIn) {
+            router.push({ name: "Panel" });
+        }
+    }
+);
+
+watch(
+    () => store.getters.isLoggedIn,
+    (isLoggedIn, old) => {
+        if (isLoggedIn) {
+            disableButtons.value = false;
             router.push({ name: "Panel" });
         }
     }

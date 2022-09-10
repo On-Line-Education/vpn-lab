@@ -64,6 +64,13 @@
     <div class="mb-4 card mw-fc" v-if="csvData.csv != null">
         <div class="card-header pb-0 d-flex justify-content-between">
             <h6>Podgląd importu</h6>
+            <small class="tooltip"
+                >i<span class="tooltiptext"
+                    >W celu prostrzego odróżnienia nazw użytkowników w systemie,
+                    zostaną one poprzedzone przedrostkiem z budowanym z nazwy
+                    huba oraz znaku podkreślenia</span
+                ></small
+            >
             <div>
                 <div
                     class="text-center shadow icon icon-shape border-radius-md bg-gradient-info"
@@ -181,7 +188,7 @@ function returnValue(val) {
                     row.forEach((element) => {
                         previewTitles.value.push(element);
                     });
-                    if (previewTitles.value.length != 5) {
+                    if (previewTitles.value.length != 4) {
                         clearImport();
                         invalid = true;
                         throw new Error("Nieprawidłowa struktura pliku csv");
@@ -191,7 +198,6 @@ function returnValue(val) {
                         "username",
                         "role",
                         "password",
-                        "passcode",
                     ];
                     for (let index in csvRequiredTitles) {
                         if (
@@ -209,9 +215,19 @@ function returnValue(val) {
                     previewTitles.value.push(...titles);
                     return;
                 }
-                let data = [];
+                let data = [],
+                    rotationCounter = 0,
+                    hubname =
+                        electHub.value.value != 0
+                            ? hubNames.value[selectHub.value.value - 1]
+                            : customHubName.value.value;
                 row.forEach((element) => {
-                    data.push(element);
+                    if (
+                        rotationCounter % 4 === 0 ||
+                        rotationCounter % 4 === 1
+                    ) {
+                        data.push(hubname + "_" + element);
+                    }
                 });
                 previewData.value.push(data);
             });

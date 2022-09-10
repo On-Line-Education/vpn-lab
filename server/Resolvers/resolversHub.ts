@@ -158,10 +158,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     instructorName,
                     instructorUsername,
                     instructorPassword,
-                    instructorPasscode,
                 }: any,
                 { user, api }
             ) {
+                let hinstructorName = hubName + "_" + instructorName;
                 if (
                     (await prisma.hub.findFirst({
                         where: {
@@ -175,26 +175,11 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            name: instructorName,
+                            name: hinstructorName,
                         },
                     })) != null
                 ) {
                     throw new Error("Taki użytkownik już istnieje");
-                }
-
-                if (
-                    (await prisma.user.findFirst({
-                        where: {
-                            loginKey: crypto
-                                .createHash("SHA256")
-                                .update(instructorPasscode)
-                                .digest("hex"),
-                        },
-                    })) != null
-                ) {
-                    throw new Error(
-                        "Użytkownik z takim kodem dostępu już istnieje"
-                    );
                 }
 
                 let hubId = (
@@ -228,17 +213,13 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     data: {
                         name: instructorName,
                         role: Roles.INSTRUCTOR,
-                        username: instructorUsername,
+                        username: hinstructorName,
                         passHash: crypto
                             .createHash("SHA256")
                             .update(instructorPassword)
                             .digest("hex"),
                         veyonKeyPriv: priv,
                         veyonKeyPub: pub,
-                        loginKey: crypto
-                            .createHash("SHA256")
-                            .update(instructorPasscode)
-                            .digest("hex"),
                         vpnPass: randomString(16),
                         hubs: {
                             create: {

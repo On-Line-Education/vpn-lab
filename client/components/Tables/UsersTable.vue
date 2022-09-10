@@ -141,14 +141,6 @@
                             class="form-control d-flex justify-content-start mb-3"
                             ref="userPassword"
                         />
-                        <label>Kod dostępu:</label>
-                        <input
-                            type="password"
-                            placeholder="Kod dostępu"
-                            name="passcode"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="userPasscode"
-                        />
                         <label>Uprawnienia:</label>
                         <select
                             class="form-control mb-3"
@@ -202,7 +194,6 @@ const { hubs } = defineProps({
 const editModal = ref();
 const userName = ref();
 const userPassword = ref();
-const userPasscode = ref();
 const permissions = ref();
 const selectedPermission = ref();
 
@@ -237,7 +228,9 @@ async function refreshUsers() {
     let hubsList = [];
 
     try {
-        let hubs = await store.getters.getServer.listHubs(),
+        let hubs = isAdmin
+                ? await store.getters.getServer.listHubs()
+                : await store.getters.getServer.listUserHubs(),
             id = 0;
         hubs.data.listHubs.HubList.forEach((hub) => {
             hubsList.push({
@@ -250,7 +243,7 @@ async function refreshUsers() {
             let users = await store.getters.getServer.listHubUsers(
                 hubsList[index].name
             );
-            
+
             users.data.getHubUsers.forEach((userGroup) => {
                 hubUsers.push({
                     name: userGroup.user.Name_str,
@@ -282,7 +275,6 @@ async function save() {
     closeEditModal();
     try {
         let name = userName.value.value,
-            passcode = userPasscode.value.value,
             password = userPassword.value.value,
             permission = "USER";
 
@@ -298,11 +290,9 @@ async function save() {
             currName,
             name,
             password,
-            passcode,
             permission
         );
         userName.value.value = "";
-        userPasscode.value.value = "";
         userPassword.value.value = "";
         await refresh();
         await refreshUsers();

@@ -95,21 +95,13 @@ export default createStore({
         setUsername(state, name) {
             state.username = name;
         },
+        setLoggedIn(state, payload) {
+            state.loggedIn = payload;
+        },
     },
     actions: {
         toggleSidebarColor({ commit }, payload) {
             commit("sidebarType", payload);
-        },
-        loginViaKey({ commit, state }, key) {
-            state.server
-                .loginViaKey(key)
-                .then((res) => {
-                    state.loggedIn = true;
-                    commit("loginState");
-                })
-                .catch((e) => {
-                    commit("setError", e);
-                });
         },
         loginViaPassword({ commit, state }, payload) {
             state.server

@@ -157,7 +157,24 @@
                 <div class="d-flex flex-row-reverse justify-content-between">
                     <div class="numbers">
                         <h3>Dodaj konto</h3>
-                        <label>Nazwa VPN konta:</label>
+                        <small class="tooltip"
+                            >i<span class="tooltiptext"
+                                >W celu prostrzego odróżnienia nazw użytkowników
+                                w systemie, zostaną one poprzedzone
+                                przedrostkiem z budowanym z nazwy huba oraz
+                                znaku podkreślenia</span
+                            ></small
+                        >
+                        <label
+                            >Nazwa VPN konta:
+                            <small class="tooltip"
+                                >i<span class="tooltiptext"
+                                    >Jest to nazwa stała, którą uzytkownik ten
+                                    będzie się identyfikował w VPN. Nie można
+                                    jej później zmienić</span
+                                ></small
+                            ></label
+                        >
                         <input
                             type="text"
                             placeholder="Nazwa konta"
@@ -180,14 +197,6 @@
                             name="password"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="userPassword"
-                        />
-                        <label>Kod dostępu:</label>
-                        <input
-                            type="password"
-                            placeholder="Kod dostępu"
-                            name="passcode"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="userPasscode"
                         />
                         <div v-if="isAdmin">
                             <label>Uprawnienia:</label>
@@ -431,7 +440,6 @@ const selectedUser = reactive({ username: "" });
 const vpnUserName = ref();
 const userName = ref();
 const userPassword = ref();
-const userPasscode = ref();
 
 const cantModal = ref();
 
@@ -466,7 +474,6 @@ function newGroupChanged() {
 async function addUser() {
     let name = vpnUserName.value.value,
         username = userName.value.value,
-        passcode = userPasscode.value.value,
         password = userPassword.value.value,
         permission = "USER";
 
@@ -488,12 +495,6 @@ async function addUser() {
         });
         return;
     }
-    if (passcode == null || passcode.trim() == "") {
-        store.commit("setError", {
-            message: "Należy podać kod dostępu dla konta użytkownika",
-        });
-        return;
-    }
 
     if (isAdmin) {
         permission = selectedPermission.value.value.toUpperCase();
@@ -504,11 +505,9 @@ async function addUser() {
         name,
         username,
         password,
-        passcode,
         permission
     );
     userName.value.value = "";
-    userPasscode.value.value = "";
     userPassword.value.value = "";
     await refresh();
     await refreshUsers();

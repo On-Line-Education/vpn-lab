@@ -16,70 +16,70 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
                 return user;
             },
-            async loginViaKey(_: any, { loginKey }: any) {
-                await prisma.token.deleteMany({
-                    where: {
-                        expireOn: {
-                            lt: new Date(Date.now()),
-                        },
-                    },
-                });
+            // async loginViaKey(_: any, { loginKey }: any) {
+            //     await prisma.token.deleteMany({
+            //         where: {
+            //             expireOn: {
+            //                 lt: new Date(Date.now()),
+            //             },
+            //         },
+            //     });
 
-                if (!loginKey || loginKey.trim() === "") {
-                    throw new Error("Kod dostępu nie może być pusty");
-                }
+            //     if (!loginKey || loginKey.trim() === "") {
+            //         throw new Error("Kod dostępu nie może być pusty");
+            //     }
 
-                let u = await prisma.user.findFirst({
-                    where: {
-                        loginKey: crypto
-                            .createHash("SHA256")
-                            .update(loginKey)
-                            .digest("hex"),
-                    },
-                });
+            //     let u = await prisma.user.findFirst({
+            //         where: {
+            //             loginKey: crypto
+            //                 .createHash("SHA256")
+            //                 .update(loginKey)
+            //                 .digest("hex"),
+            //         },
+            //     });
 
-                if (!u) {
-                    throw new AuthenticationError("Nieprawidłowy kod dostępu");
-                }
+            //     if (!u) {
+            //         throw new AuthenticationError("Nieprawidłowy kod dostępu");
+            //     }
 
-                let expire = new Date(Date.now());
-                expire.setHours(expire.getHours() + 1);
+            //     let expire = new Date(Date.now());
+            //     expire.setHours(expire.getHours() + 1);
 
-                let token = await prisma.token.create({
-                    data: {
-                        token: randomString(16),
-                        expireOn: expire,
-                        userId: u.id,
-                    },
-                });
+            //     let token = await prisma.token.create({
+            //         data: {
+            //             token: randomString(16),
+            //             expireOn: expire,
+            //             userId: u.id,
+            //         },
+            //     });
 
-                let userHubs = await prisma.usersInHub.findMany({
-                    where: {
-                        user: {
-                            name: u.name,
-                        },
-                    },
-                    select: {
-                        hub: {
-                            select: {
-                                title: true,
-                            },
-                        },
-                    },
-                });
+            //     let userHubs = await prisma.usersInHub.findMany({
+            //         where: {
+            //             user: {
+            //                 name: u.name,
+            //             },
+            //         },
+            //         select: {
+            //             hub: {
+            //                 select: {
+            //                     title: true,
+            //                 },
+            //             },
+            //         },
+            //     });
 
-                return {
-                    token: token.token,
-                    user: {
-                        name: u.name,
-                        role: u.role,
-                        id: u.id,
-                        hubs: userHubs.map((m) => {
-                            return m.hub.title;
-                        }),
-                    },
-                };
-            },
+            //     return {
+            //         token: token.token,
+            //         user: {
+            //             name: u.name,
+            //             role: u.role,
+            //             id: u.id,
+            //             hubs: userHubs.map((m) => {
+            //                 return m.hub.title;
+            //             }),
+            //         },
+            //     };
+            // },
             async loginViaPassword(_: any, { username, password }: any) {
                 await prisma.token.deleteMany({
                     where: {
@@ -347,9 +347,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async createUser(
                 _: any,
-                { hubname, name, username, password, passcode, role },
+                { hubname, name, username, password, role },
                 { user, api }
             ) {
+                let husername = hubname + "_" + name;
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
@@ -363,10 +364,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            name: name,
-                            OR: {
-                                loginKey: passcode,
-                            },
+                            name: husername,
                         },
                     })) != null
                 ) {
@@ -396,7 +394,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let dbuser = await prisma.user.create({
                     data: {
                         username: username,
-                        name: name,
+                        name: hubname + "_" + name,
                         role: role,
                         passHash: crypto
                             .createHash("SHA256")
@@ -404,10 +402,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             .digest("hex"),
                         veyonKeyPriv: privKey,
                         veyonKeyPub: pubKey,
-                        loginKey: crypto
-                            .createHash("SHA256")
-                            .update(passcode)
-                            .digest("hex"),
                         vpnPass: randomString(16),
                         hubs: {
                             create: {
@@ -419,12 +413,12 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 await vpn.user.createUser(
                     hubname,
-                    name,
-                    name,
+                    husername,
+                    husername,
                     VpnRpcUserAuthType.Password,
                     dbuser.vpnPass,
                     role == Roles.INSTRUCTOR
-                        ? name + "_" + Date.now() + "_vpn_group"
+                        ? husername + "_" + Date.now() + "_vpn_group"
                         : null
                 );
 
@@ -432,7 +426,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async updateUser(
                 _: any,
-                { vpnname, username, password, passcode, role },
+                { vpnname, username, password, role },
                 { user, api }
             ) {
                 if (!user) {
@@ -445,16 +439,16 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            name: vpnname,
-                            OR: {
-                                loginKey: passcode,
+                            username: username,
+                            AND: {
+                                NOT: {
+                                    name: vpnname,
+                                },
                             },
                         },
                     })) != null
                 ) {
-                    throw new Error(
-                        "Istnieje już użytkownik z taką nazwą lub kodem dostępu"
-                    );
+                    throw new Error("Istnieje już użytkownik z taką nazwą");
                 }
                 let currUser = await prisma.user.findFirst({
                     where: {
@@ -486,12 +480,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             : currUser.passHash,
                         veyonKeyPriv: privKey ? privKey : currUser.veyonKeyPriv,
                         veyonKeyPub: pubKey ? pubKey : currUser.veyonKeyPub,
-                        loginKey: passcode
-                            ? crypto
-                                  .createHash("SHA256")
-                                  .update(passcode)
-                                  .digest("hex")
-                            : currUser.loginKey,
                     },
                 });
 

@@ -94,14 +94,14 @@ const isErrorAlert = computed(() => {
 
 onBeforeMount(() => {
     // store.state.isTransparent = "bg-transparent";
-    const onResizeEvent = () =>{
-        if(window.innerWidth < 1200){
-            store.dispatch('toggleSidebarColor', "bg-white")
+    const onResizeEvent = () => {
+        if (window.innerWidth < 1200) {
+            store.dispatch("toggleSidebarColor", "bg-white");
         } else {
-            store.dispatch('toggleSidebarColor', "bg-transparent")
+            store.dispatch("toggleSidebarColor", "bg-transparent");
         }
-    }
-    window.addEventListener('resize', onResizeEvent);
+    };
+    window.addEventListener("resize", onResizeEvent);
     onResizeEvent();
 });
 
