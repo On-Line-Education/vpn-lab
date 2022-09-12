@@ -121,8 +121,32 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         userId: u.id,
                     },
                 });
+
+                let userHubs = await prisma.usersInHub.findMany({
+                    where: {
+                        user: {
+                            name: u.name,
+                        },
+                    },
+                    select: {
+                        hub: {
+                            select: {
+                                title: true,
+                            },
+                        },
+                    },
+                });
+
                 return {
                     token: token.token,
+                    user: {
+                        name: u.name,
+                        role: u.role,
+                        id: u.id,
+                        hubs: userHubs.map((m) => {
+                            return m.hub.title;
+                        }),
+                    },
                 };
             },
             async getAllUsersInStudentsGroup(

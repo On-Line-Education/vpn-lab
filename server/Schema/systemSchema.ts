@@ -12,7 +12,6 @@ export default gql`
         username: String
         role: String
         password: String
-        passcode: String
     }
 
     type IPSecOutput {
