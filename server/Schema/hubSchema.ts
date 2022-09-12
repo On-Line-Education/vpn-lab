@@ -139,7 +139,6 @@ export default gql`
             instructorName: String
             instructorUsername: String
             instructorPassword: String
-            instructorPasscode: String
         ): Boolean
     }
 

@@ -16,70 +16,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
                 return user;
             },
-            // async loginViaKey(_: any, { loginKey }: any) {
-            //     await prisma.token.deleteMany({
-            //         where: {
-            //             expireOn: {
-            //                 lt: new Date(Date.now()),
-            //             },
-            //         },
-            //     });
-
-            //     if (!loginKey || loginKey.trim() === "") {
-            //         throw new Error("Kod dostępu nie może być pusty");
-            //     }
-
-            //     let u = await prisma.user.findFirst({
-            //         where: {
-            //             loginKey: crypto
-            //                 .createHash("SHA256")
-            //                 .update(loginKey)
-            //                 .digest("hex"),
-            //         },
-            //     });
-
-            //     if (!u) {
-            //         throw new AuthenticationError("Nieprawidłowy kod dostępu");
-            //     }
-
-            //     let expire = new Date(Date.now());
-            //     expire.setHours(expire.getHours() + 1);
-
-            //     let token = await prisma.token.create({
-            //         data: {
-            //             token: randomString(16),
-            //             expireOn: expire,
-            //             userId: u.id,
-            //         },
-            //     });
-
-            //     let userHubs = await prisma.usersInHub.findMany({
-            //         where: {
-            //             user: {
-            //                 name: u.name,
-            //             },
-            //         },
-            //         select: {
-            //             hub: {
-            //                 select: {
-            //                     title: true,
-            //                 },
-            //             },
-            //         },
-            //     });
-
-            //     return {
-            //         token: token.token,
-            //         user: {
-            //             name: u.name,
-            //             role: u.role,
-            //             id: u.id,
-            //             hubs: userHubs.map((m) => {
-            //                 return m.hub.title;
-            //             }),
-            //         },
-            //     };
-            // },
             async loginViaPassword(_: any, { username, password }: any) {
                 await prisma.token.deleteMany({
                     where: {
@@ -99,7 +35,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         "Nieprawidłowa nazwa użytkownika (do logowania wybagana jest nazwa w systenie, nie VPN)"
                     );
                 }
-                //test2_user-11
+
                 if (
                     u.passHash !=
                     crypto.createHash("SHA256").update(password).digest("hex")
@@ -121,8 +57,32 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         userId: u.id,
                     },
                 });
+
+                let userHubs = await prisma.usersInHub.findMany({
+                    where: {
+                        user: {
+                            name: u.name,
+                        },
+                    },
+                    select: {
+                        hub: {
+                            select: {
+                                title: true,
+                            },
+                        },
+                    },
+                });
+
                 return {
                     token: token.token,
+                    user: {
+                        name: u.name,
+                        role: u.role,
+                        id: u.id,
+                        hubs: userHubs.map((m) => {
+                            return m.hub.title;
+                        }),
+                    },
                 };
             },
             async getAllUsersInStudentsGroup(

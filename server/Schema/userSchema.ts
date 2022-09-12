@@ -7,10 +7,6 @@ export default gql`
         username: String
     }
 
-    type Token {
-        token: String
-    }
-
     type User {
         id: Int
         name: String
@@ -25,7 +21,7 @@ export default gql`
         username: String
         role: String
         veyonKeyPriv: String
-        veyonKeyPub: String 
+        veyonKeyPub: String
         groupName: String
     }
 
@@ -51,8 +47,7 @@ export default gql`
     }
 
     type Query {
-        loginViaKey(loginKey: String): LoginKeyOutput
-        loginViaPassword(username: String, password: String): Token
+        loginViaPassword(username: String, password: String): LoginKeyOutput
         getCurrentUser: User
         getAllUsersInStudentsGroup(username: String, group: String): [ApiUser]
         getTeachersInUserGroups(username: String): TeachersWithUserVPNData
@@ -65,14 +60,12 @@ export default gql`
             name: String
             username: String
             password: String
-            passcode: String
             role: Permission
         ): Boolean
         updateUser(
             vpnname: String
             username: String
             password: String
-            passcode: String
             role: Permission
         ): Boolean
         deleteUser(hubname: String, username: String): Boolean
