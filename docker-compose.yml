@@ -25,6 +25,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: sdfhRTH54*7fg470
       MYSQL_DATABASE: vpndb
+      MYSQL_USER: vpndb
+      MYSQL_PASSWORD: vpndb
     ports:
       - "3307:3306"
     networks:
