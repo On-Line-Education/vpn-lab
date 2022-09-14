@@ -88,7 +88,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async getAllUsersInStudentsGroup(
                 _: any,
-                { username, group }: any,
+                { vpnname, group }: any,
                 { user, api }
             ) {
                 if (!(api || user)) {
@@ -107,7 +107,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     where: {
                         userHub: {
                             user: {
-                                name: username,
+                                name: vpnname,
                             },
                         },
                     },

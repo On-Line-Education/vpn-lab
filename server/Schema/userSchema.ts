@@ -49,8 +49,8 @@ export default gql`
     type Query {
         loginViaPassword(username: String, password: String): LoginKeyOutput
         getCurrentUser: User
-        getAllUsersInStudentsGroup(username: String, group: String): [ApiUser]
-        getTeachersInUserGroups(username: String): TeachersWithUserVPNData
+        getAllUsersInStudentsGroup(vpnname: String, group: String): [ApiUser]
+        getTeachersInUserGroups(vpnname: String): TeachersWithUserVPNData
     }
 
     type Mutation {
