@@ -158,7 +158,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async getTeachersInUserGroups(
                 _: any,
-                { username }: any,
+                { vpnname }: any,
                 { user, api }
             ) {
                 if (!(api || user)) {
@@ -175,7 +175,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let userdb = await prisma.user.findFirst({
                     where: {
-                        name: username,
+                        name: vpnname,
                     },
                 });
 
@@ -183,7 +183,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     where: {
                         userHub: {
                             user: {
-                                name: username,
+                                name: vpnname,
                             },
                         },
                     },
