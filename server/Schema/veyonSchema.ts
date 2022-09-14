@@ -31,13 +31,13 @@ export default gql`
     }
 
     type Query {
-        getVeyonKeys(hubName: String, username: String): VeyonKeys
+        getVeyonKeys(hubName: String, vpnname: String): VeyonKeys
     }
 
     type Mutation {
         changeUserGroupToTeacher(
-            studentName: String
-            teacherName: String
+            studentVpnName: String
+            teacherVpnName: String
         ): Boolean
     }
 `;
