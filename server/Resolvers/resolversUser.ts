@@ -295,6 +295,16 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     data["username"] = settings.username;
                 }
 
+                if (
+                    (await prisma.user.findFirst({
+                        where: {
+                            username: settings.username,
+                        },
+                    })) != null
+                ) {
+                    throw new Error("Taka nazwa użytkownika już istnieje");
+                }
+
                 await prisma.user.update({
                     where: {
                         id: user.id,
@@ -329,9 +339,17 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         },
                     })) != null
                 ) {
-                    throw new Error(
-                        "Istnieje już użytkownik z taką nazwą lub kodem dostępu"
-                    );
+                    throw new Error("Istnieje już użytkownik z taką nazwą vpn");
+                }
+
+                if (
+                    (await prisma.user.findFirst({
+                        where: {
+                            username: username,
+                        },
+                    })) != null
+                ) {
+                    throw new Error("Istnieje już użytkownik z taką nazwą");
                 }
 
                 let hub = await prisma.hub.findFirst({

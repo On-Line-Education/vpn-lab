@@ -76,14 +76,28 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     throw new Error("Hub z taką nazwą już istnieje.");
                 }
 
+                let vpnNamesToCheck = [];
                 let namesToCheck = [];
 
-                data.csv.forEach((row: { name: string }) => {
-                    namesToCheck.push({ name: row.name });
+                data.csv.forEach((row: { name: string; username: string }) => {
+                    vpnNamesToCheck.push({ name: row.name });
+                    namesToCheck.push({ username: row.username });
                 });
 
                 if (
-                    await prisma.user.findFirst({ where: { OR: namesToCheck } })
+                    await prisma.user.findFirst({
+                        where: { OR: vpnNamesToCheck },
+                    })
+                ) {
+                    throw new Error(
+                        "Istnieje już co najmniej jeden użytkownik z podaną nazwą vpn."
+                    );
+                }
+
+                if (
+                    await prisma.user.findFirst({
+                        where: { OR: namesToCheck },
+                    })
                 ) {
                     throw new Error(
                         "Istnieje już co najmniej jeden użytkownik z podaną nazwą."
