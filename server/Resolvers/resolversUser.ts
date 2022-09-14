@@ -158,7 +158,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async getTeachersInUserGroups(
                 _: any,
-                { vpnname }: any,
+                { vpnname, hubname }: any,
                 { user, api }
             ) {
                 if (!(api || user)) {
@@ -206,6 +206,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         userHub: {
                             user: {
                                 role: Roles.INSTRUCTOR,
+                            },
+                            hub: {
+                                title: hubname,
                             },
                         },
                         groupName: userWithGroups.groupName,
