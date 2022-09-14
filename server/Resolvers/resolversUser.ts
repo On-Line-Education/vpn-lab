@@ -77,6 +77,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     token: token.token,
                     user: {
                         name: u.name,
+                        username: u.username,
                         role: u.role,
                         id: u.id,
                         hubs: userHubs.map((m) => {

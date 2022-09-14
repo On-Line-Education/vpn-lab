@@ -7,13 +7,13 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
         Query: {
             // username must be vpn name
-            async getVeyonKeys(_: any, { hubName, username }: any, { api }) {
+            async getVeyonKeys(_: any, { hubName, vpnname }: any, { api }) {
                 if (!api) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let u = await prisma.user.findFirst({
                     where: {
-                        name: username,
+                        name: vpnname,
                     },
                 });
 
@@ -30,7 +30,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             // studentName and teacherName must be vpn name
             async changeUserGroupToTeacher(
                 _: any,
-                { studentName, teacherName }: any,
+                { studentVpnName, teacherVpnName }: any,
                 { api }
             ) {
                 if (!api) {
@@ -41,7 +41,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     (
                         await prisma.user.findFirst({
                             where: {
-                                name: studentName,
+                                name: studentVpnName,
                             },
                         })
                     ).role === Roles.INSTRUCTOR
@@ -54,7 +54,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         users: {
                             some: {
                                 user: {
-                                    name: teacherName,
+                                    name: teacherVpnName,
                                 },
                             },
                         },
@@ -66,12 +66,12 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let teacherVpn = await vpn.user.getUser(
                     teacher.title,
-                    teacherName
+                    teacherVpnName
                 );
 
                 await vpn.user.setGroup(
                     teacher.title,
-                    studentName,
+                    studentVpnName,
                     teacherVpn.GroupName_str
                 );
 
