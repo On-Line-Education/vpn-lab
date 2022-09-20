@@ -71,6 +71,6 @@ export default gql`
             password: String
             role: Permission
         ): Boolean
-        deleteUser(hubname: String, username: String): Boolean
+        deleteUser(hubname: String, vpnname: String): Boolean
     }
 `;
