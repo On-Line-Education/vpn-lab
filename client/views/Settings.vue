@@ -101,20 +101,24 @@ async function save() {
         });
         return;
     }
-    let res = await store.getters.getServer.changeUserSettings({
-        username: newUsername.value.value.trim(),
-        newPassword: newPassword.value.value,
-        oldPassword: oldPassword.value.value,
-    });
-    if (res.data.changeUserSettings) {
-        store.commit("showAlert", { message: "Zmiany zostały zapisane" });
-        if (newUsername.value.value) {
-            store.commit("setUsername", newUsername.value.value);
-        }
-    } else {
-        store.commit("setError", {
-            message: "Wystąpił niespodziewany problem",
+    try {
+        let res = await store.getters.getServer.changeUserSettings({
+            username: newUsername.value.value.trim(),
+            newPassword: newPassword.value.value,
+            oldPassword: oldPassword.value.value,
         });
+        if (res.data.changeUserSettings) {
+            store.commit("showAlert", { message: "Zmiany zostały zapisane" });
+            if (newUsername.value.value) {
+                store.commit("setUsername", newUsername.value.value);
+            }
+        } else {
+            store.commit("setError", {
+                message: "Wystąpił niespodziewany problem",
+            });
+        }
+    } catch (e) {
+        store.commit("setError", e);
     }
 }
 </script>
