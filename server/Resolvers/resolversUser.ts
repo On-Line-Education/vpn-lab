@@ -449,7 +449,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                 },
                             },
                         })
-                    ).includes(vpnname)
+                    )
+                        .map((el) => el.user.name)
+                        .includes(vpnname)
                 ) {
                     throw new Error(
                         "Nie masz uprawnień do edycji tego użytkownika"
