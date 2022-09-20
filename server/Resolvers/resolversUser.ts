@@ -467,7 +467,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 return true;
             },
-            async deleteUser(_: any, { hubname, name }, { user, api }) {
+            async deleteUser(_: any, { hubname, vpnname }, { user, api }) {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
@@ -480,7 +480,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let dbuser = await prisma.user.findFirst({
                     where: {
-                        name: name,
+                        name: vpnname,
                     },
                 });
 
@@ -518,7 +518,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
-                await vpn.user.deleteUser(hubname, name);
+                await vpn.user.deleteUser(hubname, vpnname);
                 return true;
             },
         },

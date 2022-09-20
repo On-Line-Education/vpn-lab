@@ -579,16 +579,16 @@ export default class Connection {
         await this.refreshUser();
         return updated;
     }
-    async deleteUser(hubname, username) {
+    async deleteUser(hubname, vpnname) {
         return await this._apollo.mutate({
             mutation: gql`
-                mutation DeleteUser($hubname: String, $username: String) {
-                    deleteUser(hubname: $hubname, username: $username)
+                mutation DeleteUser($hubname: String, $vpnname: String) {
+                    deleteUser(hubname: $hubname, vpnname: $vpnname)
                 }
             `,
             variables: {
                 hubname,
-                username,
+                vpnname,
             },
             context: {
                 headers: {
