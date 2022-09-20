@@ -71,12 +71,19 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let hubId = 0;
 
                 if (
-                    data.newHub &&
-                    (await prisma.hub.findFirst({
-                        where: { title: data.hubName },
-                    }))
+                    (data.newHub && user.role === Roles.INSTRUCTOR) ||
+                    (data.newHub &&
+                        (await prisma.hub.findFirst({
+                            where: { title: data.hubName },
+                        })))
                 ) {
-                    throw new Error("Hub z taką nazwą już istnieje.");
+                    if (user.role === Roles.INSTRUCTOR) {
+                        throw new Error(
+                            "Tylko Administrator może stworzyć nowy hub."
+                        );
+                    } else {
+                        throw new Error("Hub z taką nazwą już istnieje.");
+                    }
                 }
 
                 if (user.role === Roles.INSTRUCTOR) {
@@ -101,7 +108,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             .includes(data.hubName)
                     ) {
                         throw new Error(
-                            "Nie masz uprawnień do importowania do tego huba"
+                            "Nie masz uprawnień do importowania do tego huba."
                         );
                     }
                 }
@@ -109,10 +116,20 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let vpnNamesToCheck = [];
                 let namesToCheck = [];
 
-                data.csv.forEach((row: { name: string; username: string }) => {
-                    vpnNamesToCheck.push({ name: row.name });
-                    namesToCheck.push({ username: row.username });
-                });
+                data.csv.forEach(
+                    (row: { name: string; username: string; role: string }) => {
+                        if (
+                            row.role === Roles.ADMIN &&
+                            user.role !== Roles.ADMIN
+                        ) {
+                            throw new Error(
+                                "Tylko Administrator może stworzyć użytkownika z uprawnieniami Administratora"
+                            );
+                        }
+                        vpnNamesToCheck.push({ name: row.name });
+                        namesToCheck.push({ username: row.username });
+                    }
+                );
 
                 if (
                     await prisma.user.findFirst({
