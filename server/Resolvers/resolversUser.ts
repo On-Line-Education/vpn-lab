@@ -414,8 +414,46 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if (user && ![Roles.ADMIN].includes(user.role)) {
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
+                }
+
+                let currUser = await prisma.usersInHub.findFirst({
+                    where: {
+                        user: {
+                            name: vpnname,
+                        },
+                    },
+                    select: {
+                        user: true,
+                        hub: true,
+                    },
+                });
+
+                if (
+                    !(
+                        await prisma.usersInHub.findMany({
+                            where: {
+                                hub: {
+                                    title: currUser.hub.title,
+                                },
+                            },
+                            select: {
+                                user: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                            },
+                        })
+                    ).includes(vpnname)
+                ) {
+                    throw new Error(
+                        "Nie masz uprawnień do edycji tego użytkownika"
+                    );
                 }
 
                 if (
@@ -432,11 +470,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 ) {
                     throw new Error("Istnieje już użytkownik z taką nazwą");
                 }
-                let currUser = await prisma.user.findFirst({
-                    where: {
-                        name: vpnname,
-                    },
-                });
 
                 let veyonConnector = new VeyonConnector();
                 let pubKey = null,
