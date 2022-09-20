@@ -77,26 +77,32 @@ const oldPassword = ref();
 
 async function save() {
     if (
-        newPassword.value.value &&
+        newPassword.value.value.length > 0 &&
         newPassword.value.value !== newPasswordRepeat.value.value
     ) {
         store.commit("setError", { message: "Podane hasła nie są takie same" });
         return;
     }
-    if (newPassword.value.value === oldPassword.value.value) {
+    if (
+        newPassword.value.value.length > 0 &&
+        newPassword.value.value === oldPassword.value.value
+    ) {
         store.commit("setError", {
             message: "Hasła są identyczne",
         });
         return;
     }
-    if (newUsername.value.value.length < 3) {
+    if (
+        newUsername.value.value.trim().length != 0 &&
+        newUsername.value.value.trim().length < 3
+    ) {
         store.commit("setError", {
             message: "Nazwa użytkownika musi mieć minimum 3 znaki",
         });
         return;
     }
     let res = await store.getters.getServer.changeUserSettings({
-        username: newUsername.value.value,
+        username: newUsername.value.value.trim(),
         newPassword: newPassword.value.value,
         oldPassword: oldPassword.value.value,
     });

@@ -271,7 +271,11 @@ async function refreshUsers() {
 
 async function refresh() {
     let perms = await store.getters.getServer.getRoles();
-    permissions.value = perms.data.getRoles;
+    let userPerms = perms.data.getRoles;
+    if (store.getters.getRole == "instructor") {
+        userPerms.splice(userPerms.indexOf("admin"), 1);
+    }
+    permissions.value = userPerms;
 }
 
 async function save() {
