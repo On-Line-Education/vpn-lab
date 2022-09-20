@@ -326,13 +326,19 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             ) {
                 let husername = hubname + "_" + name;
                 if (!user) {
-                    throw new AuthenticationError("Nie masz uprawnień");
+                    throw new AuthenticationError("Nie masz uprawnień.");
                 }
                 if (
                     user &&
                     ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
                 ) {
-                    throw new AuthenticationError("Nie masz uprawnień");
+                    throw new AuthenticationError("Nie masz uprawnień.");
+                }
+
+                if (Roles.INSTRUCTOR === user.role && role === Roles.ADMIN) {
+                    throw new Error(
+                        "Tylko Administrator może stworzyć użytkownika z uprawnieniami Administratora."
+                    );
                 }
 
                 if (
@@ -342,7 +348,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         },
                     })) != null
                 ) {
-                    throw new Error("Istnieje już użytkownik z taką nazwą vpn");
+                    throw new Error(
+                        "Istnieje już użytkownik z taką nazwą vpn."
+                    );
                 }
 
                 if (
@@ -352,7 +360,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         },
                     })) != null
                 ) {
-                    throw new Error("Istnieje już użytkownik z taką nazwą");
+                    throw new Error("Istnieje już użytkownik z taką nazwą.");
                 }
 
                 let hub = await prisma.hub.findFirst({
@@ -360,7 +368,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 });
 
                 if (hub == null) {
-                    throw new Error("Hub nie istnieje");
+                    throw new Error("Hub nie istnieje.");
                 }
 
                 let hubId = hub.id;
