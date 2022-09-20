@@ -474,7 +474,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let veyonConnector = new VeyonConnector();
                 let pubKey = null,
                     privKey = null;
-                if (role === Roles.INSTRUCTOR && !currUser.veyonKeyPriv) {
+                if (role === Roles.INSTRUCTOR && !currUser.user.veyonKeyPriv) {
                     let { pub, priv } = await veyonConnector.getKeyPair();
                     pubKey = pub;
                     privKey = priv;
@@ -492,9 +492,13 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                   .createHash("SHA256")
                                   .update(password)
                                   .digest("hex")
-                            : currUser.passHash,
-                        veyonKeyPriv: privKey ? privKey : currUser.veyonKeyPriv,
-                        veyonKeyPub: pubKey ? pubKey : currUser.veyonKeyPub,
+                            : currUser.user.passHash,
+                        veyonKeyPriv: privKey
+                            ? privKey
+                            : currUser.user.veyonKeyPriv,
+                        veyonKeyPub: pubKey
+                            ? pubKey
+                            : currUser.user.veyonKeyPub,
                     },
                 });
 
