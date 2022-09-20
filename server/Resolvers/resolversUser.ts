@@ -433,29 +433,31 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
-                if (
-                    !(
-                        await prisma.usersInHub.findMany({
-                            where: {
-                                hub: {
-                                    title: currUser.hub.title,
-                                },
-                            },
-                            select: {
-                                user: {
-                                    select: {
-                                        name: true,
+                if (user.role === Roles.INSTRUCTOR) {
+                    if (
+                        !(
+                            await prisma.usersInHub.findMany({
+                                where: {
+                                    hub: {
+                                        title: currUser.hub.title,
                                     },
                                 },
-                            },
-                        })
-                    )
-                        .map((el) => el.user.name)
-                        .includes(vpnname)
-                ) {
-                    throw new Error(
-                        "Nie masz uprawnień do edycji tego użytkownika"
-                    );
+                                select: {
+                                    user: {
+                                        select: {
+                                            name: true,
+                                        },
+                                    },
+                                },
+                            })
+                        )
+                            .map((el) => el.user.name)
+                            .includes(vpnname)
+                    ) {
+                        throw new Error(
+                            "Nie masz uprawnień do edycji tego użytkownika"
+                        );
+                    }
                 }
 
                 if (

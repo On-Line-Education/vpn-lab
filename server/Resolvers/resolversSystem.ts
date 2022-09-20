@@ -62,7 +62,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
-                if (user && user.role !== Roles.ADMIN) {
+                if (
+                    user &&
+                    ![Roles.ADMIN, Roles.INSTRUCTOR].includes(user.role)
+                ) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
                 let hubId = 0;
@@ -74,6 +77,33 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     }))
                 ) {
                     throw new Error("Hub z taką nazwą już istnieje.");
+                }
+
+                if (user.role === Roles.INSTRUCTOR) {
+                    if (
+                        !(
+                            await prisma.usersInHub.findMany({
+                                where: {
+                                    user: {
+                                        name: user.name,
+                                    },
+                                },
+                                select: {
+                                    hub: {
+                                        select: {
+                                            title: true,
+                                        },
+                                    },
+                                },
+                            })
+                        )
+                            .map((el) => el.hub.title)
+                            .includes(data.hubName)
+                    ) {
+                        throw new Error(
+                            "Nie masz uprawnień do importowania do tego huba"
+                        );
+                    }
                 }
 
                 let vpnNamesToCheck = [];
