@@ -32,7 +32,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 });
                 if (u === null) {
                     throw new Error(
-                        "Nieprawidłowa nazwa użytkownika (do logowania wybagana jest nazwa w systenie, nie VPN)"
+                        "Nieprawidłowa nazwa użytkownika (do logowania wymagana jest nazwa w systenie, nie VPN)"
                     );
                 }
 
