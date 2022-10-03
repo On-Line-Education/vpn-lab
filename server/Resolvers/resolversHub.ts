@@ -157,15 +157,11 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
         Mutation: {
             async createNewHub(
                 _: any,
-                {
-                    hubName,
-                    instructorName,
-                    instructorUsername,
-                    instructorPassword,
-                }: any,
+                { hubName, instructorUsername, instructorPassword }: any,
                 { user, api }
             ) {
-                let hinstructorName = hubName + "_" + instructorName;
+                let hinstructorName = hubName + "_" + instructorUsername;
+                let hinstructorUsername = instructorUsername + "@" + hubName;
                 if (
                     (await prisma.hub.findFirst({
                         where: {
@@ -217,7 +213,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     data: {
                         name: hinstructorName,
                         role: Roles.INSTRUCTOR,
-                        username: instructorUsername,
+                        username: hinstructorUsername,
                         passHash: crypto
                             .createHash("SHA256")
                             .update(instructorPassword)

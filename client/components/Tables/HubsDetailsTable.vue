@@ -76,7 +76,7 @@
                                         class="d-flex flex-column justify-content-center"
                                     >
                                         <h6 class="mb-0 text-sm">
-                                            {{ user.username }}@{{ hubname }}
+                                            {{ user.username }}
                                         </h6>
                                     </div>
                                 </div>
@@ -165,14 +165,6 @@
                         >
                             Dodaj konto
                         </h3>
-                        <label
-                            class="tooltip-custom"
-                            data-html="true"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title="Jest to nazwa stała, którą uzytkownik ten będzie się identyfikował w VPN. Nie można jej później zmienić"
-                            >Nazwa VPN konta:</label
-                        >
                         <input
                             type="text"
                             placeholder="Nazwa konta"
@@ -435,7 +427,6 @@ const showGroupsEdit = ref();
 const selectedUserGroups = reactive({ groups: [] });
 const selectedUser = reactive({ vpnname: "" });
 
-const vpnUserName = ref();
 const userName = ref();
 const userPassword = ref();
 
@@ -470,17 +461,10 @@ function newGroupChanged() {
 }
 
 async function addUser() {
-    let name = vpnUserName.value.value,
-        username = userName.value.value,
+    let username = userName.value.value,
         password = userPassword.value.value,
         permission = "USER";
 
-    if (name == null || name.trim() == "") {
-        store.commit("setError", {
-            message: "Należy podać nazwę VPN użytkownika",
-        });
-        return;
-    }
     if (username == null || username.trim() == "") {
         store.commit("setError", {
             message: "Należy podać nazwę użytkownika",
@@ -500,7 +484,6 @@ async function addUser() {
 
     await store.getters.getServer.createUser(
         hubname,
-        name,
         username,
         password,
         permission

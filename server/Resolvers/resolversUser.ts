@@ -340,10 +340,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             },
             async createUser(
                 _: any,
-                { hubname, name, username, password, role },
+                { hubname, username, password, role },
                 { user, api }
             ) {
-                let husername = hubname + "_" + name;
+                let husername = hubname + "_" + username;
                 if (!user) {
                     throw new AuthenticationError("Nie masz uprawnień.");
                 }
@@ -406,7 +406,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let dbuser = await prisma.user.create({
                     data: {
                         username: usernameHub,
-                        name: hubname + "_" + name,
+                        name: husername,
                         role: role,
                         passHash: crypto
                             .createHash("SHA256")

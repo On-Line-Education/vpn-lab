@@ -136,7 +136,6 @@ export default gql`
         deleteHub(hubName: String): HubDelete
         createNewHub(
             hubName: String
-            instructorName: String
             instructorUsername: String
             instructorPassword: String
         ): Boolean

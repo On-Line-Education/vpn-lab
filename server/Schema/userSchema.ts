@@ -60,7 +60,6 @@ export default gql`
         changeUserSettings(settings: UserSettings): Boolean
         createUser(
             hubname: String
-            name: String
             username: String
             password: String
             role: Permission

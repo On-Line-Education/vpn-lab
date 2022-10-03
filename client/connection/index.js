@@ -479,23 +479,16 @@ export default class Connection {
             },
         });
     }
-    async createNewHub(
-        hubName,
-        instructorName,
-        instructorUsername,
-        instructorPassword
-    ) {
+    async createNewHub(hubName, instructorUsername, instructorPassword) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation CreateNewHub(
                     $hubName: String
-                    $instructorName: String
                     $instructorUsername: String
                     $instructorPassword: String
                 ) {
                     createNewHub(
                         hubName: $hubName
-                        instructorName: $instructorName
                         instructorUsername: $instructorUsername
                         instructorPassword: $instructorPassword
                     )
@@ -503,7 +496,6 @@ export default class Connection {
             `,
             variables: {
                 hubName,
-                instructorName,
                 instructorUsername,
                 instructorPassword,
             },
@@ -514,19 +506,17 @@ export default class Connection {
             },
         });
     }
-    async createUser(hubname, name, username, password, role) {
+    async createUser(hubname, username, password, role) {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation CreateUser(
                     $hubname: String
-                    $name: String
                     $username: String
                     $password: String
                     $role: Permission
                 ) {
                     createUser(
                         hubname: $hubname
-                        name: $name
                         username: $username
                         password: $password
                         role: $role
@@ -535,7 +525,6 @@ export default class Connection {
             `,
             variables: {
                 hubname,
-                name,
                 username,
                 password,
                 role,

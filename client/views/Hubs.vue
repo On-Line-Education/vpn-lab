@@ -41,21 +41,6 @@
                                 class="form-control d-flex justify-content-start mb-3"
                                 ref="hubname"
                             />
-                            <label
-                                class="tooltip-custom"
-                                data-html="true"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
-                                title="Jest to nazwa stała, którą uzytkownik ten będzie się identyfikował w VPN. Nie można jej później zmienić"
-                                >Nazwa VPN konta instruktora:</label
-                            >
-                            <input
-                                type="text"
-                                placeholder="Nazwa VPN konta instruktora"
-                                name="name"
-                                class="form-control d-flex justify-content-start mb-3"
-                                ref="instructorName"
-                            />
                             <label>Nazwa konta instruktora:</label>
                             <input
                                 type="text"
@@ -96,7 +81,6 @@ const store = useStore();
 const isAdmin = store.getters.getRole == "admin";
 
 const hubname = ref();
-const instructorName = ref();
 const instructorUsername = ref();
 const instructorPassword = ref();
 
@@ -105,18 +89,11 @@ const reactiveHubs = reactive({ hubs: null });
 async function addHub() {
     let hn = hubname.value.value,
         iusername = instructorUsername.value.value,
-        iname = instructorName.value.value,
         ipassword = instructorPassword.value.value;
 
     if (hn == null || hn.trim() == "") {
         store.commit("setError", {
             message: "Należy podać nazwę huba",
-        });
-        return;
-    }
-    if (iname == null || iname.trim() == "") {
-        store.commit("setError", {
-            message: "Należy podać nazwę dla konta instruktora",
         });
         return;
     }
@@ -132,18 +109,12 @@ async function addHub() {
     }
 
     try {
-        await store.getters.getServer.createNewHub(
-            hn,
-            iname,
-            iusername,
-            ipassword
-        );
+        await store.getters.getServer.createNewHub(hn, iusername, ipassword);
     } catch (e) {
         store.commit("setError", e);
         return;
     }
     hubname.value.value = "";
-    instructorName.value.value = "";
     instructorPassword.value.value = "";
     store.commit("showAlert", { message: "Hub został utworzony" });
     await refreshHubs();
