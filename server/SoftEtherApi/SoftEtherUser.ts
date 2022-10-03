@@ -32,6 +32,7 @@ export default class SoftEtherUser {
             Auth_Password_str: password,
             ExpireTime_dt: null,
             GroupName_str: groupName,
+            UsePolicy_bool: false,
         });
 
         if (groupName != null) {
