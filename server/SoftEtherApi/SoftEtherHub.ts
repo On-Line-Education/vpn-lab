@@ -7,12 +7,13 @@ import {
     VpnRpcDeleteHub,
     VpnRpcSetHubOnline,
     VpnVhOption,
+    VpnRpcHub,
 } from "vpnrpc";
 import SoftEtherAPI from "./SoftEtherAPI";
 
 export default class SoftEtherHub {
     protected api: VpnServerRpc;
-    protected parent: SoftEtherAPI; 
+    protected parent: SoftEtherAPI;
     constructor(parent: SoftEtherAPI) {
         this.api = parent.getApi();
         this.parent = parent;
@@ -34,7 +35,12 @@ export default class SoftEtherHub {
             MaxSession_u32: maxSession,
             NoEnum_bool: noEnum,
         });
-        return await this.api.CreateHub(data);
+        let ch = await this.api.CreateHub(data);
+        let hub: VpnRpcHub = new VpnRpcHub({
+            HubName_str: hubName,
+        });
+        await this.api.EnableSecureNAT(hub);
+        return ch;
     }
 
     public async get(hubName: string): Promise<VpnRpcCreateHub> {
@@ -51,15 +57,12 @@ export default class SoftEtherHub {
         return await this.api.GetHubStatus(data);
     }
 
-    public async getSecureNATOption(hubName: string): Promise<VpnVhOption>
-    {
-        let in_vh_option: VpnVhOption = new VpnVhOption(
-        {
+    public async getSecureNATOption(hubName: string): Promise<VpnVhOption> {
+        let in_vh_option: VpnVhOption = new VpnVhOption({
             RpcHubName_str: hubName,
         });
         return await this.api.GetSecureNATOption(in_vh_option);
     }
-    
 
     public async update(
         hubName: string,
