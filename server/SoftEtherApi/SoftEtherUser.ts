@@ -86,15 +86,8 @@ export default class SoftEtherUser {
         groupName: string
     ): Promise<VpnRpcSetUser> {
         let user = await this.getUser(hubName, userName);
-        let data: VpnRpcSetUser = new VpnRpcSetUser({
-            HubName_str: hubName,
-            Name_str: userName,
-            GroupName_str: groupName,
-            AuthType_u32: user.AuthType_u32,
-            Auth_Password_str: user.Auth_Password_str,
-            ExpireTime_dt: null,
-        });
-        return await this.api.SetUser(data);
+        user.GroupName_str = groupName;
+        return await this.api.SetUser(user);
     }
 
     public async deleteUser(
@@ -110,16 +103,7 @@ export default class SoftEtherUser {
 
     public async update(hubName: string, oldName: string, userName: string) {
         let user: VpnRpcSetUser = await this.getUser(hubName, oldName);
-        let data: VpnRpcSetUser = new VpnRpcSetUser({
-            HubName_str: hubName,
-            Name_str: userName != oldName ? userName : user.Name_str,
-            Realname_utf: user.Realname_utf,
-            Note_utf: user.Note_utf,
-            GroupName_str: user.GroupName_str,
-            AuthType_u32: user.AuthType_u32,
-            Auth_Password_str: user.Auth_Password_str,
-            ExpireTime_dt: null,
-        });
+        user.Name_str = userName != oldName ? userName : user.Name_str;
         // let data = new VpnRpcSetUser({
         //     HubName_str: hub_name,
         //     Name_str: "test1",
@@ -175,6 +159,6 @@ export default class SoftEtherUser {
         //     ["policy:VLanId_u32"]: 0,
         //     ["policy:Ver3_bool"]: true,
         // });
-        return await this.api.SetUser(data);
+        return await this.api.SetUser(user);
     }
 }

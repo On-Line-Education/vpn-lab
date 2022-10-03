@@ -23,12 +23,12 @@
                 <table class="table align-items-center mb-0">
                     <thead>
                         <tr>
-                            <th
+                            <!-- <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="reactiveHub.hub.sort('name')"
                             >
                                 Nazwa VPN użytkownika
-                            </th>
+                            </th> -->
                             <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="reactiveHub.hub.sort('username')"
@@ -59,7 +59,7 @@
                             v-for="user in reactiveHub.hub.sortData.data"
                             :key="user.key"
                         >
-                            <td>
+                            <!-- <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
                                         class="d-flex flex-column justify-content-center"
@@ -69,14 +69,14 @@
                                         </h6>
                                     </div>
                                 </div>
-                            </td>
+                            </td> -->
                             <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
                                         class="d-flex flex-column justify-content-center"
                                     >
                                         <h6 class="mb-0 text-sm">
-                                            {{ user.username }}
+                                            {{ user.username }}@{{ hubname }}
                                         </h6>
                                     </div>
                                 </div>

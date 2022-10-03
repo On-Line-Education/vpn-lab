@@ -289,19 +289,38 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     data["passHash"] = newPass;
                 }
 
-                if (settings.username) {
+                let hub = await prisma.usersInHub.findFirst({
+                    where: {
+                        user: {
+                            id: user.id,
+                        },
+                    },
+                    select: {
+                        hub: {
+                            select: {
+                                title: true,
+                            },
+                        },
+                    },
+                });
+                let username =
+                    settings.username == ""
+                        ? ""
+                        : settings.username + "@" + hub.hub.title;
+
+                if (username) {
                     if (settings.username.length < 3) {
                         throw new Error(
                             "Nazwa użytkownika musi mieć minimum 3 znaki"
                         );
                     }
-                    data["username"] = settings.username;
+                    data["username"] = username;
                 }
 
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            username: settings.username,
+                            username: username,
                         },
                     })) != null
                 ) {
@@ -353,10 +372,13 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     );
                 }
 
+                let usernameHub =
+                    username == "" ? "" : username + "@" + hubname;
+
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            username: username,
+                            username: usernameHub,
                         },
                     })) != null
                 ) {
@@ -383,7 +405,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let dbuser = await prisma.user.create({
                     data: {
-                        username: username,
+                        username: usernameHub,
                         name: hubname + "_" + name,
                         role: role,
                         passHash: crypto
@@ -468,10 +490,27 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     }
                 }
 
+                let hub = await prisma.usersInHub.findFirst({
+                    where: {
+                        user: {
+                            id: user.id,
+                        },
+                    },
+                    select: {
+                        hub: {
+                            select: {
+                                title: true,
+                            },
+                        },
+                    },
+                });
+                let usernameHub =
+                    username == "" ? "" : username + "@" + hub.hub.title;
+
                 if (
                     (await prisma.user.findFirst({
                         where: {
-                            username: username,
+                            username: usernameHub,
                             AND: {
                                 NOT: {
                                     name: vpnname,
@@ -497,7 +536,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         name: vpnname,
                     },
                     data: {
-                        username: username,
+                        username: usernameHub,
                         role: role,
                         passHash: password
                             ? crypto

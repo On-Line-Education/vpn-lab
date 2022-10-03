@@ -126,8 +126,12 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                 "Tylko Administrator może stworzyć użytkownika z uprawnieniami Administratora"
                             );
                         }
-                        vpnNamesToCheck.push({ name: row.name });
-                        namesToCheck.push({ username: row.username });
+                        vpnNamesToCheck.push({
+                            name: data.hubName + "_" + row.name,
+                        });
+                        namesToCheck.push({
+                            username: row.username + "@" + data.hubName,
+                        });
                     }
                 );
 
@@ -195,7 +199,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         let dbuser = await prisma.user.create({
                             data: {
                                 name: data.hubName + "_" + user.name,
-                                username: data.hubName + "_" + user.username,
+                                username: user.username + "@" + data.hubName,
                                 role: user.role,
                                 passHash: user.password
                                     ? crypto
