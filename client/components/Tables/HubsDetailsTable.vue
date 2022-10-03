@@ -165,13 +165,6 @@
                         >
                             Dodaj konto
                         </h3>
-                        <input
-                            type="text"
-                            placeholder="Nazwa konta"
-                            name="name"
-                            class="form-control d-flex justify-content-start mb-3"
-                            ref="vpnUserName"
-                        />
                         <label>Nazwa konta:</label>
                         <input
                             type="text"
