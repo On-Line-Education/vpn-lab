@@ -220,7 +220,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             .digest("hex"),
                         veyonKeyPriv: priv,
                         veyonKeyPub: pub,
-                        vpnPass: randomString(16),
+                        vpnPass: randomString(8),
                         hubs: {
                             create: {
                                 hubId,
