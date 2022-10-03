@@ -10,7 +10,7 @@ import VpnGroup from "./SoftEtherData/VpnGroup";
 
 export default class SoftEtherUser {
     protected api: VpnServerRpc;
-    protected parent: SoftEtherAPI; 
+    protected parent: SoftEtherAPI;
     constructor(parent: SoftEtherAPI) {
         this.api = parent.getApi();
         this.parent = parent;
@@ -31,28 +31,31 @@ export default class SoftEtherUser {
             AuthType_u32: authType,
             Auth_Password_str: password,
             ExpireTime_dt: null,
-            GroupName_str: groupName
+            GroupName_str: groupName,
         });
 
-        if(groupName != null){
+        if (groupName != null) {
             let groupList = await this.parent.group.list(hubName),
                 flag = false;
             for (let index in groupList.GroupList) {
-                if (groupList.GroupList[index].Name_str == groupName || groupList.GroupList[index].Realname_utf == groupName){
+                if (
+                    groupList.GroupList[index].Name_str == groupName ||
+                    groupList.GroupList[index].Realname_utf == groupName
+                ) {
                     flag = true;
                     break;
                 }
             }
-            if(!flag){
-                let groupData = new VpnGroup()
-                
+            if (!flag) {
+                let groupData = new VpnGroup();
+
                 groupData = {
                     ...groupData,
                     HubName_str: hubName,
                     Name_str: groupName,
                     Realname_utf: groupName,
-                    Note_utf: userName +"_"+fullName,
-                    UsePolicy_bool: false
+                    Note_utf: userName + "_" + fullName,
+                    UsePolicy_bool: false,
                 };
                 await this.parent.group.create(groupData);
             }
@@ -82,10 +85,14 @@ export default class SoftEtherUser {
         userName: string,
         groupName: string
     ): Promise<VpnRpcSetUser> {
+        let user = await this.getUser(hubName, userName);
         let data: VpnRpcSetUser = new VpnRpcSetUser({
             HubName_str: hubName,
             Name_str: userName,
             GroupName_str: groupName,
+            AuthType_u32: user.AuthType_u32,
+            Auth_Password_str: user.Auth_Password_str,
+            ExpireTime_dt: null,
         });
         return await this.api.SetUser(data);
     }
@@ -94,19 +101,14 @@ export default class SoftEtherUser {
         hubname: string,
         username: string
     ): Promise<VpnRpcDeleteUser> {
-        let in_rpc_delete_user: VpnRpcDeleteUser = new VpnRpcDeleteUser(
-            {
-                HubName_str: hubname,
-                Name_str: username,
-            });
+        let in_rpc_delete_user: VpnRpcDeleteUser = new VpnRpcDeleteUser({
+            HubName_str: hubname,
+            Name_str: username,
+        });
         return await this.api.DeleteUser(in_rpc_delete_user);
     }
 
-    public async update(
-        hubName: string,
-        oldName: string,
-        userName: string
-    ) {
+    public async update(hubName: string, oldName: string, userName: string) {
         let user: VpnRpcSetUser = await this.getUser(hubName, oldName);
         let data: VpnRpcSetUser = new VpnRpcSetUser({
             HubName_str: hubName,
@@ -114,6 +116,9 @@ export default class SoftEtherUser {
             Realname_utf: user.Realname_utf,
             Note_utf: user.Note_utf,
             GroupName_str: user.GroupName_str,
+            AuthType_u32: user.AuthType_u32,
+            Auth_Password_str: user.Auth_Password_str,
+            ExpireTime_dt: null,
         });
         // let data = new VpnRpcSetUser({
         //     HubName_str: hub_name,
