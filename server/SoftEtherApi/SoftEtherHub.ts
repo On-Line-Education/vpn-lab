@@ -89,15 +89,7 @@ export default class SoftEtherHub {
             hub.NoEnum_bool = noEnum;
         }
 
-        let data: VpnRpcCreateHub = new VpnRpcCreateHub({
-            HubName_str: hubName,
-            HubType_u32: hub.HubType_u32,
-            Online_bool: hub.Online_bool,
-            AdminPasswordPlainText_str: hub.AdminPasswordPlainText_str,
-            MaxSession_u32: hub.MaxSession_u32,
-            NoEnum_bool: hub.NoEnum_bool,
-        });
-        return await this.api.SetHub(data);
+        return await this.api.SetHub(hub);
     }
 
     public async list(): Promise<VpnRpcEnumHub> {
