@@ -493,7 +493,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let hub = await prisma.usersInHub.findFirst({
                     where: {
                         user: {
-                            id: user.id,
+                            id: currUser.user.id,
                         },
                     },
                     select: {

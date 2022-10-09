@@ -189,17 +189,12 @@ function returnValue(val) {
                     row.forEach((element) => {
                         previewTitles.value.push(element);
                     });
-                    if (previewTitles.value.length != 4) {
+                    if (previewTitles.value.length != 3) {
                         clearImport();
                         invalid = true;
                         throw new Error("Nieprawidłowa struktura pliku csv");
                     }
-                    let csvRequiredTitles = [
-                        "name",
-                        "username",
-                        "role",
-                        "password",
-                    ];
+                    let csvRequiredTitles = ["username", "role", "password"];
                     for (let index in csvRequiredTitles) {
                         if (
                             !previewTitles.value.includes(
@@ -223,15 +218,12 @@ function returnValue(val) {
                             ? hubNames.value[selectHub.value.value - 1]
                             : customHubName.value.value;
                 row.forEach((element) => {
-                    if (
-                        rotationCounter % 4 === 0 ||
-                        rotationCounter % 4 === 1
-                    ) {
-                        data.push(hubname + "_" + element);
+                    if (rotationCounter % 3 === 0) {
+                        data.push(element + "@" + hubname);
                     } else {
                         data.push(element);
                     }
-                    rotationCounter = (rotationCounter + 1) % 4;
+                    rotationCounter = (rotationCounter + 1) % 3;
                 });
                 previewData.value.push(data);
             });

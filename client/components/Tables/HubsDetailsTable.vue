@@ -17,18 +17,30 @@
                 size="sm"
                 @keyup="reactiveHub.hub.search($event.target.value)"
             ></vsud-input>
+            <vsud-button
+                color="info"
+                variant="outline"
+                size="sm"
+                @click="bulkAddToGroup()"
+                v-if="isInstructor"
+            >
+                Zmień grupę wybranym użytkownikom
+            </vsud-button>
         </div>
         <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
                     <thead>
                         <tr>
-                            <!-- <th
+                            <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7"
-                                @click="reactiveHub.hub.sort('name')"
                             >
-                                Nazwa VPN użytkownika
-                            </th> -->
+                                <input
+                                    type="checkbox"
+                                    ref="selectAll"
+                                    v-on:change="selectAllUsers()"
+                                />
+                            </th>
                             <th
                                 class="text-uppercase text-secondary font-weight-bolder opacity-7"
                                 @click="reactiveHub.hub.sort('username')"
@@ -59,17 +71,22 @@
                             v-for="user in reactiveHub.hub.sortData.data"
                             :key="user.key"
                         >
-                            <!-- <td>
+                            <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
                                         class="d-flex flex-column justify-content-center"
                                     >
-                                        <h6 class="mb-0 text-sm">
-                                            {{ user.name }}
-                                        </h6>
+                                        <input
+                                            type="checkbox"
+                                            name="selected"
+                                            :checked="user.selected"
+                                            v-on:change="
+                                                changeUserSelected(user)
+                                            "
+                                        />
                                     </div>
                                 </div>
-                            </td> -->
+                            </td>
                             <td>
                                 <div class="d-flex px-2 py-1">
                                     <div
@@ -126,6 +143,7 @@
                                     variant="outline"
                                     size="sm"
                                     @click="changeGroups(user.name)"
+                                    v-if="isInstructor"
                                 >
                                     Edytuj grupy
                                 </vsud-button>
@@ -382,6 +400,82 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-4">
+        <!-- Modal -->
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="showGroupsBulkEdit"
+        >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edytuj grupy</h5>
+                        <button
+                            type="button"
+                            class="btn-close text-dark"
+                            @click="closeBulkModal"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    v-model="newBulkGroup"
+                                    ref="newGroupBulkCheckbox"
+                                    v-on:change="newGroupBulkChanged"
+                                />
+                                <label class="custom-control-label"
+                                    >Nowa grupa</label
+                                >
+                            </div>
+                            <select
+                                class="form-control"
+                                ref="selectedBulkGroup"
+                            >
+                                <option
+                                    v-for="group in groups.value"
+                                    :value="group"
+                                >
+                                    {{ group }}
+                                </option>
+                            </select>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Nazwa nowej grupy"
+                                value=""
+                                ref="inputGroupNameBulkModal"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            class="btn bg-gradient-primary"
+                            @click="addUsersToGroup()"
+                        >
+                            Dodaj
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn bg-gradient-secondary"
+                            @click="closeBulkModal"
+                        >
+                            Zamknij
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -408,6 +502,8 @@ const isInstructor = isAdmin || store.getters.getRole == "instructor";
 const permissions = ref();
 const selectedPermission = ref();
 
+const selectAll = ref();
+
 const groups = reactive([]);
 const newGroup = ref();
 const newGroupCheckbox = ref();
@@ -427,6 +523,14 @@ const cantModal = ref();
 
 const usureModal = ref();
 const usureYesModal = ref();
+
+// bulk group edit vars
+const showGroupsBulkEdit = ref();
+const newBulkGroup = ref();
+const newGroupBulkCheckbox = ref();
+const selectedBulkGroup = ref();
+const inputGroupNameBulkModal = ref();
+// end bulk group edit vars
 
 var reactiveHub = reactive({ hub: [] });
 
@@ -525,6 +629,7 @@ async function refreshUsers() {
             group: userGroup.groups ? userGroup.groups : [],
             role: userGroup.role,
             username: userGroup.username,
+            selected: false,
         });
     });
     reactiveHub.hub = new TableSorter(
@@ -534,6 +639,11 @@ async function refreshUsers() {
         })
     );
     updateGroupData();
+    try {
+        selectAll.value.checked = false;
+    } catch (e) {
+        //do nothing
+    }
 }
 
 async function refresh() {
@@ -580,11 +690,16 @@ onMounted(async () => {
     await refresh();
     await refreshUsers();
     newGroupCheckbox.value.checked = (groups.value?.length ?? 0) == 0;
+    newGroupBulkCheckbox.value.checked = (groups.value?.length ?? 0) == 0;
     newGroupChanged();
+    newGroupBulkChanged();
     selectedGroup.value.style.display =
         (groups.value?.length ?? 0) > 0
             ? selectedGroup.value.style.display
             : "none";
+    selectedBulkGroup.value.style.display = !newGroupBulkCheckbox.value.checked
+        ? selectedBulkGroup.value.style.display
+        : "none";
 });
 
 function closeModal() {
@@ -649,4 +764,102 @@ function removeFromGroup(username, group) {
 function changeGroup(vpnname) {
     addToGroup(vpnname);
 }
+
+function selectAllUsers() {
+    if (reactiveHub.hub.sortData.data.length == 0) {
+        return;
+    }
+    const check = selectAll.value.checked;
+    for (let index in reactiveHub.hub.sortData.data) {
+        reactiveHub.hub.sortData.data[index].selected = check;
+    }
+}
+
+function changeUserSelected(user) {
+    reactiveHub.hub.sortData.data[
+        reactiveHub.hub.sortData.data.indexOf(user)
+    ].selected = !user.selected;
+    let selected = 0;
+    reactiveHub.hub.sortData.data.forEach((e) => {
+        if (e.selected) {
+            selected++;
+        }
+    });
+
+    if (selected > 0 && selected != reactiveHub.hub.sortData.data.length) {
+        selectAll.value.indeterminate = true;
+    } else if (selected == 0) {
+        selectAll.value.indeterminate = false;
+        selectAll.value.checked = false;
+    } else {
+        selectAll.value.indeterminate = false;
+        selectAll.value.checked = true;
+    }
+}
+
+// bulk add to group
+
+function bulkAddToGroup() {
+    showGroupsBulkEdit.value.style.display = "block";
+}
+
+function closeBulkModal() {
+    showGroupsBulkEdit.value.style.display = "none";
+}
+
+function newGroupBulkChanged() {
+    selectedBulkGroup.value.style.display = newGroupBulkCheckbox.value.checked
+        ? "none"
+        : "block";
+    inputGroupNameBulkModal.value.style.display = newGroupBulkCheckbox.value
+        .checked
+        ? "block"
+        : "none";
+}
+
+async function addUsersToGroup() {
+    let groupName = "";
+    if (newGroupBulkCheckbox.value?.checked ?? true) {
+        groupName = inputGroupNameBulkModal.value.value;
+        newGroupChanged();
+    } else {
+        if (selectedBulkGroup.value.value) {
+            groupName = selectedBulkGroup.value.value;
+        } else {
+            store.commit("setError", {
+                message: "Wystąpił błąd podczas określania grupy",
+            });
+            return;
+        }
+    }
+
+    if (selectedUserGroups.groups.includes(groupName)) {
+        cantModal.value.style.display = "block";
+        return;
+    }
+
+    const usersToGroupAdd = [];
+    for (let index in reactiveHub.hub.sortData.data) {
+        if (!reactiveHub.hub.sortData.data[index].selected) {
+            continue;
+        }
+        if (!reactiveHub.hub.sortData.data[index].group.includes(groupName)) {
+            usersToGroupAdd.push(reactiveHub.hub.sortData.data[index].name);
+        }
+    }
+
+    for (let index in usersToGroupAdd) {
+        await store.getters.getServer.addUserToGroup(
+            hubname,
+            groupName,
+            usersToGroupAdd[index]
+        );
+    }
+
+    inputGroupNameBulkModal.value.value = "";
+    await refresh();
+    await refreshUsers();
+}
+
+// end bulk add to group
 </script>

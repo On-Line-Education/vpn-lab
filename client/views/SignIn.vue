@@ -43,6 +43,14 @@
                                             ref="password"
                                             @keypress="triggerLogin($event)"
                                         />
+                                        <small
+                                            @mousedown="showPassword()"
+                                            @mouseup="hidePassword()"
+                                            @touchstart="showPassword()"
+                                            @touchend="hidePassword()"
+                                            style="cursor: pointer"
+                                            >Podgląd hasła</small
+                                        >
                                         <div class="text-center">
                                             <button
                                                 class="my-4 mb-2 btn bg-gradient-warning btn-lg w-100"
@@ -98,6 +106,14 @@ function triggerLogin(event) {
     if (event.charCode === 13) {
         passwordLogin();
     }
+}
+
+function showPassword() {
+    password.value.type = "text";
+}
+
+function hidePassword() {
+    password.value.type = "password";
 }
 
 function passwordLogin() {

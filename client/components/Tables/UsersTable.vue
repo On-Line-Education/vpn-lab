@@ -44,6 +44,12 @@
                                 Hub
                             </th>
                             <th
+                                class="text-uppercase text-secondary font-weight-bolder opacity-7"
+                                @click="reactiveUsers.users.sort('group')"
+                            >
+                                Grupy
+                            </th>
+                            <th
                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
                             >
                                 Akcje
@@ -85,6 +91,34 @@
                                     </div>
                                 </div>
                             </td>
+                            <td>
+                                <div
+                                    class="d-flex px-2 py-1"
+                                    v-if="user.group.length > 0"
+                                >
+                                    <div
+                                        class="d-flex flex-column justify-content-center"
+                                        v-for="(group, index) in user.group"
+                                    >
+                                        <h6
+                                            class="mb-0 text-sm"
+                                            v-if="
+                                                index + 1 ==
+                                                    user.group.length ||
+                                                user.group.length < 2
+                                            "
+                                        >
+                                            {{ group }}
+                                        </h6>
+                                        <h6 class="mb-0 text-sm" v-else>
+                                            {{ group }},
+                                        </h6>
+                                    </div>
+                                </div>
+                                <p class="text-xs font-weight-bold mb-0" v-else>
+                                    -
+                                </p>
+                            </td>
                             <td class="align-middle">
                                 <vsud-button
                                     @click="edit(user.name, user.username)"
@@ -93,6 +127,14 @@
                                     size="sm"
                                 >
                                     Edytuj
+                                </vsud-button>
+                                <vsud-button
+                                    @click="openGroupModal(user)"
+                                    color="info"
+                                    variant="outline"
+                                    size="sm"
+                                >
+                                    Zmień grupę
                                 </vsud-button>
                             </td>
                         </tr>
@@ -171,6 +213,178 @@
             </div>
         </div>
     </div>
+    <div class="col-md-4" style="z-index: 10000">
+        <!-- Modal -->
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="usureModal"
+        >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Czy na pewno?</h5>
+                        <button
+                            type="button"
+                            class="btn-close text-dark"
+                            @click="closeUsureModal()"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn bg-gradient-secondary"
+                            @click="closeUsureModal()"
+                        >
+                            Nie
+                        </button>
+                        <button
+                            type="button"
+                            class="btn bg-gradient-primary"
+                            ref="usureYesModal"
+                        >
+                            Tak
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4" style="z-index: 10001">
+        <!-- Modal -->
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="cantModal"
+        >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Nie można wykonać tej operacji
+                        </h5>
+                        <button
+                            type="button"
+                            class="btn-close text-dark"
+                            @click="closeCantModal()"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Próbujesz przypisać użytkownika do grupy, w której już
+                        się znajduje
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn bg-gradient-secondary"
+                            @click="closeCantModal()"
+                        >
+                            Zamknij
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4" style="z-index: 9999">
+        <!-- Modal -->
+        <div
+            class="modal modal-custom"
+            tabindex="-1"
+            role="dialog"
+            ref="showGroupsEdit"
+        >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edytuj grupy</h5>
+                        <button
+                            type="button"
+                            class="btn-close text-dark"
+                            @click="closeGroupModal()"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    v-model="newGroup"
+                                    ref="newGroupCheckbox"
+                                    v-on:change="newGroupChanged"
+                                />
+                                <label class="custom-control-label"
+                                    >Nowa grupa</label
+                                >
+                            </div>
+                            <select class="form-control" ref="selectedGroup">
+                                <option
+                                    v-for="group in hubUserGroups.groups"
+                                    :value="group"
+                                >
+                                    {{ group }}
+                                </option>
+                            </select>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Nazwa nowej grupy"
+                                value=""
+                                ref="inputGroupNameModal"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            class="btn bg-gradient-primary"
+                            @click="addUserToGroup()"
+                        >
+                            Dodaj
+                        </button>
+                        <hr v-if="selectedUserGroups.groups?.length ?? 0 > 0" />
+                        <div>
+                            <div
+                                class="d-flex"
+                                style="list-style-type: none; font-size: 24px"
+                                v-for="group in selectedUserGroups.groups"
+                            >
+                                <button
+                                    class="btn btn-outline-danger"
+                                    style="margin-right: 5px"
+                                    @click="removeFromGroup(group)"
+                                >
+                                    Usuń
+                                </button>
+                                {{ group }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn bg-gradient-secondary"
+                            @click="closeGroupModal()"
+                        >
+                            Zamknij
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -211,8 +425,113 @@ const date = computed(() => {
 
 let currName = "";
 
+// edit groups
+
+const groups = reactive([]);
+const showGroupsEdit = ref();
+const newGroup = ref();
+const newGroupCheckbox = ref();
+const selectedGroup = ref();
+const inputGroupNameModal = ref();
+const selectedUserGroups = reactive({ groups: [] });
+const cantModal = ref();
+const usureModal = ref();
+const usureYesModal = ref();
+const hubUserGroups = reactive({ groups: [] });
+
+let selectedGroupUser = null;
+
+function openGroupModal(user) {
+    selectedGroupUser = user;
+    hubUserGroups.groups = user.hubGroups;
+    selectedUserGroups.groups = user.group;
+    showGroupsEdit.value.style.display = "block";
+}
+
+function closeGroupModal() {
+    showGroupsEdit.value.style.display = "none";
+}
+
+function newGroupChanged() {
+    selectedGroup.value.style.display = newGroupCheckbox.value.checked
+        ? "none"
+        : "block";
+    inputGroupNameModal.value.style.display = newGroupCheckbox.value.checked
+        ? "block"
+        : "none";
+}
+
+async function addUserToGroup() {
+    const user = selectedGroupUser;
+    let vpnname = user.name;
+    let groupName = "";
+    if (newGroupCheckbox.value?.checked ?? true) {
+        groupName = inputGroupNameModal.value.value;
+        newGroupChanged();
+    } else {
+        if (selectedGroup.value.value) {
+            groupName = selectedGroup.value.value;
+        } else {
+            store.commit("setError", {
+                message: "Wystąpił błąd podczas określania grupy",
+            });
+            return;
+        }
+    }
+
+    if (user.group.includes(groupName)) {
+        cantModal.value.style.display = "block";
+        return;
+    }
+
+    await store.getters.getServer.addUserToGroup(user.hub, groupName, vpnname);
+    inputGroupNameModal.value.value = "";
+    await refresh();
+    await refreshUsers();
+    openGroupModal(
+        reactiveUsers.users.sortData.data.find(
+            (e) => e.name == selectedGroupUser.name
+        )
+    );
+}
+
+async function removeFromGroup(group) {
+    // are you sure
+    usureModal.value.style.display = "block";
+    const cl = async () => {
+        closeUsureModal();
+        await store.getters.getServer.removeFromSystemGroup(
+            selectedGroupUser.hub,
+            selectedGroupUser.name,
+            group
+        );
+        usureYesModal.value.removeEventListener("click", cl);
+        await refresh();
+        await refreshUsers();
+        openGroupModal(
+            reactiveUsers.users.sortData.data.find(
+                (e) => e.name == selectedGroupUser.name
+            )
+        );
+    };
+    usureYesModal.value.addEventListener("click", cl);
+}
+
+// end edit groups
+
+function closeCantModal() {
+    cantModal.value.style.display = "none";
+}
+
+async function closeUsureModal() {
+    usureModal.value.style.display = "none";
+}
+
 function edit(name, username) {
-    userName.value.value = username;
+    userName.value.value = username.replace(
+        "@" + username.split("@").pop(),
+        ""
+    );
     currName = name;
     selectedPermission.value.value = reactiveUsers.users.sortData.data.find(
         (user) => {
@@ -247,12 +566,20 @@ async function refreshUsers() {
                 hubsList[index].name
             );
 
+            let groups = (
+                await store.getters.getServer.listSystemGroupsInHub(
+                    hubsList[index].name
+                )
+            ).data.listSystemGroups;
+
             users.data.getHubUsers.forEach((userGroup) => {
                 hubUsers.push({
                     name: userGroup.user.Name_str,
                     hub: hubsList[index].name,
                     role: userGroup.role,
                     username: userGroup.username,
+                    group: userGroup.groups ? userGroup.groups : [],
+                    hubGroups: groups,
                 });
             });
         }
@@ -287,7 +614,7 @@ async function save() {
 
         if (name == null || name.trim() == "") {
             store.commit("setError", {
-                message: "Nazwa użytkownika nie moiże być pusta",
+                message: "Nazwa użytkownika nie może być pusta",
             });
             return;
         }
@@ -316,5 +643,11 @@ async function closeEditModal() {
 onMounted(async () => {
     await refresh();
     await refreshUsers();
+    newGroupCheckbox.value.checked = (groups.value?.length ?? 0) == 0;
+    newGroupChanged();
+    selectedGroup.value.style.display =
+        (groups.value?.length ?? 0) > 0
+            ? selectedGroup.value.style.display
+            : "none";
 });
 </script>

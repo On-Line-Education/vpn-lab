@@ -116,24 +116,19 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let vpnNamesToCheck = [];
                 let namesToCheck = [];
 
-                data.csv.forEach(
-                    (row: { name: string; username: string; role: string }) => {
-                        if (
-                            row.role === Roles.ADMIN &&
-                            user.role !== Roles.ADMIN
-                        ) {
-                            throw new Error(
-                                "Tylko Administrator może stworzyć użytkownika z uprawnieniami Administratora"
-                            );
-                        }
-                        vpnNamesToCheck.push({
-                            name: data.hubName + "_" + row.name,
-                        });
-                        namesToCheck.push({
-                            username: row.username + "@" + data.hubName,
-                        });
+                data.csv.forEach((row: { username: string; role: string }) => {
+                    if (row.role === Roles.ADMIN && user.role !== Roles.ADMIN) {
+                        throw new Error(
+                            "Tylko Administrator może stworzyć użytkownika z uprawnieniami Administratora"
+                        );
                     }
-                );
+                    vpnNamesToCheck.push({
+                        name: data.hubName + "_" + row.username,
+                    });
+                    namesToCheck.push({
+                        username: row.username + "@" + data.hubName,
+                    });
+                });
 
                 if (
                     await prisma.user.findFirst({
@@ -182,7 +177,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 let veyonConnector = new VeyonConnector();
                 data.csv.forEach(
                     async (user: {
-                        name: string;
                         username: string;
                         role: string;
                         password: string;
@@ -198,7 +192,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         }
                         let dbuser = await prisma.user.create({
                             data: {
-                                name: data.hubName + "_" + user.name,
+                                name: data.hubName + "_" + user.username,
                                 username: user.username + "@" + data.hubName,
                                 role: user.role,
                                 passHash: user.password
@@ -219,12 +213,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         });
                         await vpn.user.createUser(
                             data.hubName,
-                            data.hubName + "_" + user.name,
-                            data.hubName + "_" + user.name,
+                            data.hubName + "_" + user.username,
+                            data.hubName + "_" + user.username,
                             VpnRpcUserAuthType.Password,
                             dbuser.vpnPass,
                             user.role == Roles.INSTRUCTOR
-                                ? user.name + "_" + Date.now() + "_vpn_group"
+                                ? user.username +
+                                      "_" +
+                                      Date.now() +
+                                      "_vpn_group"
                                 : null
                         );
                     }

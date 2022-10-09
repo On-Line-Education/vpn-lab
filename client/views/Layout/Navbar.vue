@@ -42,14 +42,19 @@
                         <a
                             href="#"
                             @click="toggleSidebar"
-                            class="p-0 nav-link text-body"
+                            class="p-0 nav-link text-body d-flex align-items-center"
                             id="iconNavbarSidenav"
                         >
-                            <div class="sidenav-toggler-inner">
-                                <i class="sidenav-toggler-line"></i>
-                                <i class="sidenav-toggler-line"></i>
-                                <i class="sidenav-toggler-line"></i>
+                            <div class="px-0 text-body">
+                                <div class="sidenav-toggler-inner">
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                    <i class="sidenav-toggler-line"></i>
+                                </div>
                             </div>
+                            <span class="px-2 d-sm-inline d-none">
+                                Przełącz Menu</span
+                            >
                         </a>
                     </li>
                 </ul>
