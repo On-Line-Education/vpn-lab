@@ -84,9 +84,13 @@ export default class SoftEtherUser {
     public async setGroup(
         hubName: string,
         userName: string,
-        groupName: string
+        groupName: string,
+        authType: VpnRpcUserAuthType,
+        password: string
     ): Promise<VpnRpcSetUser> {
         let user = await this.getUser(hubName, userName);
+        user.AuthType_u32 = authType;
+        user.Auth_Password_str = password;
         user.GroupName_str = groupName;
         return await this.api.SetUser(user);
     }

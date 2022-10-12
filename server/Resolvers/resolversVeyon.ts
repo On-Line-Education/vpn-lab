@@ -1,13 +1,14 @@
-import { PrismaClient } from "@prisma/client";
-import { AuthenticationError } from "apollo-server-express";
+import {PrismaClient} from "@prisma/client";
+import {AuthenticationError} from "apollo-server-express";
 import Roles from "../Helpsers/roles";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
+import {VpnRpcUserAuthType} from "vpnrpc";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
         Query: {
             // username must be vpn name
-            async getVeyonKeys(_: any, { hubName, vpnname }: any, { api }) {
+            async getVeyonKeys(_: any, {hubName, vpnname}: any, {api}) {
                 if (!api) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
@@ -30,22 +31,20 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
             // studentName and teacherName must be vpn name
             async changeUserGroupToTeacher(
                 _: any,
-                { studentVpnName, teacherVpnName }: any,
-                { api }
+                {studentVpnName, teacherVpnName}: any,
+                {api}
             ) {
                 if (!api) {
                     throw new AuthenticationError("Nie masz uprawnień");
                 }
+                const studentDb = await prisma.user.findFirst({
+                    where: {
+                        name: studentVpnName,
+                    },
+                });
 
-                if (
-                    (
-                        await prisma.user.findFirst({
-                            where: {
-                                name: studentVpnName,
-                            },
-                        })
-                    ).role === Roles.INSTRUCTOR
-                ) {
+                if (studentDb.role === Roles.INSTRUCTOR
+                    ) {
                     return false;
                 }
 
@@ -72,7 +71,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 await vpn.user.setGroup(
                     teacher.title,
                     studentVpnName,
-                    teacherVpn.GroupName_str
+                    teacherVpn.GroupName_str,
+                    VpnRpcUserAuthType.Password,
+                    studentDb.vpnPass
                 );
 
                 return true;
