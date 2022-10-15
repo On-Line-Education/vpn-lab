@@ -18,6 +18,7 @@ export default async function createServer(
     const app = express();
 
     const apolloServer = new ApolloServer({
+        persistedQueries: false,
         typeDefs: schema,
         resolvers: resolvers.build(vpn, db),
         context: async ({ req }) => {
@@ -43,14 +44,20 @@ export default async function createServer(
     if (process.env.NODE_ENV == "production") {
         // Assumes certificates are in a .ssl folder off of the package root.
         // Make sure these files are secured.
-        httpServer = https.createServer(
-            {
-                key: fs.readFileSync(`../ssl/server.key`),
-                cert: fs.readFileSync(`../ssl/server.crt`),
-            },
+        try {
+            httpServer = https.createServer(
+                    {
+                        key: fs.readFileSync(`../ssl/server.key`),
+                        cert: fs.readFileSync(`../ssl/server.crt`),
+                    },
 
-            app
-        );
+                    app
+                    );
+        } catch(e) {
+            console.warn(e);
+            console.warn("Reverting to http");
+            httpServer = http.createServer(app);
+        }
     } else {
         httpServer = http.createServer(app);
     }
