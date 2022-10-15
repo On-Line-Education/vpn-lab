@@ -12,6 +12,10 @@
         </div>
         <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
+            <div v-if="loading.inProgress" class="progress-custom">
+            <div class="progress-message">Wczytywanie</div>
+            <div class="progress-loading progress-bar progress-bar-striped bg-warning" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
                 <table
                     v-if="
                         !(
@@ -125,6 +129,7 @@
                                     color="info"
                                     variant="outline"
                                     size="sm"
+                                    v-if="(user.name !== loggedInUserVpnName && user.role !== 'instructor') || isAdmin"
                                 >
                                     Edytuj
                                 </vsud-button>
@@ -388,8 +393,6 @@
 </template>
 
 <script setup>
-import VsudAvatar from "../Basic/VsudAvatar.vue";
-import VsudBadge from "../Basic/VsudBadge.vue";
 import VsudButton from "../Basic/VsudButton.vue";
 import VsudInput from "../Basic/VsudInput.vue";
 import { useRouter } from "vue-router";
@@ -415,9 +418,9 @@ const emit = defineEmits(["reload"]);
 
 const tableSorter = new TableSorter(hubs);
 
-const isAdmin = store.getters.getRole == "admin";
-
-var reactiveUsers = reactive({ users: [] });
+const isAdmin = store.getters.getRole === "admin";
+const loggedInUserVpnName = store.getters.getServer.getUser().name;
+const reactiveUsers = reactive({ users: [] });
 
 const date = computed(() => {
     return Date.now();
@@ -425,6 +428,7 @@ const date = computed(() => {
 
 let currName = "";
 
+const loading = reactive({inProgress: true});
 // edit groups
 
 const groups = reactive([]);
@@ -490,7 +494,7 @@ async function addUserToGroup() {
     await refreshUsers();
     openGroupModal(
         reactiveUsers.users.sortData.data.find(
-            (e) => e.name == selectedGroupUser.name
+            (e) => e.name === selectedGroupUser.name
         )
     );
 }
@@ -510,7 +514,7 @@ async function removeFromGroup(group) {
         await refreshUsers();
         openGroupModal(
             reactiveUsers.users.sortData.data.find(
-                (e) => e.name == selectedGroupUser.name
+                (e) => e.name === selectedGroupUser.name
             )
         );
     };
@@ -590,6 +594,7 @@ async function refreshUsers() {
                 return el;
             })
         );
+        loading.inProgress = false;
     } catch (e) {
         store.commit("setError", e);
         console.error(e);
@@ -599,7 +604,7 @@ async function refreshUsers() {
 async function refresh() {
     let perms = await store.getters.getServer.getRoles();
     let userPerms = perms.data.getRoles;
-    if (store.getters.getRole == "instructor") {
+    if (store.getters.getRole === "instructor") {
         userPerms.splice(userPerms.indexOf("admin"), 1);
     }
     permissions.value = userPerms;
@@ -632,7 +637,6 @@ async function save() {
         await refreshUsers();
     } catch (e) {
         store.commit("setError", e);
-        return;
     }
 }
 

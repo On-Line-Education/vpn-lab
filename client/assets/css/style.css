@@ -61,3 +61,37 @@
     cursor: help;
     border-bottom: 1px dotted black;
   }
+
+.progress-loading {
+    z-index: 0;
+    display: block;
+    animation: progress-indeterminate 3s linear infinite;
+    height: 25px;
+    width: 100%;
+    background-size: 30px 30px;
+    color: black;
+    position: relative;
+}
+
+.progress-custom {
+    overflow: hidden;
+    display: grid;
+    border-radius: 0.25rem;
+    background-color: #f7f7f7;
+    position: relative;
+    height: 25px;
+    margin: 0 25px;
+}
+
+.progress-message {
+    z-index: 3;
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+    position: absolute;
+}
+
+@keyframes progress-indeterminate {
+    0% { left: -25%; width: 125%; }
+    100% { left: 0%; width: 150%; }
+}

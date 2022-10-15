@@ -22,7 +22,7 @@
                 variant="outline"
                 size="sm"
                 @click="bulkAddToGroup()"
-                v-if="isInstructor"
+                v-if="isInstructor || isAdmin"
             >
                 Zmień grupę wybranym użytkownikom
             </vsud-button>
@@ -143,7 +143,7 @@
                                     variant="outline"
                                     size="sm"
                                     @click="changeGroups(user.name)"
-                                    v-if="isInstructor"
+                                    v-if="isInstructor || isAdmin"
                                 >
                                     Edytuj grupy
                                 </vsud-button>
@@ -153,11 +153,8 @@
                                     size="sm"
                                     @click="deleteUser(user.name)"
                                     v-if="
-                                        isInstructor &&
-                                        ((user.role.toUpperCase() ===
-                                            'INSTRUCTOR' &&
-                                            instructorsCount > 1) ||
-                                            user.role.toUpperCase() === 'USER')
+                                    isAdmin || (isInstructor &&
+                                        (user.role.toUpperCase() === 'USER'))
                                     "
                                 >
                                     Usuń
@@ -169,7 +166,7 @@
             </div>
         </div>
     </div>
-    <div class="d-flex" v-if="isInstructor">
+    <div class="d-flex" v-if="isInstructor || isAdmin">
         <div class="mb-4 card full-width">
             <div class="p-3 card-body flex-space-between">
                 <div class="d-flex flex-row-reverse justify-content-between">
@@ -498,7 +495,7 @@ const { hubname } = defineProps({
 const store = useStore();
 
 const isAdmin = store.getters.getRole == "admin";
-const isInstructor = isAdmin || store.getters.getRole == "instructor";
+const isInstructor = store.getters.getRole == "instructor";
 const permissions = ref();
 const selectedPermission = ref();
 

@@ -57,6 +57,9 @@ export default createStore({
         toggleSidebar(state) {
             state.showSidenav = !state.showSidenav;
         },
+        setSidebar(state, payload) {
+            state.showSidenav = payload;
+        },
         navbarFixed(state) {
             if (state.isNavFixed === false) {
                 state.isNavFixed = true;
