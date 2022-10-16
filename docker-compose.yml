@@ -2,7 +2,8 @@ version: '3.3'
 services:
   web:
     image: node:16
-    user: "node"
+#     if you don't want/don't need to run it as root, please uncomment thus line:
+#     user: "node"
     working_dir: /home/node/app
     command: sh -c "sleep 30 && npm run dockerstart:prod"
     volumes:
