@@ -4,7 +4,7 @@ import randomString from "../Helpsers/randomString";
 import crypto from "crypto";
 import Roles from "../Helpsers/roles";
 import VeyonConnector from "../Veyon/veyonConnector";
-import { VpnRpcUserAuthType } from "vpnrpc";
+import { VpnRpcUserAuthType, VpnAccess } from "vpnrpc";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
@@ -437,7 +437,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         );
 
                 if(role == Roles.INSTRUCTOR) {
-                    await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
+                    await vpn.acl.addAlIpv4Custom(hubname, new VpnAccess({
                         Active_bool: true,
                         Priority_u32: 100,
                         Discard_bool: false,
