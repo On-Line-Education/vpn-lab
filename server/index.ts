@@ -15,6 +15,10 @@ async function main(): Promise<void> {
         process.env.NODE_ENV != "production"
     );
 
+    process.on("beforeExit", async ()=>{
+        await vpn.save();
+    });
+
     if (parseInt(process.env.develop) == 1) {
         process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
     }

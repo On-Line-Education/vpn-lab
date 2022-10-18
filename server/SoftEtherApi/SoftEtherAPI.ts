@@ -44,6 +44,13 @@ export default class SoftEtherAPI {
         return await this.api.GetServerStatus();
     }
 
+    public async save(): Promise<void> {
+        let in_rpc_test: VPN.VpnRpcTest = new VPN.VpnRpcTest(
+            {
+            });
+        await this.api.Flush(in_rpc_test);
+    }
+
     public getApi() {
         return this.api;
     }
