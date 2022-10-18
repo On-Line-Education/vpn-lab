@@ -5,7 +5,7 @@ import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 import Roles from "../Helpsers/roles";
 import crypto from "crypto";
 import VeyonConnector from "../Veyon/veyonConnector";
-import { VpnRpcHubType, VpnRpcUserAuthType, VpnAccess } from "vpnrpc";
+import { VpnRpcHubType, VpnRpcUserAuthType, VpnAccess, VpnIpProtocolNumber } from "vpnrpc";
 import randomString from "../Helpsers/randomString";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
@@ -200,6 +200,16 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
                     Active_bool: true,
+                    Priority_u32: 110,
+                    Discard_bool: false,
+                    IsIPv6_bool: false,
+                    Protocol_u32: VpnIpProtocolNumber.UDP,
+                    DestPortStart_u32: 67,
+                    DestPortEnd_u32: 68
+                }));
+
+                await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
+                    Active_bool: true,
                     Priority_u32: 1000,
                     Discard_bool: true,
                     IsIPv6_bool: false
@@ -244,15 +254,14 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     group
                 );
 
-
-                    await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
-                        Active_bool: true,
-                        Priority_u32: 100,
-                        Discard_bool: false,
-                        IsIPv6_bool: false,
-                        SrcUsername_str: group,
-                        DestUsername_str: group
-                    }));
+                await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
+                    Active_bool: true,
+                    Priority_u32: 100,
+                    Discard_bool: false,
+                    IsIPv6_bool: false,
+                    SrcUsername_str: group,
+                    DestUsername_str: group
+                }));
 
                 return true;
             },

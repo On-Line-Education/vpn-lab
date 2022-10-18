@@ -13,7 +13,7 @@ export default class Connection {
 
     constructor() {
         this._link = createHttpLink({
-            uri: require("../config").ENV.API_URL,
+            uri: process.env.VUE_APP_API_URL,
         });
         this._apollo = new ApolloClient({
             link: this._link,

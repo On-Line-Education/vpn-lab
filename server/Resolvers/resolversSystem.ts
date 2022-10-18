@@ -164,7 +164,18 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         true,
                         256,
                         randomString(16)
-                    );
+                        );
+
+                    await vpn.acl.addAlIpv4Custom(data.hubName, new VpnAccess({
+                        Active_bool: true,
+                        Priority_u32: 110,
+                        Discard_bool: false,
+                        IsIPv6_bool: false,
+                        Protocol_u32: VpnIpProtocolNumber.UDP,
+                        DestPortStart_u32: 67,
+                        DestPortEnd_u32: 68
+                    }));
+                    
                     await vpn.acl.addAlIpv4Custom(data.hubName, new VpnAccess({
                         Active_bool: true,
                         Priority_u32: 1000,

@@ -423,16 +423,29 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
+                const group = role == Roles.INSTRUCTOR
+                ? husername + "_" + Date.now() + "_vpn_group"
+                : null;
+
                 await vpn.user.createUser(
                     hubname,
                     husername,
                     husername,
                     VpnRpcUserAuthType.Password,
                     dbuser.vpnPass,
-                    role == Roles.INSTRUCTOR
-                        ? husername + "_" + Date.now() + "_vpn_group"
-                        : null
-                );
+                    group
+                        );
+
+                if(role == Roles.INSTRUCTOR) {
+                    await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
+                        Active_bool: true,
+                        Priority_u32: 100,
+                        Discard_bool: false,
+                        IsIPv6_bool: false,
+                        SrcUsername_str: group,
+                        DestUsername_str: group
+                    }));
+                }
 
                 return true;
             },
