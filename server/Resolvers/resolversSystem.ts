@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
 import crypto from "crypto";
-import { VpnRpcHubType, VpnRpcUserAuthType } from "vpnrpc";
+import { VpnRpcHubType, VpnRpcUserAuthType, VpnAccess, VpnIpProtocolNumber } from "vpnrpc";
 import randomString from "../Helpsers/randomString";
 import Roles from "../Helpsers/roles";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
@@ -162,10 +162,15 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         data.hubName,
                         VpnRpcHubType.Standalone,
                         true,
-                        64,
-                        randomString(16),
-                        true
+                        256,
+                        randomString(16)
                     );
+                    await vpn.acl.addAlIpv4Custom(data.hubName, new VpnAccess({
+                        Active_bool: true,
+                        Priority_u32: 1000,
+                        Discard_bool: true,
+                        IsIPv6_bool: false
+                    }));
                 } else {
                     hubId = (
                         await prisma.hub.findUnique({
@@ -175,57 +180,64 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                 }
 
                 let veyonConnector = new VeyonConnector();
-                data.csv.forEach(
-                    async (user: {
-                        username: string;
-                        role: string;
-                        password: string;
-                    }) => {
-                        let pubKey = null,
-                            privKey = null;
-                        if (user.role === Roles.INSTRUCTOR) {
-                            // get keypair
-                            let { pub, priv } =
-                                await veyonConnector.getKeyPair();
-                            pubKey = pub;
-                            privKey = priv;
-                        }
-                        let dbuser = await prisma.user.create({
-                            data: {
-                                name: data.hubName + "_" + user.username,
-                                username: user.username + "@" + data.hubName,
-                                role: user.role,
-                                passHash: user.password
-                                    ? crypto
-                                          .createHash("SHA256")
-                                          .update(user.password)
-                                          .digest("hex")
-                                    : "",
-                                veyonKeyPriv: privKey,
-                                veyonKeyPub: pubKey,
-                                vpnPass: randomString(8),
-                                hubs: {
-                                    create: {
-                                        hubId,
-                                    },
+                for (const csvUser of data.csv) {
+                    let pubKey = null,
+                        privKey = null;
+                    if (csvUser.role === Roles.INSTRUCTOR) {
+                        // get keypair
+                        let { pub, priv } =
+                            await veyonConnector.getKeyPair();
+                        pubKey = pub;
+                        privKey = priv;
+                    }
+                    let dbuser = await prisma.user.create({
+                        data: {
+                            name: data.hubName + "_" + csvUser.username,
+                            username: csvUser.username + "@" + data.hubName,
+                            role: csvUser.role,
+                            passHash: csvUser.password
+                                ? crypto
+                                      .createHash("SHA256")
+                                      .update(csvUser.password)
+                                      .digest("hex")
+                                : "",
+                            veyonKeyPriv: privKey,
+                            veyonKeyPub: pubKey,
+                            vpnPass: randomString(8),
+                            hubs: {
+                                create: {
+                                    hubId,
                                 },
                             },
-                        });
-                        await vpn.user.createUser(
-                            data.hubName,
-                            data.hubName + "_" + user.username,
-                            data.hubName + "_" + user.username,
-                            VpnRpcUserAuthType.Password,
-                            dbuser.vpnPass,
-                            user.role == Roles.INSTRUCTOR
-                                ? user.username +
-                                      "_" +
-                                      Date.now() +
-                                      "_vpn_group"
-                                : null
-                        );
+                        },
+                    });
+                    const group = csvUser.role == Roles.INSTRUCTOR
+                    ? csvUser.username +
+                    "_" +
+                    Date.now() +
+                    "_vpn_group"
+                    : null;
+                    await vpn.user.createUser(
+                        data.hubName,
+                        data.hubName + "_" + csvUser.username,
+                        data.hubName + "_" + csvUser.username,
+                        VpnRpcUserAuthType.Password,
+                        dbuser.vpnPass,
+                        group
+                    );
+
+                    if(csvUser.role === Roles.INSTRUCTOR) {
+                        await vpn.acl.addAlIpv4Custom(data.hubName, new VpnAccess({
+                            Active_bool: true,
+                            Priority_u32: 100,
+                            Discard_bool: false,
+                            IsIPv6_bool: false,
+                            SrcUsername_str: group,
+                            DestUsername_str: group
+                        }));
                     }
-                );
+
+                }
                 return true;
             },
             async setIpSec(_: any, { ipsec }: any, { user, api }) {

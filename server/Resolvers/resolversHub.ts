@@ -5,7 +5,7 @@ import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
 import Roles from "../Helpsers/roles";
 import crypto from "crypto";
 import VeyonConnector from "../Veyon/veyonConnector";
-import { VpnRpcHubType, VpnRpcUserAuthType } from "vpnrpc";
+import { VpnRpcHubType, VpnRpcUserAuthType, VpnAccess } from "vpnrpc";
 import randomString from "../Helpsers/randomString";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
@@ -188,23 +188,29 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             title: hubName,
                         },
                     })
-                ).id;
+                    ).id;
 
-                let createHub = await vpn.hub.create(
+                await vpn.hub.create(
                     hubName,
                     VpnRpcHubType.Standalone,
                     true,
-                    64,
-                    randomString(16),
-                    false
-                );
+                    256,
+                    randomString(16)
+                    );
 
-                let defaultAcl = defaultACL();
+                await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
+                    Active_bool: true,
+                    Priority_u32: 1000,
+                    Discard_bool: true,
+                    IsIPv6_bool: false
+                }));
 
-                defaultAcl.DestUsername_str = createHub.HubName_str;
-                defaultAcl.SrcUsername_str = createHub.HubName_str;
-
-                await vpn.acl.addAlIpv4(createHub.HubName_str, defaultAcl);
+//                 let defaultAcl = defaultACL();
+//
+//                 defaultAcl.DestUsername_str = createHub.HubName_str;
+//                 defaultAcl.SrcUsername_str = createHub.HubName_str;
+//
+//                 await vpn.acl.addAlIpv4(createHub.HubName_str, defaultAcl);
 
                 let veyonConnector = new VeyonConnector();
                 let { pub, priv } = await veyonConnector.getKeyPair();
@@ -228,14 +234,25 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         },
                     },
                 });
+                const group = user.name + "_" + Date.now() + "_vpn_group";
                 await vpn.user.createUser(
                     hubName,
                     dbuser.name,
                     dbuser.name,
                     VpnRpcUserAuthType.Password,
                     dbuser.vpnPass,
-                    user.name + "_" + Date.now() + "_vpn_group"
+                    group
                 );
+
+
+                    await vpn.acl.addAlIpv4Custom(hubName, new VpnAccess({
+                        Active_bool: true,
+                        Priority_u32: 100,
+                        Discard_bool: false,
+                        IsIPv6_bool: false,
+                        SrcUsername_str: group,
+                        DestUsername_str: group
+                    }));
 
                 return true;
             },

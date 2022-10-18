@@ -30,6 +30,17 @@ export default class SoftEtherAl {
         return await this.api.AddAccess(data);
     }
 
+    public async addAlIpv4Custom(
+        hubName: string,
+        va: VpnAccess
+        ): Promise<VpnRpcAddAccess> {
+        let data = new VpnRpcAddAccess({
+            HubName_str: hubName,
+            AccessListSingle: [va],
+        });
+        return await this.api.AddAccess(data);
+    }
+
     public async addAlIpv6(
         hubName: string,
         va: VpnAccessDataIPv6
