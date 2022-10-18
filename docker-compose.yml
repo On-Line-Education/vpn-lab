@@ -23,6 +23,8 @@ services:
       MYSQL_DATABASE: vpndb
       MYSQL_USER: vpndb
       MYSQL_PASSWORD: vpndb
+    volumes:
+      - ./database:/var/lib/mysql
     ports:
       - "3307:3306"
     networks:
