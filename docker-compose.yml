@@ -51,6 +51,8 @@ services:
      SPW: 'Abc@alphaT2'
     networks:
       vpn_net:
+    volumes:
+      - ./vpn_server.config:/usr/vpnserver/vpn_server.config
     cap_add:
       - NET_ADMIN
   veyon-php:
