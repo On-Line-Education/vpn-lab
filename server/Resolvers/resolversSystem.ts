@@ -130,24 +130,55 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     });
                 });
 
-                if (
-                    await prisma.user.findFirst({
-                        where: { OR: vpnNamesToCheck },
-                    })
-                ) {
-                    throw new Error(
-                        "Istnieje już co najmniej jeden użytkownik z podaną nazwą vpn."
-                    );
-                }
+                let vpnUsers = await prisma.user.findMany({
+                    where: { OR: vpnNamesToCheck },
+                    select: {
+                        name: true
+                    }
+                });
 
                 if (
-                    await prisma.user.findFirst({
-                        where: { OR: namesToCheck },
-                    })
+                    vpnUsers.length > 0
                 ) {
-                    throw new Error(
-                        "Istnieje już co najmniej jeden użytkownik z podaną nazwą."
-                    );
+                    return {
+                        successful: false,
+                        message: "Istnieje już co najmniej jeden użytkownik z podaną nazwą.",
+                        names: vpnUsers.map(value=>{
+
+                            return value.name.replace(
+                                    value.name.split("_").shift() + "_",
+                                    ""
+                                    );
+                        })
+                    };
+                    // throw new Error(
+                    //     "Istnieje już co najmniej jeden użytkownik z podaną nazwą vpn."
+                    // );
+                }
+
+                let vpnNames = await prisma.user.findMany({
+                    where: { OR: namesToCheck },
+                    select: {
+                        name: true
+                    }
+                });
+
+                if (
+                    vpnNames.length > 0
+                ) {
+                    return {
+                        successful: false,
+                        message: "Istnieje już co najmniej jeden użytkownik z podaną nazwą.",
+                        names: vpnNames.map(value=>{
+                            return value.name.replace(
+                                    "@" + value.name.split("@").pop(),
+                                    ""
+                                    );
+                        })
+                    };
+                    // throw new Error(
+                    //    "Istnieje już co najmniej jeden użytkownik z podaną nazwą."
+                    // );
                 }
 
                 if (data.newHub) {
@@ -249,7 +280,11 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     }
 
                 }
-                return true;
+                return {
+                        successful: true,
+                        message: "",
+                        names: []
+                };
             },
             async setIpSec(_: any, { ipsec }: any, { user, api }) {
                 if (!(api || user)) {

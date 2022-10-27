@@ -284,7 +284,11 @@ export default class Connection {
         return await this._apollo.mutate({
             mutation: gql`
                 mutation Import($data: Import) {
-                    import(data: $data)
+                    import(data: $data) {
+                        successful
+                        message
+                        names
+                    }
                 }
             `,
             variables: {
@@ -403,7 +407,7 @@ export default class Connection {
                         name
                         url
                         permission
-                    }
+                    }im
                 }
             `,
             context: {

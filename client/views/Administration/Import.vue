@@ -100,6 +100,47 @@
             </table>
         </div>
     </div>
+
+    <div class="mb-4 card mw-fc" v-if="importResult.result != null">
+        <div class="card-header pb-0 d-flex justify-content-between">
+            <h6
+            class="tooltip-custom"
+            data-html="true"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Podgląd błędu wynikającego z przeprowadzonego importu"
+            >
+            Rezultat importu
+            </h6>
+            <div>
+                <div
+                class="text-center shadow icon icon-shape border-radius-md bg-gradient-danger"
+                >
+                    <i
+                    class="text-lg opacity-10 text-white fas fa-solid fa-magnifying-glass"
+                    aria-hidden="true"
+                    ></i>
+                </div>
+            </div>
+        </div>
+        <div
+        class="card-body p-3 d-flex justify-content-between table-responsive flex-column"
+        >
+            <p>{{importResult.result.message}}</p>
+            <table class="table align-items-center mb-0">
+                <thead>
+                    <tr class="table-ms-15">
+                        <th>Zajeta nazwa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-ms-15" v-for="name in importResult.result.names">
+                        <td>{{ name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </template>
 <script setup>
 import { onMounted, reactive, ref, watch } from "vue";
@@ -118,6 +159,9 @@ const customHubName = ref();
 const importButton = ref();
 
 const isAdmin = store.getters.getRole == "admin";
+
+const importResult = reactive({result: null});
+const importMessage = "";
 
 function selectHubChanged() {
     if (selectHub.value.value != 0) {
@@ -235,6 +279,7 @@ function returnValue(val) {
 }
 
 function importData() {
+    importResult.result = null;
     if (csvData.csv === null) {
         throw new Error("Najpierw wybierz plik csv");
     }
@@ -274,9 +319,13 @@ function importData() {
         });
         store.getters.getServer
             .import({ csv, newHub, hubName })
-            .then((_) => {
-                importButton.value.disabled = false;
-                store.commit("showAlert", { message: "Import zakończony" });
+            .then((result) => {
+                if(result.data.import.successful){
+                    importButton.value.disabled = false;
+                    store.commit("showAlert", { message: "Import zakończony" });
+                } else {
+                    importResult.result = result.data.import;
+                }
             })
             .catch((e) => {
                 importButton.value.disabled = false;

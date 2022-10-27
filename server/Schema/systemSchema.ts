@@ -44,6 +44,12 @@ export default gql`
         permission: String
     }
 
+    type ImportResult {
+        successful: Boolean
+        message: String
+        names: [String]
+    }
+
     enum Permission {
         ADMIN
         INSTRUCTOR
@@ -57,7 +63,7 @@ export default gql`
     }
 
     type Mutation {
-        import(data: Import): Boolean
+        import(data: Import): ImportResult
         setIpSec(ipsec: IPSec): IPSecOutput
         addFileEntry(name: String, permission: Permission, url: String): Boolean
         deleteFileEntry(id: Int): Boolean
