@@ -48,6 +48,7 @@ const navbarMinimize = mapMutations(["navbarMinimize"]);
 const currentRouteName = computed(() => {
     return route.name;
 });
+let alertTimeout = ()=>{};
 
 function checkPerms(route) {
     if (route !== "Zaloguj się" && !store.getters.isLoggedIn) {
@@ -63,6 +64,10 @@ watch(currentRouteName, (r) => checkPerms(r));
 // const navbarMinimize = mapMutations(["navbarMinimize"]);
 
 const alertClasses = computed(() => {
+    clearTimeout(alertTimeout);
+    alertTimeout = setTimeout(()=>{
+        alertClose();
+    }, 3000);
     return {
         "pos-alert alert alert-danger alert-dismissible fade show":
             store.state.isAlertError && store.state.showAlert,

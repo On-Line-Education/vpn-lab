@@ -314,17 +314,17 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             "Nazwa użytkownika musi mieć minimum 3 znaki"
                         );
                     }
-                    data["username"] = username;
-                }
 
-                if (
-                    (await prisma.user.findFirst({
-                        where: {
-                            username: username,
-                        },
-                    })) != null
-                ) {
-                    throw new Error("Taka nazwa użytkownika już istnieje");
+                    if (
+                        (await prisma.user.findFirst({
+                            where: {
+                                username: username,
+                            },
+                        })) != null
+                        ) {
+                        throw new Error("Taka nazwa użytkownika już istnieje");
+                    }
+                    data["username"] = username;
                 }
 
                 await prisma.user.update({

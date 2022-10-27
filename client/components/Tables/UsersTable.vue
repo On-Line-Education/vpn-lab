@@ -179,6 +179,7 @@
                             name="name"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="userName"
+                            readonly
                         />
                         <label>Hasło:</label>
                         <input

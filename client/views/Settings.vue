@@ -20,13 +20,13 @@
                         class="d-flex flex-column justify-content-between"
                         @submit.prevent="save()"
                     >
-                        <input
+                        <!--<input
                             type="text"
                             placeholder="Zmień nazwę"
                             name="password"
                             class="form-control d-flex justify-content-start mb-3"
                             ref="newUsername"
-                        />
+                        />-->
                         <input
                             type="password"
                             placeholder="Zmień hasło"
@@ -70,7 +70,7 @@ import { useStore } from "vuex";
 
 const store = useStore();
 
-const newUsername = ref();
+/*const newUsername = ref();*/
 const newPassword = ref();
 const newPasswordRepeat = ref();
 const oldPassword = ref();
@@ -92,7 +92,7 @@ async function save() {
         });
         return;
     }
-    if (
+    /*if (
         newUsername.value.value.trim().length != 0 &&
         newUsername.value.value.trim().length < 3
     ) {
@@ -100,18 +100,18 @@ async function save() {
             message: "Nazwa użytkownika musi mieć minimum 3 znaki",
         });
         return;
-    }
+    }*/
     try {
         let res = await store.getters.getServer.changeUserSettings({
-            username: newUsername.value.value.trim(),
+            username: ""/*newUsername.value.value.trim()*/,
             newPassword: newPassword.value.value,
             oldPassword: oldPassword.value.value,
         });
         if (res.data.changeUserSettings) {
             store.commit("showAlert", { message: "Zmiany zostały zapisane" });
-            if (newUsername.value.value) {
+            /*if (newUsername.value.value) {
                 store.commit("setUsername", newUsername.value.value);
-            }
+            }*/
         } else {
             store.commit("setError", {
                 message: "Wystąpił niespodziewany problem",
