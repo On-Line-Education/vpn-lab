@@ -175,6 +175,7 @@ const permissions = ref();
 const selectedPermission = ref();
 const url = ref();
 const ftpName = ref();
+const usureModal = ref();
 
 const emit = defineEmits(["reload"]);
 
