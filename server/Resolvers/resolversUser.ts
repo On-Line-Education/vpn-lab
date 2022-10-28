@@ -179,7 +179,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
 
-                let userWithGroups = await prisma.usersGroup.findFirst({
+                let userWithGroups = (await prisma.usersGroup.findMany({
                     where: {
                         userHub: {
                             user: {
@@ -196,9 +196,9 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         },
                         groupName: true,
                     },
-                });
+                })).map(user=>user.groupName);
 
-                if (!userWithGroups)
+                if (userWithGroups.length === 0)
                     throw new Error("Użytkownik nie należy do żadnej grupy");
 
                 let usersHub = await prisma.usersGroup.findMany({
@@ -211,7 +211,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                                 title: hubname,
                             },
                         },
-                        groupName: userWithGroups.groupName,
+                        groupName: { in: userWithGroups },
                     },
                     select: {
                         userHub: {
