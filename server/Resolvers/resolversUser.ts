@@ -198,6 +198,10 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 })).map(user=>user.groupName);
 
+                userWithGroups = userWithGroups.filter(function(item, pos) {
+                    return userWithGroups.indexOf(item) == pos;
+                });
+                    
                 if (userWithGroups.length === 0)
                     throw new Error("Użytkownik nie należy do żadnej grupy");
 
