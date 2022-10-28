@@ -182,14 +182,14 @@ async function del(hubname) {
             }
 
             await store.getters.getServer.deleteHub(hubname);
-            usureModal.value.removeEventListener("click", cl);
+            usureYesModal.value.removeEventListener("click", cl);
             emit("reload");
         } catch (e) {
             store.commit("setError", e);
             return;
         }
     };
-    usureModal.value.addEventListener("click", cl);
+    usureYesModal.value.addEventListener("click", cl);
 }
 
 async function closeUsureModal() {
