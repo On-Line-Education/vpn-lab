@@ -671,6 +671,13 @@ async function addUserToGroup() {
             return;
         }
     }
+    
+    if(groupName.trim() === ""){
+        store.commit("setError", {
+            message: "Nazwa grupy nie może być pusta",
+        });
+        return;
+    }
 
     if (selectedUserGroups.groups.includes(groupName)) {
         cantModal.value.style.display = "block";
