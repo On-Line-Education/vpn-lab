@@ -407,7 +407,7 @@ export default class Connection {
                         name
                         url
                         permission
-                    }im
+                    }
                 }
             `,
             context: {
