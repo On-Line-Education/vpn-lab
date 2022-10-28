@@ -296,12 +296,6 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
 
                 let curentConfig = await vpn.ipsec.get();
 
-                ipsec.L2TP_Raw_bool;
-                ipsec.L2TP_IPsec_bool;
-                ipsec.EtherIP_IPsec_bool;
-                ipsec.IPsec_Secret_str;
-                ipsec.L2TP_DefaultHub_str;
-
                 return await vpn.ipsec.set(
                     ipsec.L2TP_Raw_bool,
                     ipsec.L2TP_IPsec_bool,
