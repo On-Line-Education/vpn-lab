@@ -21,13 +21,21 @@ Dev Setup
 --
 For developing run in the terminal <code>npm run dev</code>. It will report errors and logs for backend and frontend. Remember to set correct api url in client/config.js
 
+<b>Using in docker is highly recommended</b>
+You can use prepared docker-compose files for setting up dev env in docker. 
+
+Remember to fill your data to <code>.env</code> file (make a copy of <code>.env.example</code> and edit it)
 
 Testing VPN Docker
 --
 Testing docker container command: <code>docker run -d --cap-add NET_ADMIN -p 500:500/udp -p 4500:4500/udp -p 1701:1701/tcp -p 1194:1194/udp -p 5555:5555/tcp -e SPW='!@#$%^&*' siomiz/softethervpn</code>
 
+Use this if you are not using prepared docker-compose files.
+
 Install
 --
+I highly recommend you to use one of prepared docker-compose files. If you want to do it withour docker, then follow steps below:
+
 To setup this project on your local env, you will need:
 - Softether VPN
 - MySQL database
@@ -38,10 +46,9 @@ Next you need to:
 - Change data in <code>.env</code> so it is correct for your setup
 - Run <code>npm install</code>
 - Run <code>npm run prisma:setup</code>
-- Now you can follow _Dev Setup_ section
+- Now you can run <code>serve</code> and <code>start</code> commands or any other in table on top of this document.
 
 Additional info
 --
 To access auth required query, assign user token to Authorization header
 To access data from desktop app, you need to assign desktop_key token to Authorization header
-You can use docker to setup this project
