@@ -231,7 +231,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                const getUnique = (a) => {
                     let seen = [];
                     return a.filter(function(item) {
-                        let k = item.groupName;
+                        let k = item.userHub.user.name;
                         if(seen.includes(k)){
                             return false;  
                         } else {
