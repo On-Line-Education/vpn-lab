@@ -4,6 +4,7 @@ VPN LAB
 | npm command        | what it does                                       | command                                                                                                                         |
 | ------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | serve              | start app                                          | npx vue-cli-service serve                                                                                                       |
+| serve:production              | start app in production mode                                          | npx vue-cli-service build && npx serve -s dist/client -l 4000                                                                                                       |
 | start              | start server                                       | npx ts-node server/index.ts                                                                                                     |
 | dev:serve          | start app in development mode                      | npx vue-cli-service serve --mode development                                                                                    |
 | dev:server         | start server with watcher                          | nodemon                                                                                                                         |
@@ -14,7 +15,7 @@ VPN LAB
 | command            | run system command                                 | node ./server/Commands/command.cjs                                                                                              |
 | dockerstart:local  | commands for local env docker                      | npm i && npm run prisma:setup:local && npm run command create:admin admin && npm run dev                                        |
 | dockerstart:dev    | commands for dev env docker                        | npm i && npm run prisma:setup:dev && npm run command create:admin admin && concurrently \"npm run start\" \"npm run dev:serve\" |
-| dockerstart:prod   | commands for prod env docker                       | npm i && npm run prisma:setup && concurrently \"npm run start\" \"npm run serve\"                                               |
+| dockerstart:prod   | commands for prod env docker                       | npm i && npm run prisma:setup && concurrently \"npm run start\" \"npm run serve:production\"                                               |
 
 Dev Setup
 --
