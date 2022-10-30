@@ -160,6 +160,7 @@ const emit = defineEmits(["reload"]);
 const tableSorter = new TableSorter(hubs);
 
 const isAdmin = store.getters.getRole == "admin";
+const usureYesModal = ref();
 
 function more(hubname) {
     router.push({ name: "HUB", params: { hubname } });
