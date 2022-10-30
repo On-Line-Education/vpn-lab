@@ -227,6 +227,16 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         groupName: true,
                     },
                 });
+                    
+                const getUniqueBy = (a, key) => {
+                    let seen = {};
+                    return a.filter(function(item) {
+                        let k = key(item);
+                        return seen.hasOwnProperty(k) ? false : (seen[k] = true);
+                    })
+                };
+                
+                usersHub = getUniqueBy(usersHub, JSON.stringify);
 
                 usersHub.map((r) => {
                     teachersInGroups.push({
