@@ -206,7 +206,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     throw new Error("Użytkownik nie należy do żadnej grupy");
 
                 let usersHub = await prisma.usersGroup.findMany({
-                    distinct: ["groupName"],
+//                     distinct: ["groupName"],
                     where: {
                         userHub: {
                             user: {
