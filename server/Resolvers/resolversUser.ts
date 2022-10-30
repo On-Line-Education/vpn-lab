@@ -228,15 +228,20 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                     },
                 });
                     
-                const getUniqueBy = (a, key) => {
-                    let seen = {};
+               const getUnique = (a) => {
+                    let seen = [];
                     return a.filter(function(item) {
-                        let k = key(item);
-                        return seen.hasOwnProperty(k) ? false : (seen[k] = true);
+                        let k = item.groupName;
+                        if(seen.includes(k)){
+                            return false;  
+                        } else {
+                            seen.push(k);
+                            return true;
+                        }
                     })
                 };
                 
-                usersHub = getUniqueBy(usersHub, JSON.stringify);
+                usersHub = getUnique(usersHub);
 
                 usersHub.map((r) => {
                     teachersInGroups.push({
