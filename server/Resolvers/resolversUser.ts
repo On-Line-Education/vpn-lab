@@ -6,6 +6,7 @@ import Roles from "../Helpsers/roles";
 import VeyonConnector from "../Veyon/veyonConnector";
 import { VpnRpcUserAuthType, VpnAccess } from "vpnrpc";
 import SoftEtherAPI from "../SoftEtherApi/SoftEtherAPI";
+import VpnGroup from "../SoftEtherApi/SoftEtherData/VpnGroup";
 
 export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
     return {
@@ -537,6 +538,7 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                         },
                     },
                 });
+
                 let usernameHub =
                     username == "" ? "" : username + "@" + hub.hub.title;
 
@@ -585,6 +587,50 @@ export default (prisma: PrismaClient, vpn: SoftEtherAPI) => {
                             : currUser.user.veyonKeyPub,
                     },
                 });
+
+                const group = username +
+                "_" +
+                Date.now() +
+                "_vpn_group";
+
+                if (role === Roles.INSTRUCTOR) {
+                    const groupObj = new VpnGroup();
+                    groupObj.HubName_str = hub.hub.title;
+                    groupObj.Name_str = group;
+                    groupObj.Realname_utf = group;
+                    groupObj.Note_utf = "";
+                    groupObj.UsePolicy_bool = false;
+
+                    await vpn.group.create(groupObj);
+
+                    await vpn.user.setGroup(
+                        hub.hub.title,
+                        vpnname,
+                        group,
+                        VpnRpcUserAuthType.Password,
+                        currUser.user.vpnPass
+                    );
+
+                    await vpn.acl.addAlIpv4Custom(hub.hub.title, new VpnAccess({
+                        Active_bool: true,
+                        Priority_u32: 100,
+                        Discard_bool: false,
+                        IsIPv6_bool: false,
+                        SrcUsername_str: group,
+                        DestUsername_str: group
+                    }));
+                } else {
+                    try {
+                        const aclList = await vpn.acl.list(hub.hub.title);
+                        const searchAcl = aclList.AccessList.find(acl => acl.DestUsername_str.includes(username));
+                        if (searchAcl) { 
+                            await vpn.acl.delete(hub.hub.title, searchAcl.Id_u32);
+                        }
+                        await vpn.group.delete(hub.hub.title, group);
+                    } catch (e) {
+                        // ignore error here
+                    }
+                }
 
                 return true;
             },
